@@ -1,0 +1,25 @@
+const sanitizeUser = (user) => ({
+  _id: user._id,
+  userId: user.userId,
+  name: user.name,
+  email: user.email,
+  role: user.role,
+  isBanned: Boolean(user.isBanned),
+  isVerified: Boolean(user.isVerified),
+  bio: user.bio || "",
+  location: user.location || "",
+  avatar: user.avatar || "",
+  banner: user.banner || "",
+  skillsOffered: Array.isArray(user.skillsOffered) ? user.skillsOffered : [],
+  skillsWanted: Array.isArray(user.skillsWanted) ? user.skillsWanted : [],
+  interests: Array.isArray(user.interests) ? user.interests : [],
+  learningGoals: Array.isArray(user.learningGoals) ? user.learningGoals : [],
+  rating: typeof user.rating === "number" ? user.rating : 0,
+  followers: Array.isArray(user.followers) ? user.followers : [],
+  following: Array.isArray(user.following) ? user.following : [],
+  mfaEnabled: Boolean(user.mfaEnabled),
+  createdAt: user.createdAt,
+  updatedAt: user.updatedAt,
+});
+
+module.exports = { sanitizeUser };
