@@ -1,3 +1,4 @@
+import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import {
   ArrowRight,
@@ -5,24 +6,18 @@ import {
   BookOpen,
   CheckCircle2,
   Code2,
-  Github,
-  Linkedin,
-  Quote,
-  Send,
   Users,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
+import API from "@/api/axios";
 import { useApp } from "@/context/AppContext";
 
 const navItems = [
   { label: "Features", href: "#features" },
-  { label: "Company", href: "#testimonials" },
-  { label: "Resources", href: "#workspace" },
-  { label: "Help", href: "#features" },
-  { label: "Docs", href: "#workspace" },
+  { label: "Workspace", href: "#workspace" },
   { label: "AI", href: "#features" },
-  { label: "Pricing", href: "#landing-footer" },
+  { label: "Community", to: "/community" },
 ];
 
 const featureItems = [
@@ -43,37 +38,11 @@ const featureItems = [
   },
 ];
 
-const testimonialItems = [
-  {
-    quote:
-      "SkillFlow helped me go from scattered tutorials to shipping real projects with useful feedback.",
-    name: "Ananya Sharma",
-    role: "UI Designer",
-    initials: "AS",
-  },
-  {
-    quote:
-      "The peer swap flow makes practice feel accountable. I learn faster because feedback is built in.",
-    name: "Rohan Verma",
-    role: "Full Stack Developer",
-    initials: "RV",
-  },
-  {
-    quote:
-      "Clean paths, focused goals, and a community that actually helps you keep momentum.",
-    name: "Sara Khan",
-    role: "Product Manager",
-    initials: "SK",
-  },
-];
-
 const easeOut = [0.22, 1, 0.36, 1];
-const heroVideoUrl =
-  "https://res.cloudinary.com/dauw2sdmc/video/upload/q_auto:best/f_auto/v1780154788/Animated_sphere_with_swirling_light_202605302055_al4i0f.mp4";
-const heroStats = [
-  { label: "Builders", value: "5K+" },
-  { label: "Skills", value: "100+" },
-  { label: "Paths", value: "4 weeks" },
+const defaultStats = [
+  { label: "Builders", value: "0" },
+  { label: "Skills", value: "0" },
+  { label: "Swaps", value: "0" },
 ];
 
 function renderNavItem(item) {
@@ -93,9 +62,35 @@ function renderNavItem(item) {
 }
 
 function LandingPage() {
-  const { user, logout } = useApp();
+  const { user, logout, currentUser } = useApp();
+  const [landingStats, setLandingStats] = useState(defaultStats);
+  const [rawStats, setRawStats] = useState({ builders: 0, skills: 0, swaps: 0, paths: 0, posts: 0 });
   const primaryPath = user ? "/home" : "/register";
   const primaryLabel = user ? "Open workspace" : "Get started";
+  const userSkillCount = useMemo(() => {
+    if (!currentUser) return rawStats.skills;
+    return new Set([...(currentUser.skillsOffered || []), ...(currentUser.skillsWanted || [])]).size;
+  }, [currentUser, rawStats.skills]);
+
+  useEffect(() => {
+    let active = true;
+
+    API.get("/public/landing")
+      .then(({ data }) => {
+        if (!active) return;
+        setLandingStats(Array.isArray(data.displayStats) ? data.displayStats : defaultStats);
+        setRawStats(data.stats || { builders: 0, skills: 0, swaps: 0, paths: 0, posts: 0 });
+      })
+      .catch(() => {
+        if (active) {
+          setLandingStats(defaultStats);
+        }
+      });
+
+    return () => {
+      active = false;
+    };
+  }, []);
 
   return (
     <div id="top" className="landing-shell resend-shell">
@@ -129,16 +124,6 @@ function LandingPage() {
 
       <main className="resend-main">
         <section className="resend-hero resend-hero-layout">
-          <video
-            className="resend-hero-video"
-            src={heroVideoUrl}
-            autoPlay
-            loop
-            muted
-            playsInline
-            preload="auto"
-            aria-hidden="true"
-          />
           <h1 className="sr-only">
             SkillFlow helps builders learn real-world skills with guided paths and peer swaps.
           </h1>
@@ -168,23 +153,12 @@ function LandingPage() {
             <div className="resend-hero-side resend-hero-side-right">
               <span className="resend-hero-side-label">Peer Momentum</span>
               <div className="resend-hero-stat-list">
-                {heroStats.map((item) => (
+                {landingStats.map((item) => (
                   <div key={item.label} className="resend-hero-stat-card">
                     <strong>{item.value}</strong>
                     <span>{item.label}</span>
                   </div>
                 ))}
-              </div>
-              <div className="resend-hero-socials">
-                <a href="https://github.com" aria-label="SkillFlow on GitHub">
-                  <Github size={16} />
-                </a>
-                <a href="https://linkedin.com" aria-label="SkillFlow on LinkedIn">
-                  <Linkedin size={16} />
-                </a>
-                <a href="https://t.me" aria-label="SkillFlow on Telegram">
-                  <Send size={16} />
-                </a>
               </div>
             </div>
           </motion.div>
@@ -233,42 +207,21 @@ function LandingPage() {
             <div className="resend-dashboard-grid">
               <div>
                 <span>Active path</span>
-                <strong>Frontend Systems</strong>
+                <strong>{rawStats.paths}</strong>
               </div>
               <div>
                 <span>Peer swaps</span>
-                <strong>12</strong>
+                <strong>{rawStats.swaps}</strong>
               </div>
               <div>
-                <span>Milestones</span>
-                <strong>7/9</strong>
+                <span>Community posts</span>
+                <strong>{rawStats.posts}</strong>
               </div>
               <div>
-                <span>Confidence</span>
-                <strong>High</strong>
+                <span>{currentUser ? "Your skills" : "Skills"}</span>
+                <strong>{userSkillCount}</strong>
               </div>
             </div>
-          </div>
-        </section>
-
-        <section id="testimonials" className="resend-section resend-testimonials">
-          <div className="resend-section-head">
-            <span className="resend-eyebrow">Beyond tutorials</span>
-            <h2>Learners build momentum here.</h2>
-          </div>
-
-          <div className="resend-testimonial-grid">
-            {testimonialItems.map((item) => (
-              <article key={item.name} className="resend-testimonial-card">
-                <Quote size={18} />
-                <p>{item.quote}</p>
-                <div>
-                  <span>{item.initials}</span>
-                  <strong>{item.name}</strong>
-                  <small>{item.role}</small>
-                </div>
-              </article>
-            ))}
           </div>
         </section>
       </main>

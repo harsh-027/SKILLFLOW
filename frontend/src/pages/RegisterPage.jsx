@@ -74,7 +74,7 @@ function RegisterPage() {
         transition={{ duration: 0.3, ease: "easeOut" }}
       >
           <div className="auth-emblem" aria-hidden="true">
-            <span className="auth-emblem-text">SF</span>
+            <img src="/favicon.svg" alt="" className="auth-emblem-logo" />
           </div>
           <h2 className="auth-title">Create your SkillFlow account</h2>
           <p className="auth-sub">Launch your profile, list what you know, and start learning with intention.</p>
@@ -89,7 +89,7 @@ function RegisterPage() {
                   type="text"
                   value={form.userId}
                   onChange={handleChange}
-                  placeholder="your-unique-id"
+                  placeholder="Choose a user ID"
                   aria-invalid={Boolean(errors.userId)}
                   aria-describedby={errors.userId ? "register-userid-error" : undefined}
                   required
@@ -109,7 +109,7 @@ function RegisterPage() {
                   type="text"
                   value={form.name}
                   onChange={handleChange}
-                  placeholder="Ada Lovelace"
+                  placeholder="Your name"
                   aria-invalid={Boolean(errors.name)}
                   aria-describedby={errors.name ? "register-name-error" : undefined}
                   required
@@ -130,7 +130,7 @@ function RegisterPage() {
                 type="email"
                 value={form.email}
                 onChange={handleChange}
-                placeholder="alan.turing@example.com"
+                placeholder="Email address"
                 aria-invalid={Boolean(errors.email)}
                 aria-describedby={errors.email ? "register-email-error" : undefined}
                 required

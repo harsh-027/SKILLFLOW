@@ -8,7 +8,7 @@ import type { AiLearningPath, AiSkillRecommendation } from "@/types/ai";
 
 export default function AiPage() {
   const { currentUser, addToast, updateProfile, bootstrapping } = useApp();
-  const [roadmapSkill, setRoadmapSkill] = useState("Full Stack Development");
+  const [roadmapSkill, setRoadmapSkill] = useState("");
   const [recommendations, setRecommendations] = useState<AiSkillRecommendation[]>([]);
   const [learningPath, setLearningPath] = useState<AiLearningPath | null>(null);
   const [loadingRecommendations, setLoadingRecommendations] = useState(true);
@@ -16,24 +16,26 @@ export default function AiPage() {
   const [pendingWishlistKeys, setPendingWishlistKeys] = useState<string[]>([]);
 
   const skillSuggestions = useMemo(() => {
-    if (!currentUser) return ["React", "Python", "UI/UX Design", "Full Stack Development"];
+    if (!currentUser) return [];
 
     return Array.from(
       new Set(
         [
           ...(currentUser.skillsOffered || []),
           ...(currentUser.skillsWanted || []),
-          "React",
-          "Python",
-          "UI/UX Design",
-          "Full Stack Development",
         ].filter(Boolean)
       )
     );
   }, [currentUser]);
 
   useEffect(() => {
-    if (!currentUser) {
+    if (!roadmapSkill && skillSuggestions.length) {
+      setRoadmapSkill(skillSuggestions[0]);
+    }
+  }, [roadmapSkill, skillSuggestions]);
+
+  useEffect(() => {
+    if (!currentUser || !roadmapSkill) {
       return;
     }
 

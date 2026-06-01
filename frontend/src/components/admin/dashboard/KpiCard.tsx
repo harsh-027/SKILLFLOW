@@ -16,23 +16,24 @@ export default function KpiCard({
   icon: Icon,
 }: KpiCardProps) {
   return (
-    <article className="group flex h-[132px] flex-col justify-between rounded-2xl border border-white/5 bg-[#1f2937] p-4 shadow-[0_10px_24px_rgba(2,8,23,0.22)] transition duration-300 hover:-translate-y-0.5 hover:border-cyan-400/18 hover:bg-[#243042]">
+    <article className="group relative flex min-h-[148px] flex-col justify-between overflow-hidden rounded-[8px] border border-white/14 bg-[linear-gradient(145deg,rgba(255,255,255,0.075),rgba(255,255,255,0.025))] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.07)] transition duration-300 hover:border-white/25 hover:bg-white/[0.07]">
+      <div className="pointer-events-none absolute -right-8 -top-10 h-28 w-28 rounded-full border border-white/10 opacity-30" />
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-sm font-medium text-slate-400">{label}</p>
-          <p className="mt-3 text-3xl font-extrabold tracking-tight text-white">{value}</p>
+          <p className="text-sm font-medium text-slate-300/85">{label}</p>
+          <p className="mt-5 text-3xl font-semibold tracking-[-0.02em] text-white">{value}</p>
         </div>
-        <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-500/16 via-sky-500/12 to-violet-500/16 text-cyan-300 ring-1 ring-inset ring-white/6">
+        <div className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/[0.055] text-slate-200">
           <Icon className="h-5 w-5" />
         </div>
       </div>
 
-      <div className="flex items-center justify-between gap-3">
-        <div className="inline-flex items-center gap-1.5 rounded-full border border-emerald-400/12 bg-emerald-400/8 px-2.5 py-1 text-xs font-medium text-emerald-300">
+      <div className="flex items-center gap-2 text-sm">
+        <div className="inline-flex items-center gap-1.5 font-medium text-emerald-400">
           <TrendingUp className="h-3.5 w-3.5" />
           {trend}
         </div>
-        <p className="text-xs text-slate-500">{helper}</p>
+        <p className="truncate text-slate-400">{helper}</p>
       </div>
     </article>
   );

@@ -61,7 +61,7 @@ function LoginPage() {
         transition={{ duration: 0.3, ease: "easeOut" }}
       >
           <div className="auth-emblem" aria-hidden="true">
-            <span className="auth-emblem-text">SF</span>
+            <img src="/favicon.svg" alt="" className="auth-emblem-logo" />
           </div>
           <h2 className="auth-title">Log in to SkillFlow</h2>
           <p className="auth-sub">Step into your workspace and keep your growth in motion.</p>
@@ -75,7 +75,7 @@ function LoginPage() {
                 type="email"
                 value={form.email}
                 onChange={handleChange}
-                placeholder="alan.turing@example.com"
+                placeholder="Email address"
                 aria-invalid={Boolean(errors.email)}
                 aria-describedby={errors.email ? "login-email-error" : undefined}
                 required

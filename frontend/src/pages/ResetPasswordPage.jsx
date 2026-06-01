@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, Eye, EyeOff, KeyRound, LoaderCircle } from "lucide-react";
+import { ArrowLeft, Eye, EyeOff, LoaderCircle } from "lucide-react";
 import { motion } from "framer-motion";
 
 import API from "../api/axios";
@@ -92,11 +92,8 @@ function ResetPasswordPage() {
         whileHover={{ y: -2 }}
         transition={{ duration: 0.3, ease: "easeOut" }}
       >
-        <div className="auth-badge-row">
-          <span className="auth-icon-badge">
-            <KeyRound size={18} />
-          </span>
-          <span className="auth-kicker">New password</span>
+        <div className="auth-emblem" aria-hidden="true">
+          <img src="/favicon.svg" alt="" className="auth-emblem-logo" />
         </div>
         <h2 className="auth-title">Reset your password</h2>
         <p className="auth-sub">

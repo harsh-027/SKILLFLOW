@@ -23,11 +23,11 @@ export default function UserGrowthChart({ data }: { data: GrowthPoint[] }) {
         <LineChart data={data} margin={{ top: 8, right: 8, left: -18, bottom: 0 }}>
           <defs>
             <linearGradient id="userGrowthStroke" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#22d3ee" />
-              <stop offset="100%" stopColor="#8b5cf6" />
+              <stop offset="0%" stopColor="#3f6f43" />
+              <stop offset="100%" stopColor="#75c66a" />
             </linearGradient>
           </defs>
-          <CartesianGrid stroke="rgba(255,255,255,0.05)" vertical={false} />
+          <CartesianGrid stroke="rgba(255,255,255,0.055)" vertical={false} />
           <XAxis
             dataKey="name"
             stroke="#64748b"
@@ -45,9 +45,9 @@ export default function UserGrowthChart({ data }: { data: GrowthPoint[] }) {
           <Tooltip
             cursor={{ stroke: "rgba(255,255,255,0.12)", strokeDasharray: "4 4" }}
             contentStyle={{
-              background: "#0f172a",
-              border: "1px solid rgba(255,255,255,0.08)",
-              borderRadius: 12,
+              background: "#071014",
+              border: "1px solid rgba(255,255,255,0.14)",
+              borderRadius: 8,
               color: "#fff",
             }}
           />
@@ -57,13 +57,13 @@ export default function UserGrowthChart({ data }: { data: GrowthPoint[] }) {
             stroke="url(#userGrowthStroke)"
             strokeWidth={3}
             dot={{ r: 0 }}
-            activeDot={{ r: 5, strokeWidth: 0, fill: "#22d3ee" }}
+            activeDot={{ r: 5, strokeWidth: 0, fill: "#75c66a" }}
           />
           {hasActiveSeries ? (
             <Line
               type="monotone"
               dataKey="active"
-              stroke="#93c5fd"
+              stroke="#8f989a"
               strokeDasharray="6 6"
               strokeWidth={2}
               dot={{ r: 0 }}

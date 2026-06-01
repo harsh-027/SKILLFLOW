@@ -11,7 +11,7 @@ type CategoryPoint = {
   value: number;
 };
 
-const colors = ["#22d3ee", "#8b5cf6", "#38bdf8", "#a855f7", "#06b6d4"];
+const colors = ["#75c66a", "#8f989a", "#3f6f43", "#d7dce0", "#5f765c"];
 
 export default function SkillCategoryChart({ data }: { data: CategoryPoint[] }) {
   return (
@@ -21,9 +21,9 @@ export default function SkillCategoryChart({ data }: { data: CategoryPoint[] }) 
           <PieChart>
             <Tooltip
               contentStyle={{
-                background: "#0f172a",
-                border: "1px solid rgba(255,255,255,0.08)",
-                borderRadius: 12,
+                background: "#071014",
+                border: "1px solid rgba(255,255,255,0.14)",
+                borderRadius: 8,
                 color: "#fff",
               }}
             />
@@ -34,7 +34,7 @@ export default function SkillCategoryChart({ data }: { data: CategoryPoint[] }) 
               innerRadius={64}
               outerRadius={92}
               paddingAngle={4}
-              stroke="rgba(15,23,42,0.8)"
+              stroke="rgba(7,16,20,0.88)"
               strokeWidth={4}
             >
               {data.map((entry, index) => (
@@ -49,7 +49,7 @@ export default function SkillCategoryChart({ data }: { data: CategoryPoint[] }) 
         {data.map((item, index) => (
           <div
             key={item.name}
-            className="flex items-center justify-between rounded-xl border border-white/5 bg-[#111827] px-4 py-3"
+            className="flex items-center justify-between rounded-[8px] border border-white/10 bg-white/[0.035] px-4 py-3"
           >
             <div className="flex items-center gap-3">
               <span

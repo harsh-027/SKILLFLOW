@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowLeft, LoaderCircle, MailCheck } from "lucide-react";
+import { ArrowLeft, LoaderCircle } from "lucide-react";
 import { motion } from "framer-motion";
 
 import API from "../api/axios";
@@ -42,11 +42,8 @@ function ForgotPasswordPage() {
         whileHover={{ y: -2 }}
         transition={{ duration: 0.3, ease: "easeOut" }}
       >
-        <div className="auth-badge-row">
-          <span className="auth-icon-badge">
-            <MailCheck size={18} />
-          </span>
-          <span className="auth-kicker">Secure recovery</span>
+        <div className="auth-emblem" aria-hidden="true">
+          <img src="/favicon.svg" alt="" className="auth-emblem-logo" />
         </div>
         <h2 className="auth-title">Forgot your password?</h2>
         <p className="auth-sub">
@@ -67,7 +64,7 @@ function ForgotPasswordPage() {
                 setEmail(event.target.value);
                 setError("");
               }}
-              placeholder="you@example.com"
+              placeholder="Email address"
               required
             />
             {error ? <p className="auth-error-text">{error}</p> : null}

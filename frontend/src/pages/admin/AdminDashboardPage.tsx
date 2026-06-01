@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { BarChart3, Flag, ShieldAlert, Tags, Users } from "lucide-react";
+import { ArrowUpRight, BarChart3, Flag, RefreshCw, ShieldAlert, Tags, Users } from "lucide-react";
 
 import API from "@/api/axios";
 import KpiCard from "@/components/admin/dashboard/KpiCard";
@@ -139,13 +139,22 @@ export default function AdminDashboardPage() {
   }
 
   return (
-    <div className="flex flex-col gap-6 lg:gap-8">
+    <div className="flex flex-col gap-5 lg:gap-6">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-        <div>
-          <h1 className="text-xl font-semibold text-white">Admin Dashboard</h1>
-          <p className="text-sm text-slate-400">
-            Monitor platform performance, users, and marketplace activity.
-          </p>
+        <div className="flex flex-wrap items-center gap-2">
+          {["Day", "Week", "Month", "Year"].map((range) => (
+            <button
+              key={range}
+              type="button"
+              className={`h-10 rounded-full border px-5 text-sm transition ${
+                range === "Month"
+                  ? "border-white/15 bg-white/[0.09] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]"
+                  : "border-white/10 bg-white/[0.035] text-slate-300 hover:bg-white/[0.07] hover:text-white"
+              }`}
+            >
+              {range}
+            </button>
+          ))}
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
@@ -154,14 +163,15 @@ export default function AdminDashboardPage() {
             placeholder="Search recent users..."
             value={search}
             onChange={(event) => setSearch(event.target.value)}
-            className="h-10 rounded-lg border border-white/10 bg-white/[0.04] px-4 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-white/20"
+            className="h-10 rounded-full border border-white/10 bg-white/[0.045] px-4 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-white/20"
           />
 
           <button
             type="button"
             onClick={() => window.location.reload()}
-            className="h-10 rounded-lg bg-white px-4 text-sm font-medium text-black transition hover:bg-slate-200"
+            className="inline-flex h-10 items-center gap-2 rounded-full border border-white/10 bg-white/[0.055] px-4 text-sm font-medium text-white transition hover:bg-white/[0.09]"
           >
+            <RefreshCw className="h-4 w-4" />
             Refresh
           </button>
         </div>
@@ -169,18 +179,13 @@ export default function AdminDashboardPage() {
 
       <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {kpiCards.map((card) => (
-          <div
-            key={card.label}
-            className="rounded-2xl border border-white/10 bg-gradient-to-b from-white/[0.06] to-white/[0.02] p-4 shadow-sm transition hover:shadow-md"
-          >
-            <KpiCard {...card} />
-          </div>
+          <KpiCard key={card.label} {...card} />
         ))}
       </section>
 
       <section className="grid grid-cols-1 gap-4 xl:grid-cols-3">
         <div className="xl:col-span-2">
-          <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
+          <div className="rounded-[8px] border border-white/14 bg-white/[0.035] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]">
             <div className="mb-4 flex items-center justify-between">
               <div>
                 <h2 className="text-base font-semibold text-white">User Growth</h2>
@@ -190,7 +195,10 @@ export default function AdminDashboardPage() {
               </div>
 
               <div className="flex items-center gap-2 text-xs text-slate-400">
-                <span className="rounded-md bg-white/[0.05] px-2 py-1">Last 6 months</span>
+                <span className="rounded-full border border-white/10 bg-white/[0.045] px-3 py-1">Last 6 months</span>
+                <button className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/[0.045] text-slate-200" aria-label="Open user growth">
+                  <ArrowUpRight className="h-4 w-4" />
+                </button>
               </div>
             </div>
 
@@ -198,14 +206,14 @@ export default function AdminDashboardPage() {
           </div>
         </div>
 
-        <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
+        <div className="rounded-[8px] border border-white/14 bg-white/[0.035] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]">
           <div className="mb-4 flex items-center justify-between">
             <div>
               <h2 className="text-base font-semibold text-white">Skill Categories</h2>
               <p className="text-xs text-slate-400">Active listing distribution</p>
             </div>
 
-            <div className="flex items-center gap-1 rounded-md bg-white/[0.04] px-2 py-1 text-xs text-slate-400">
+            <div className="flex items-center gap-1 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-xs text-slate-400">
               <Flag className="h-3.5 w-3.5" />
               Live data
             </div>
@@ -215,7 +223,7 @@ export default function AdminDashboardPage() {
         </div>
       </section>
 
-      <section className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
+      <section className="rounded-[8px] border border-white/14 bg-white/[0.035] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]">
         <div className="mb-4 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <h2 className="text-base font-semibold text-white">User Operations</h2>

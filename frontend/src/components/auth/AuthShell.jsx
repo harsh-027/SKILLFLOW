@@ -1,10 +1,12 @@
 import { ArrowLeft } from "lucide-react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
+import SplineBackground from "@/components/SplineBackground";
 
 export default function AuthShell({ children }) {
   return (
-    <section className="auth-page resend-shell">
+    <section className="auth-page">
+      <SplineBackground className="auth-spline-background" />
       <motion.div
         className="auth-spotlight auth-spotlight-top"
         animate={{ x: [0, 18, 0], y: [0, -14, 0], scale: [1, 1.03, 1] }}
@@ -29,6 +31,7 @@ export default function AuthShell({ children }) {
       <div className="auth-grain" />
 
       <motion.div
+        className="auth-home-wrap"
         initial={{ opacity: 0, y: -8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.45, ease: "easeOut" }}

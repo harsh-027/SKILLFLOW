@@ -6,6 +6,7 @@ const cookieParser = require("cookie-parser");
 const mongoSanitize = require("express-mongo-sanitize");
 const connectDB = require("./config/db");
 const { errorHandler, notFoundHandler } = require("./middleware/errorHandler");
+const { apiRateLimiter, writeRateLimiter } = require("./middleware/rateLimiters");
 
 dotenv.config();
 
@@ -46,18 +47,21 @@ app.use(
   })
 );
 app.use(cookieParser());
-app.use(express.json({ limit: "10mb" }));
-app.use(express.urlencoded({ extended: true, limit: "10mb" }));
+app.use(express.json({ limit: process.env.JSON_BODY_LIMIT || "5mb" }));
+app.use(express.urlencoded({ extended: true, limit: process.env.FORM_BODY_LIMIT || "1mb" }));
 app.use(
   mongoSanitize({
     replaceWith: "_",
   })
 );
+app.disable("x-powered-by");
+app.use("/api", apiRateLimiter, writeRateLimiter);
 
 app.get("/", (req, res) => {
   res.status(200).json({ message: "Skill Exchange API is running" });
 });
 
+app.use("/api/public", require("./routes/publicRoutes"));
 app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api/users", require("./routes/userRoutes"));
 app.use("/api/posts", require("./routes/postRoutes"));

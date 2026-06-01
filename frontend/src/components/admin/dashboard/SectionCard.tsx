@@ -19,10 +19,10 @@ export default function SectionCard({
 }: SectionCardProps) {
   return (
     <section
-      className={`rounded-2xl border border-white/5 bg-[#1f2937] shadow-[0_10px_24px_rgba(2,8,23,0.24)] ${className}`}
+      className={`overflow-hidden rounded-[8px] border border-white/14 bg-white/[0.035] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] ${className}`}
     >
       {title || description || action ? (
-        <div className="flex flex-col gap-4 border-b border-white/5 px-5 py-4 sm:flex-row sm:items-start sm:justify-between">
+        <div className="flex flex-col gap-4 border-b border-white/10 px-5 py-4 sm:flex-row sm:items-start sm:justify-between">
           <div className="min-w-0">
             {title ? <h2 className="text-base font-semibold text-white">{title}</h2> : null}
             {description ? <p className="mt-1 text-sm text-slate-400">{description}</p> : null}

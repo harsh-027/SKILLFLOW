@@ -17,7 +17,7 @@ const settingsSections = [
 
 export default function AdminSettingsPage() {
   return (
-    <div className="flex flex-col gap-6 lg:gap-8">
+    <div className="flex flex-col gap-5 lg:gap-6">
       <div>
         <h1 className="text-xl font-semibold text-white">System Settings</h1>
         <p className="text-sm text-slate-400">
@@ -33,9 +33,9 @@ export default function AdminSettingsPage() {
           {settingsSections.map((section) => (
             <div
               key={section.title}
-              className="group relative rounded-2xl border border-white/5 bg-gradient-to-b from-[#111827] to-[#0b1220] p-5 transition hover:border-cyan-400/20 hover:shadow-md"
+              className="group relative rounded-[8px] border border-white/10 bg-white/[0.035] p-5 transition hover:border-white/20 hover:bg-white/[0.055]"
             >
-              <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-cyan-500/5 to-transparent opacity-0 transition group-hover:opacity-100" />
+              <div className="absolute inset-0 rounded-[8px] bg-gradient-to-br from-emerald-500/5 to-transparent opacity-0 transition group-hover:opacity-100" />
 
               <h3 className="relative text-base font-semibold text-white">
                 {section.title}
@@ -48,7 +48,7 @@ export default function AdminSettingsPage() {
               <div className="relative mt-4 flex items-center justify-between">
                 <span className="text-xs text-slate-500">Click to configure</span>
 
-                <button className="rounded-md bg-white/[0.05] px-3 py-1.5 text-xs text-slate-300 transition hover:bg-white/[0.08]">
+                <button className="rounded-full border border-white/10 bg-white/[0.05] px-3 py-1.5 text-xs text-slate-300 transition hover:bg-white/[0.08]">
                   Open
                 </button>
               </div>
@@ -56,29 +56,6 @@ export default function AdminSettingsPage() {
           ))}
         </div>
       </SectionCard>
-
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-        <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
-          <p className="text-xs uppercase tracking-[0.18em] text-slate-500">
-            Moderation Engine
-          </p>
-          <p className="mt-2 text-sm text-emerald-300">Operational</p>
-        </div>
-
-        <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
-          <p className="text-xs uppercase tracking-[0.18em] text-slate-500">
-            Notification Service
-          </p>
-          <p className="mt-2 text-sm text-emerald-300">Healthy</p>
-        </div>
-
-        <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
-          <p className="text-xs uppercase tracking-[0.18em] text-slate-500">
-            Access Control
-          </p>
-          <p className="mt-2 text-sm text-amber-300">Review Mode</p>
-        </div>
-      </div>
     </div>
   );
 }

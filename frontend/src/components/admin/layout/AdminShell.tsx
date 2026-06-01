@@ -65,11 +65,13 @@ export default function AdminShell({ children }: { children: ReactNode }) {
   }, [location.pathname]);
 
   return (
-    <div className="min-h-screen bg-[#0f172a] text-slate-100">
-      <div className="flex min-h-screen">
+    <div className="min-h-screen overflow-hidden bg-[#03090c] text-slate-100">
+      <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_18%_12%,rgba(39,82,61,0.2),transparent_30%),radial-gradient(circle_at_84%_8%,rgba(65,86,98,0.16),transparent_28%),linear-gradient(135deg,#03090c_0%,#071013_48%,#020506_100%)]" />
+      <div className="relative mx-auto flex min-h-screen max-w-[1720px] p-3 sm:p-5 lg:p-7">
+        <div className="flex min-h-[calc(100vh-1.5rem)] w-full overflow-hidden rounded-[10px] border border-white/15 bg-[#071014]/88 shadow-[0_30px_90px_rgba(0,0,0,0.5)] backdrop-blur-xl sm:min-h-[calc(100vh-2.5rem)] lg:min-h-[calc(100vh-3.5rem)]">
         <aside
-          className={`h-screen shrink-0 border-r border-white/10 bg-[#0f172a] transition-all duration-300 ${
-            collapsed ? "w-20" : "w-[260px]"
+          className={`w-0 shrink-0 border-r border-white/12 bg-black/10 transition-all duration-300 md:block ${
+            collapsed ? "md:w-20" : "md:w-[260px]"
           }`}
         >
           <AdminSidebar
@@ -82,17 +84,17 @@ export default function AdminShell({ children }: { children: ReactNode }) {
 
         <div className="flex min-w-0 flex-1 flex-col">
           <AdminTopbar
-            collapsed={collapsed}
             title={pageMeta.title}
             description={pageMeta.description}
             onOpenMobileSidebar={() => setMobileOpen(true)}
           />
 
-          <main className="flex-1 px-4 pb-6 pt-24 sm:px-5 lg:px-6 lg:pb-8 lg:pt-[88px]">
-            <div className="mx-auto flex w-full max-w-[1600px] flex-col gap-6 lg:gap-8">
+          <main className="flex-1 overflow-auto px-4 py-5 sm:px-6 lg:px-8 lg:py-6">
+            <div className="mx-auto flex w-full max-w-[1460px] flex-col gap-5 lg:gap-6">
               {children}
             </div>
           </main>
+        </div>
         </div>
       </div>
     </div>

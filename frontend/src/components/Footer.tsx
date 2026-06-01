@@ -1,24 +1,31 @@
-import { ArrowRight, Github, Linkedin, Twitter } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 
 import { useApp } from "@/context/AppContext";
 
 const footerColumns = [
   {
-    title: "Product",
-    links: ["Courses", "Learning Paths", "Skill Tracks", "Pricing"],
+    title: "Workspace",
+    links: [
+      { label: "Dashboard", to: "/home" },
+      { label: "AI Lab", to: "/ai" },
+      { label: "Community", to: "/community" },
+    ],
   },
   {
     title: "Community",
-    links: ["Discussions", "Peer Swaps", "Events", "Leaderboard"],
+    links: [
+      { label: "People", to: "/users" },
+      { label: "Swap Requests", to: "/requests" },
+      { label: "Create Post", to: "/create-post" },
+    ],
   },
   {
-    title: "Resources",
-    links: ["Blog", "Guides", "Help Center", "Roadmap"],
-  },
-  {
-    title: "Company",
-    links: ["About Us", "Careers", "Contact", "Privacy Policy"],
+    title: "Account",
+    links: [
+      { label: "Log In", to: "/login" },
+      { label: "Register", to: "/register" },
+    ],
   },
 ];
 
@@ -44,9 +51,9 @@ function LandingFooter() {
             <div key={column.title} className="resend-footer-column">
               <h3>{column.title}</h3>
               {column.links.map((link) => (
-                <a key={link} href="#top">
-                  {link}
-                </a>
+                <Link key={link.label} to={link.to}>
+                  {link.label}
+                </Link>
               ))}
             </div>
           ))}
@@ -57,17 +64,9 @@ function LandingFooter() {
             <span>Copyright 2026 SkillFlow. All rights reserved.</span>
           </div>
 
-          <div className="resend-footer-socials">
-            <a href="https://x.com" aria-label="SkillFlow on X">
-              <Twitter size={18} />
-            </a>
-            <a href="https://linkedin.com" aria-label="SkillFlow on LinkedIn">
-              <Linkedin size={18} />
-            </a>
-            <a href="https://github.com" aria-label="SkillFlow on GitHub">
-              <Github size={18} />
-            </a>
-          </div>
+          <Link to={primaryPath} className="resend-footer-brand">
+            {currentUser ? "Open workspace" : "Create account"}
+          </Link>
         </div>
       </div>
     </footer>

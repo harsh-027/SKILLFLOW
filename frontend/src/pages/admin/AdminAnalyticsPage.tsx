@@ -61,7 +61,7 @@ export default function AdminAnalyticsPage() {
   }
 
   return (
-    <div className="flex flex-col gap-6 lg:gap-8">
+    <div className="flex flex-col gap-5 lg:gap-6">
       <div>
         <h1 className="text-xl font-semibold text-white">Analytics Overview</h1>
         <p className="text-sm text-slate-400">
@@ -91,7 +91,7 @@ export default function AdminAnalyticsPage() {
           </SectionCard>
         </div>
 
-        <div className="space-y-6">
+        <div className="space-y-4">
           <SectionCard
             title="Skill Category Mix"
             description="Where marketplace supply is currently concentrated"
@@ -99,7 +99,7 @@ export default function AdminAnalyticsPage() {
             <SkillCategoryChart data={analytics?.skillCategories || []} />
           </SectionCard>
 
-          <div className="rounded-2xl border border-white/10 bg-gradient-to-b from-white/[0.06] to-white/[0.02] p-5">
+          <div className="rounded-[8px] border border-white/14 bg-white/[0.035] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]">
             <h3 className="text-sm font-semibold text-white">Key Insight</h3>
 
             <p className="mt-2 text-sm leading-6 text-slate-400">
@@ -109,10 +109,10 @@ export default function AdminAnalyticsPage() {
             </p>
 
             <div className="mt-4 flex items-center gap-2 text-xs text-slate-500">
-              <span className="rounded-full bg-emerald-400/10 px-2 py-1 text-emerald-300">
+              <span className="rounded-full border border-emerald-400/15 bg-emerald-400/10 px-2 py-1 text-emerald-300">
                 {analytics?.totalUsers || 0} users
               </span>
-              <span className="rounded-full bg-cyan-400/10 px-2 py-1 text-cyan-300">
+              <span className="rounded-full border border-white/10 bg-white/[0.05] px-2 py-1 text-slate-300">
                 {analytics?.totalListings || 0} active listings
               </span>
             </div>
