@@ -21,7 +21,7 @@ function UsersPage() {
     const fetchUsers = async () => {
       try {
         const { data } = await API.get("/users");
-        setUsersList(data);
+        setUsersList(Array.isArray(data) ? data.filter((user) => user.role !== "admin") : []);
       } catch (error) {
         if (error.response?.status === 401) {
           addToast("Please login to browse users.", "warning");

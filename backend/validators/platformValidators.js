@@ -24,6 +24,12 @@ const createReviewValidator = [
   body("comment").optional().trim().isLength({ max: 600 }).withMessage("Comment must be 600 characters or fewer."),
 ];
 
+const createSiteReviewValidator = [
+  body("name").trim().isLength({ min: 2, max: 80 }).withMessage("Name must be between 2 and 80 characters."),
+  body("rating").isInt({ min: 1, max: 5 }).withMessage("Rating must be between 1 and 5."),
+  body("comment").trim().isLength({ min: 10, max: 600 }).withMessage("Review must be between 10 and 600 characters."),
+];
+
 const createReportValidator = [
   body("targetType")
     .isIn(["user", "listing", "exchange"])
@@ -57,6 +63,7 @@ module.exports = {
   createListingValidator,
   createExchangeValidator,
   createReviewValidator,
+  createSiteReviewValidator,
   createReportValidator,
   adminToggleValidator,
   createLearningPathValidator,

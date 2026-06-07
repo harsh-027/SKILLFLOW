@@ -1,5 +1,6 @@
 const LearningPath = require("../models/LearningPath");
 const Post = require("../models/Post");
+const SiteReview = require("../models/SiteReview");
 const SkillListing = require("../models/SkillListing");
 const SwapRequest = require("../models/SwapRequest");
 const User = require("../models/User");
@@ -64,4 +65,27 @@ const getLandingStats = asyncHandler(async (req, res) => {
   });
 });
 
-module.exports = { getLandingStats };
+const serializeSiteReview = (review) => ({
+  _id: review._id,
+  name: review.name,
+  rating: review.rating,
+  comment: review.comment,
+  createdAt: review.createdAt,
+});
+
+const getSiteReviews = asyncHandler(async (req, res) => {
+  const reviews = await SiteReview.find({}).sort({ createdAt: -1 }).limit(12);
+  return res.status(200).json(reviews.map(serializeSiteReview));
+});
+
+const createSiteReview = asyncHandler(async (req, res) => {
+  const review = await SiteReview.create({
+    name: req.body.name.trim(),
+    rating: Number(req.body.rating),
+    comment: req.body.comment.trim(),
+  });
+
+  return res.status(201).json(serializeSiteReview(review));
+});
+
+module.exports = { getLandingStats, getSiteReviews, createSiteReview };

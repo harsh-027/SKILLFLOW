@@ -39,7 +39,6 @@ function LandingFooter() {
         <div className="resend-footer-cta">
           <span className="resend-eyebrow">Start building momentum</span>
           <h2>Practice real skills with people who are building too.</h2>
-          <p>Join a focused workspace for learning paths, peer reviews, and progress.</p>
           <Link to={primaryPath} className="resend-button resend-button-primary">
             {currentUser ? "Open workspace" : "Get started"}
             <ArrowRight size={16} />

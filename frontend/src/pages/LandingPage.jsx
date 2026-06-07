@@ -6,6 +6,11 @@ import {
   BookOpen,
   CheckCircle2,
   Code2,
+  MessageSquareText,
+  Route,
+  Sparkles,
+  Star,
+  WandSparkles,
   Users,
 } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -16,7 +21,7 @@ import { useApp } from "@/context/AppContext";
 const navItems = [
   { label: "Features", href: "#features" },
   { label: "Workspace", href: "#workspace" },
-  { label: "AI", href: "#features" },
+  { label: "AI", href: "#ai" },
   { label: "Community", to: "/community" },
 ];
 
@@ -45,6 +50,30 @@ const defaultStats = [
   { label: "Swaps", value: "0" },
 ];
 
+const aiDetails = [
+  {
+    title: "Path planning",
+    description: "Turn a skill goal into focused milestones, checkpoints, and next actions.",
+    icon: Route,
+  },
+  {
+    title: "Skill matching",
+    description: "Surface peers whose offers and learning goals line up with your current work.",
+    icon: Sparkles,
+  },
+  {
+    title: "Progress prompts",
+    description: "Get concise suggestions that keep practice moving without adding noise.",
+    icon: WandSparkles,
+  },
+];
+
+const emptyReviewForm = {
+  name: "",
+  rating: 5,
+  comment: "",
+};
+
 function renderNavItem(item) {
   if ("to" in item) {
     return (
@@ -65,6 +94,11 @@ function LandingPage() {
   const { user, logout, currentUser } = useApp();
   const [landingStats, setLandingStats] = useState(defaultStats);
   const [rawStats, setRawStats] = useState({ builders: 0, skills: 0, swaps: 0, paths: 0, posts: 0 });
+  const [siteReviews, setSiteReviews] = useState([]);
+  const [reviewForm, setReviewForm] = useState(emptyReviewForm);
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+  const [reviewSubmitting, setReviewSubmitting] = useState(false);
+  const [reviewMessage, setReviewMessage] = useState("");
   const primaryPath = user ? "/home" : "/register";
   const primaryLabel = user ? "Open workspace" : "Get started";
   const userSkillCount = useMemo(() => {
@@ -92,8 +126,71 @@ function LandingPage() {
     };
   }, []);
 
+  useEffect(() => {
+    let active = true;
+
+    API.get("/public/site-reviews")
+      .then(({ data }) => {
+        if (active) {
+          setSiteReviews(Array.isArray(data) ? data : []);
+        }
+      })
+      .catch(() => {
+        if (active) {
+          setSiteReviews([]);
+        }
+      });
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (isReviewModalOpen && currentUser?.name && !reviewForm.name) {
+      setReviewForm((current) => ({ ...current, name: currentUser.name }));
+    }
+  }, [currentUser, isReviewModalOpen, reviewForm.name]);
+
+  const handleReviewChange = (event) => {
+    const { name, value } = event.target;
+    setReviewForm((current) => ({
+      ...current,
+      [name]: name === "rating" ? Number(value) : value,
+    }));
+  };
+
+  const handleReviewSubmit = async (event) => {
+    event.preventDefault();
+    setReviewSubmitting(true);
+    setReviewMessage("");
+
+    try {
+      const { data } = await API.post("/public/site-reviews", reviewForm);
+      setSiteReviews((current) => [data, ...current.filter((item) => item._id !== data._id)]);
+      setReviewForm(currentUser?.name ? { ...emptyReviewForm, name: currentUser.name } : emptyReviewForm);
+      setReviewMessage("Thanks for reviewing SkillFlow.");
+      setIsReviewModalOpen(false);
+    } catch (error) {
+      const message =
+        error.response?.data?.message ||
+        error.response?.data?.errors?.[0]?.msg ||
+        "Unable to submit your review right now.";
+      setReviewMessage(message);
+    } finally {
+      setReviewSubmitting(false);
+    }
+  };
+
   return (
     <div id="top" className="landing-shell resend-shell">
+      <div className="landing-review-float" aria-label="Website review">
+        <span>Website review</span>
+        <button type="button" onClick={() => setIsReviewModalOpen(true)}>
+          Review
+        </button>
+      </div>
+
       <header className="resend-header">
         <div className="resend-nav">
           <Link to="/" className="resend-brand" aria-label="SkillFlow home">
@@ -135,9 +232,6 @@ function LandingPage() {
           >
             <div className="resend-hero-side resend-hero-side-left">
               <span className="resend-hero-side-label">Skill Exchange</span>
-              <p>
-                Guided paths, peer swaps, and visible progress for people building real work.
-              </p>
               <div className="resend-hero-actions resend-hero-actions-left">
                 <Link to={primaryPath} className="resend-button resend-button-primary">
                   {primaryLabel}
@@ -168,10 +262,6 @@ function LandingPage() {
           <div className="resend-section-head">
             <span className="resend-eyebrow">Integrate learning into your week</span>
             <h2>A cleaner way to learn, practice, and grow.</h2>
-            <p>
-              A simple interface for structured progress, with the right amount of
-              accountability from peers.
-            </p>
           </div>
 
           <div className="resend-feature-grid">
@@ -193,10 +283,6 @@ function LandingPage() {
           <div className="resend-workspace-copy">
             <span className="resend-eyebrow">Developer-grade focus</span>
             <h2>Everything in your control.</h2>
-            <p>
-              Manage goals, swaps, progress, and feedback in one quiet workspace designed
-              for repeated use.
-            </p>
           </div>
 
           <div className="resend-dashboard-card">
@@ -224,7 +310,134 @@ function LandingPage() {
             </div>
           </div>
         </section>
+
+        <section id="ai" className="resend-section resend-ai-section">
+          <div className="resend-ai-panel">
+            <div className="resend-ai-panel-top">
+              <Sparkles size={18} />
+              <span>SkillFlow AI</span>
+            </div>
+            <div className="resend-ai-detail-list">
+              {aiDetails.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <article key={item.title} className="resend-ai-detail-card">
+                    <Icon size={19} />
+                    <div>
+                      <h3>{item.title}</h3>
+                      <p>{item.description}</p>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className="resend-ai-copy">
+            <span className="resend-eyebrow">AI Lab</span>
+            <h2>Guidance that keeps your learning path moving.</h2>
+            <Link to={user ? "/ai" : "/register"} className="resend-button resend-button-primary">
+              {user ? "Open AI Lab" : "Start with AI"}
+              <ArrowRight size={16} />
+            </Link>
+          </div>
+        </section>
+
+        <section id="reviews" className="resend-section resend-reviews-section">
+          <div className="resend-section-head">
+            <span className="resend-eyebrow">Website reviews</span>
+            <h2>What people say after using SkillFlow.</h2>
+          </div>
+
+          {siteReviews.length ? (
+            <div className="resend-review-grid">
+              {siteReviews.map((review) => (
+                <article key={review._id} className="resend-review-card">
+                  <div className="resend-review-stars" aria-label={`${review.rating} out of 5 stars`}>
+                    {Array.from({ length: 5 }).map((_, index) => (
+                      <Star
+                        key={`${review._id}-${index}`}
+                        size={15}
+                        fill={index < review.rating ? "currentColor" : "none"}
+                      />
+                    ))}
+                  </div>
+                  <p>{review.comment}</p>
+                  <div>
+                    <span>{review.name.slice(0, 1).toUpperCase()}</span>
+                    <strong>{review.name}</strong>
+                  </div>
+                </article>
+              ))}
+            </div>
+          ) : (
+            <div className="resend-review-empty">
+              <MessageSquareText size={20} />
+              <p>No website reviews yet.</p>
+            </div>
+          )}
+        </section>
       </main>
+
+      {isReviewModalOpen ? (
+        <div className="landing-review-modal" role="dialog" aria-modal="true" aria-labelledby="landing-review-title">
+          <form className="landing-review-form" onSubmit={handleReviewSubmit}>
+            <div className="landing-review-form-head">
+              <div>
+                <span className="resend-eyebrow">Review SkillFlow</span>
+                <h2 id="landing-review-title">Share your experience.</h2>
+              </div>
+              <button type="button" onClick={() => setIsReviewModalOpen(false)} aria-label="Close review form">
+                Close
+              </button>
+            </div>
+
+            <label>
+              Name
+              <input
+                name="name"
+                type="text"
+                value={reviewForm.name}
+                onChange={handleReviewChange}
+                minLength={2}
+                maxLength={80}
+                required
+              />
+            </label>
+
+            <label>
+              Rating
+              <select name="rating" value={reviewForm.rating} onChange={handleReviewChange} required>
+                <option value={5}>5 stars</option>
+                <option value={4}>4 stars</option>
+                <option value={3}>3 stars</option>
+                <option value={2}>2 stars</option>
+                <option value={1}>1 star</option>
+              </select>
+            </label>
+
+            <label>
+              Review
+              <textarea
+                name="comment"
+                value={reviewForm.comment}
+                onChange={handleReviewChange}
+                minLength={10}
+                maxLength={600}
+                rows={5}
+                required
+              />
+            </label>
+
+            {reviewMessage ? <p className="landing-review-message">{reviewMessage}</p> : null}
+
+            <button type="submit" className="resend-button resend-button-primary" disabled={reviewSubmitting}>
+              {reviewSubmitting ? "Submitting..." : "Submit review"}
+              <ArrowRight size={16} />
+            </button>
+          </form>
+        </div>
+      ) : null}
     </div>
   );
 }

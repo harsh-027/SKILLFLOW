@@ -4,7 +4,7 @@ const asyncHandler = require("../utils/asyncHandler");
 const { sanitizeUser } = require("../utils/userSanitizer");
 
 const getAllUsers = asyncHandler(async (req, res) => {
-  const users = await User.find({ _id: { $ne: req.user.id } })
+  const users = await User.find({ _id: { $ne: req.user.id }, role: "user" })
     .select("-password -mfaSecret")
     .sort({ createdAt: -1 });
 
