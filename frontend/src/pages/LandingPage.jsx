@@ -407,13 +407,30 @@ function LandingPage() {
 
             <label>
               Rating
-              <select name="rating" value={reviewForm.rating} onChange={handleReviewChange} required>
-                <option value={5}>5 stars</option>
-                <option value={4}>4 stars</option>
-                <option value={3}>3 stars</option>
-                <option value={2}>2 stars</option>
-                <option value={1}>1 star</option>
-              </select>
+              <div className="landing-review-rating" role="radiogroup" aria-label="Rating">
+                {Array.from({ length: 5 }).map((_, index) => {
+                  const ratingValue = index + 1;
+                  const isSelected = reviewForm.rating === ratingValue;
+                  const isFilled = ratingValue <= reviewForm.rating;
+
+                  return (
+                    <button
+                      key={ratingValue}
+                      type="button"
+                      className={isSelected ? "active" : ""}
+                      role="radio"
+                      aria-checked={isSelected}
+                      aria-label={`${ratingValue} ${ratingValue === 1 ? "star" : "stars"}`}
+                      onClick={() =>
+                        setReviewForm((current) => ({ ...current, rating: ratingValue }))
+                      }
+                    >
+                      <Star size={20} fill={isFilled ? "currentColor" : "none"} />
+                    </button>
+                  );
+                })}
+                <span>{reviewForm.rating} {reviewForm.rating === 1 ? "star" : "stars"}</span>
+              </div>
             </label>
 
             <label>

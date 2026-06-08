@@ -113,7 +113,6 @@ export default function SiteNavbar() {
                   <Link to="/" className="sidebar-logo-text">
                     SkillFlow
                   </Link>
-                  <p className="sidebar-subtitle">Built for steady growth</p>
                 </div>
               ) : null}
             </div>
