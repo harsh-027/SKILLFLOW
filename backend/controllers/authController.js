@@ -89,8 +89,7 @@ const rotateRefreshToken = async (storedToken, user, req) => {
 };
 
 const buildResetUrl = (token) => {
-  const baseUrl =
-    process.env.PASSWORD_RESET_URL || `${process.env.CLIENT_ORIGIN || "http://localhost:5173"}/reset-password`;
+  const baseUrl = process.env.PASSWORD_RESET_URL;
   return `${baseUrl.replace(/\/+$/, "")}/${token}`;
 };
 

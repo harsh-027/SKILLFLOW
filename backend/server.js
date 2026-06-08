@@ -17,16 +17,11 @@ if (!process.env.JWT_ACCESS_SECRET || !process.env.JWT_REFRESH_SECRET) {
 connectDB();
 
 const app = express();
-const defaultClientOrigins = [
+const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:5174",
-];
-const allowedOrigins = (
-  process.env.CLIENT_ORIGIN || defaultClientOrigins.join(",")
-)
-  .split(",")
-  .map((origin) => origin.trim())
-  .filter(Boolean);
+  process.env.CLIENT_ORIGIN
+].filter(Boolean);
 
 app.set("trust proxy", 1);
 app.use(
