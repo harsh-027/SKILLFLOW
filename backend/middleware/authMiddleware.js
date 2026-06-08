@@ -1,6 +1,5 @@
 const User = require("../models/User");
 const ApiError = require("../utils/apiError");
-const { ACCESS_COOKIE_NAME, LEGACY_ACCESS_COOKIE_NAME } = require("../utils/cookies");
 const { verifyAccessToken } = require("../utils/jwt");
 const { logSecurityEvent } = require("../utils/securityEvents");
 
@@ -15,10 +14,7 @@ const extractBearerToken = (req) => {
 
 const authMiddleware = async (req, res, next) => {
   try {
-    const token =
-      req.cookies?.[ACCESS_COOKIE_NAME] ||
-      req.cookies?.[LEGACY_ACCESS_COOKIE_NAME] ||
-      extractBearerToken(req);
+    const token = extractBearerToken(req);
     if (!token) {
       throw new ApiError(401, "Authentication required");
     }

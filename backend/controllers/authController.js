@@ -1,22 +1,9 @@
 const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
 const User = require("../models/User");
-const RefreshToken = require("../models/RefreshToken");
 const ApiError = require("../utils/apiError");
 const asyncHandler = require("../utils/asyncHandler");
-const {
-  attachAuthCookies,
-  clearAuthCookies,
-  REFRESH_COOKIE_NAME,
-  LEGACY_REFRESH_COOKIE_NAME,
-} = require("../utils/cookies");
-const {
-  signAccessToken,
-  signRefreshToken,
-  verifyRefreshToken,
-  hashToken,
-  generateTokenId,
-} = require("../utils/jwt");
+const { signAccessToken, hashToken } = require("../utils/jwt");
 const { sanitizeUser } = require("../utils/userSanitizer");
 const { getClientIp, logSecurityEvent } = require("../utils/securityEvents");
 const { verifyTotpToken } = require("../utils/totp");
@@ -36,25 +23,8 @@ const normalizeSkills = (value) =>
         .filter(Boolean)
     : [];
 
-const buildSession = async (user, req, family = generateTokenId()) => {
-  const jti = generateTokenId();
+const issueAccessToken = async (user, req) => {
   const accessToken = signAccessToken({ userId: String(user._id), role: user.role });
-  const refreshToken = signRefreshToken({
-    userId: String(user._id),
-    role: user.role,
-    jti,
-    family,
-  });
-
-  await RefreshToken.create({
-    userId: user._id,
-    jti,
-    family,
-    tokenHash: hashToken(refreshToken),
-    expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-    createdByIp: getClientIp(req),
-    userAgent: req.get("user-agent") || "",
-  });
 
   user.failedLoginAttempts = 0;
   user.lockUntil = null;
@@ -62,44 +32,13 @@ const buildSession = async (user, req, family = generateTokenId()) => {
   user.lastLoginIp = getClientIp(req);
   await user.save();
 
-  return { accessToken, refreshToken };
-};
-
-const rotateRefreshToken = async (storedToken, user, req) => {
-  const nextJti = generateTokenId();
-  const accessToken = signAccessToken({ userId: String(user._id), role: user.role });
-  const refreshToken = signRefreshToken({
-    userId: String(user._id),
-    role: user.role,
-    jti: nextJti,
-    family: storedToken.family,
-  });
-
-  storedToken.revokedAt = new Date();
-  storedToken.replacedByJti = nextJti;
-  storedToken.lastUsedAt = new Date();
-  await storedToken.save();
-
-  await RefreshToken.create({
-    userId: user._id,
-    jti: nextJti,
-    family: storedToken.family,
-    tokenHash: hashToken(refreshToken),
-    expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-    createdByIp: getClientIp(req),
-    userAgent: req.get("user-agent") || "",
-  });
-
-  return { accessToken, refreshToken };
+  return accessToken;
 };
 
 const buildResetUrl = (token) => {
   const baseUrl = process.env.PASSWORD_RESET_URL;
   return `${baseUrl.replace(/\/+$/, "")}/${token}`;
 };
-
-const getRefreshCookie = (req) =>
-  req.cookies?.[REFRESH_COOKIE_NAME] || req.cookies?.[LEGACY_REFRESH_COOKIE_NAME];
 
 const register = asyncHandler(async (req, res) => {
   const { userId, name, email, password } = req.body;
@@ -145,14 +84,11 @@ const register = asyncHandler(async (req, res) => {
     }
   }
 
-  const session = await buildSession(user, req);
-  attachAuthCookies(res, session.accessToken, session.refreshToken);
+  const token = await issueAccessToken(user, req);
 
   return res.status(201).json({
-    message:
-      user.role === "admin"
-        ? "Admin account bootstrapped successfully"
-        : "User registered successfully",
+    success: true,
+    token,
     user: sanitizeUser(user),
   });
 });
@@ -231,106 +167,17 @@ const login = asyncHandler(async (req, res) => {
     });
   }
 
-  const session = await buildSession(user, req);
-  attachAuthCookies(res, session.accessToken, session.refreshToken);
+  const token = await issueAccessToken(user, req);
 
   return res.status(200).json({
-    message: "Login successful",
+    success: true,
+    token,
     user: sanitizeUser(user),
   });
 });
 
 const logout = asyncHandler(async (req, res) => {
-  const refreshToken = getRefreshCookie(req);
-  if (refreshToken) {
-    try {
-      const payload = verifyRefreshToken(refreshToken);
-      await RefreshToken.findOneAndUpdate(
-        { jti: payload.jti },
-        { revokedAt: new Date(), lastUsedAt: new Date() }
-      );
-    } catch (error) {
-      // Ignore malformed refresh cookies during logout and still clear cookies.
-    }
-  }
-
-  clearAuthCookies(res);
-  return res.status(200).json({ message: "Logged out successfully" });
-});
-
-const refresh = asyncHandler(async (req, res) => {
-  console.log("Cookies:", req.cookies);
-  console.log("Refresh token:", req.cookies?.refreshToken);
-
-  const refreshToken = getRefreshCookie(req);
-  if (!refreshToken) {
-    throw new ApiError(401, "Refresh token missing");
-  }
-
-  let payload;
-  try {
-    payload = verifyRefreshToken(refreshToken);
-  } catch (error) {
-    clearAuthCookies(res);
-    throw new ApiError(401, "Invalid or expired refresh token");
-  }
-
-  const storedToken = await RefreshToken.findOne({ jti: payload.jti }).select("+tokenHash");
-  if (!storedToken) {
-    clearAuthCookies(res);
-    throw new ApiError(401, "Refresh token session not found");
-  }
-
-  if (storedToken.revokedAt) {
-    await RefreshToken.updateMany(
-      { userId: storedToken.userId, revokedAt: null },
-      { revokedAt: new Date() }
-    );
-    await logSecurityEvent({
-      req,
-      userId: storedToken.userId,
-      type: "refresh_token_reuse",
-      severity: "critical",
-      description: "Detected refresh token reuse. Revoked active sessions.",
-      metadata: { family: storedToken.family, jti: storedToken.jti },
-    });
-    clearAuthCookies(res);
-    throw new ApiError(401, "Refresh token reuse detected");
-  }
-
-  if (storedToken.tokenHash !== hashToken(refreshToken)) {
-    clearAuthCookies(res);
-    throw new ApiError(401, "Refresh token verification failed");
-  }
-
-  const user = await User.findById(payload.userId).select("-password -mfaSecret");
-  if (!user || user.isBanned) {
-    clearAuthCookies(res);
-    throw new ApiError(401, "Session is no longer valid");
-  }
-
-  if (user.passwordChangedAt) {
-    const passwordChangedAtSeconds = Math.floor(
-      new Date(user.passwordChangedAt).getTime() / 1000
-    );
-
-    if (typeof payload.iat === "number" && payload.iat < passwordChangedAtSeconds) {
-      await RefreshToken.updateMany(
-        { userId: user._id, revokedAt: null },
-        { revokedAt: new Date() }
-      );
-      clearAuthCookies(res);
-      throw new ApiError(401, "Session has expired. Please log in again.");
-    }
-  }
-
-  const nextSession = await rotateRefreshToken(storedToken, user, req);
-  attachAuthCookies(res, nextSession.accessToken, nextSession.refreshToken);
-
-  return res.status(200).json({
-    message: "Session refreshed",
-    user: sanitizeUser(user),
-  });
+  return res.status(200).json({ success: true, message: "Logged out successfully" });
 });
 
 const getMe = asyncHandler(async (req, res) => {
@@ -424,9 +271,6 @@ const resetPassword = asyncHandler(async (req, res) => {
   user.lockUntil = null;
   await user.save();
 
-  await RefreshToken.updateMany({ userId: user._id, revokedAt: null }, { revokedAt: new Date() });
-  clearAuthCookies(res);
-
   await logSecurityEvent({
     req,
     userId: user._id,
@@ -444,7 +288,6 @@ module.exports = {
   register,
   login,
   logout,
-  refresh,
   getMe,
   forgotPassword,
   resetPassword,

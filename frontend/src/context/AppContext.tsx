@@ -108,6 +108,14 @@ function getStoredUser(): User | null {
   }
 }
 
+function getStoredToken(): string | null {
+  if (typeof window === "undefined") {
+    return null;
+  }
+
+  return window.localStorage.getItem("token");
+}
+
 export function AppProvider({ children }: { children: ReactNode }) {
   const [users, setUsers] = useState<User[]>([]);
   const [posts, setPosts] = useState<any[]>([]);
@@ -129,7 +137,26 @@ export function AppProvider({ children }: { children: ReactNode }) {
     window.localStorage.setItem("skillflow-current-user", JSON.stringify(user));
   }, []);
 
+  const persistToken = useCallback((token: string | null) => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    if (!token) {
+      window.localStorage.removeItem("token");
+      return;
+    }
+
+    window.localStorage.setItem("token", token);
+  }, []);
+
   const refreshCurrentUser = useCallback(async () => {
+    if (!getStoredToken()) {
+      setCurrentUser(null);
+      persistCurrentUser(null);
+      return null;
+    }
+
     try {
       const { data } = await API.get("/auth/me");
       setCurrentUser(data);
@@ -138,9 +165,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
     } catch (error) {
       setCurrentUser(null);
       persistCurrentUser(null);
+      persistToken(null);
       return null;
     }
-  }, [persistCurrentUser]);
+  }, [persistCurrentUser, persistToken]);
 
   useEffect(() => {
     const loadData = async () => {
@@ -210,16 +238,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
         email,
         password,
         ...(otp ? { otp } : {}),
-      }, {
-        withCredentials: true,
       });
 
+      persistToken(data.token);
       setCurrentUser(data.user);
       persistCurrentUser(data.user);
       addToast(`Welcome back, ${data.user.userId ? `@${data.user.userId}` : data.user.name}.`, "success");
       return data.user;
     },
-    [addToast, persistCurrentUser]
+    [addToast, persistCurrentUser, persistToken]
   );
 
   const register = useCallback(
@@ -245,31 +272,31 @@ export function AppProvider({ children }: { children: ReactNode }) {
         password,
         skillsOffered,
         skillsWanted,
-      }, {
-        withCredentials: true,
       });
 
+      persistToken(data.token);
       setCurrentUser(data.user);
       persistCurrentUser(data.user);
       addToast("Account created successfully.", "success");
       return data.user;
     },
-    [addToast, persistCurrentUser]
+    [addToast, persistCurrentUser, persistToken]
   );
 
   const logout = useCallback(async (silent: boolean = false) => {
     try {
-      await API.post("/auth/logout", undefined, { withCredentials: true });
+      await API.post("/auth/logout");
     } catch (error) {
-      // Clear local session state even if the server cookie is already gone.
+      // Clear local session state even if the token is already invalid.
     }
 
     setCurrentUser(null);
     persistCurrentUser(null);
+    persistToken(null);
     if (!silent) {
       addToast("You have been logged out.", "info");
     }
-  }, [addToast, persistCurrentUser]);
+  }, [addToast, persistCurrentUser, persistToken]);
 
   const uploadImageIfNeeded = useCallback(async (imageValue: string) => {
     const isDataUrl = /^data:image\//i.test(imageValue);

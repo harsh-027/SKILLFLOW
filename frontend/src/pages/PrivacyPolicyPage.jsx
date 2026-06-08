@@ -30,7 +30,7 @@ const serviceItems = [
   {
     icon: ShieldCheck,
     title: "JWT Authentication",
-    text: "SkillFlow uses JWT access and refresh tokens to keep users logged in securely.",
+    text: "SkillFlow uses a JWT access token to authenticate requests after login.",
   },
 ];
 
@@ -79,8 +79,8 @@ function PrivacyPolicyPage() {
               <h2>Passwords and Login</h2>
               <p>
                 Passwords are securely stored in hashed form and are used only for
-                authentication. SkillFlow also uses JWT access and refresh tokens to help
-                keep login sessions secure.
+                authentication. SkillFlow also uses a JWT access token to authorize
+                requests while you are logged in.
               </p>
             </section>
 

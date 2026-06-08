@@ -3,7 +3,6 @@ const {
   register,
   login,
   logout,
-  refresh,
   getMe,
   forgotPassword,
   resetPassword,
@@ -40,7 +39,6 @@ router.post(
   resetPassword
 );
 router.post("/logout", logout);
-router.post("/refresh", refresh);
 router.get("/me", authMiddleware, getMe);
 
 module.exports = router;

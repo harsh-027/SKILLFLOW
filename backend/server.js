@@ -2,7 +2,6 @@ const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
 const helmet = require("helmet");
-const cookieParser = require("cookie-parser");
 const mongoSanitize = require("express-mongo-sanitize");
 const connectDB = require("./config/db");
 const { errorHandler, notFoundHandler } = require("./middleware/errorHandler");
@@ -10,8 +9,8 @@ const { apiRateLimiter, writeRateLimiter } = require("./middleware/rateLimiters"
 
 dotenv.config();
 
-if (!process.env.JWT_ACCESS_SECRET || !process.env.JWT_REFRESH_SECRET) {
-  throw new Error("JWT_ACCESS_SECRET and JWT_REFRESH_SECRET must be configured");
+if (!process.env.JWT_ACCESS_SECRET) {
+  throw new Error("JWT_ACCESS_SECRET must be configured");
 }
 
 connectDB();
@@ -35,7 +34,6 @@ const corsOptions = {
 
     return callback(new Error("CORS origin not allowed"));
   },
-  credentials: true,
 };
 
 console.log("Auth environment:", {
@@ -43,7 +41,6 @@ console.log("Auth environment:", {
   CLIENT_URL: process.env.CLIENT_URL,
   CLIENT_ORIGIN: process.env.CLIENT_ORIGIN,
   JWT_ACCESS_SECRET: Boolean(process.env.JWT_ACCESS_SECRET),
-  JWT_REFRESH_SECRET: Boolean(process.env.JWT_REFRESH_SECRET),
 });
 
 app.set("trust proxy", 1);
@@ -54,7 +51,6 @@ app.use(
 );
 app.use(cors(corsOptions));
 app.options("*", cors(corsOptions));
-app.use(cookieParser());
 app.use(express.json({ limit: process.env.JSON_BODY_LIMIT || "5mb" }));
 app.use(express.urlencoded({ extended: true, limit: process.env.FORM_BODY_LIMIT || "1mb" }));
 app.use(
@@ -67,10 +63,6 @@ app.use("/api", apiRateLimiter, writeRateLimiter);
 
 app.get("/", (req, res) => {
   res.status(200).json({ message: "Skill Exchange API is running" });
-});
-
-app.get("/api/debug/cookies", (req, res) => {
-  res.status(200).json({ cookies: req.cookies || {} });
 });
 
 const mountApiRoutes = (basePath) => {
