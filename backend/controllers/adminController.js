@@ -3,6 +3,7 @@ const SkillListing = require("../models/SkillListing");
 const Exchange = require("../models/Exchange");
 const Review = require("../models/Review");
 const Report = require("../models/Report");
+const Post = require("../models/Post");
 const ApiError = require("../utils/apiError");
 const asyncHandler = require("../utils/asyncHandler");
 const { sanitizeUser } = require("../utils/userSanitizer");
@@ -194,6 +195,25 @@ const deleteUser = asyncHandler(async (req, res) => {
   await Promise.all([
     User.findByIdAndDelete(req.params.id),
     SkillListing.deleteMany({ userId: req.params.id }),
+    Post.deleteMany({ user: req.params.id }),
+    Post.updateMany(
+      {},
+      {
+        $pull: {
+          comments: { user: req.params.id },
+          likes: req.params.id,
+        },
+      }
+    ),
+    User.updateMany(
+      {},
+      {
+        $pull: {
+          followers: req.params.id,
+          following: req.params.id,
+        },
+      }
+    ),
     Exchange.deleteMany({
       $or: [{ userA: req.params.id }, { userB: req.params.id }],
     }),
