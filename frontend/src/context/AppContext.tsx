@@ -210,6 +210,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
         email,
         password,
         ...(otp ? { otp } : {}),
+      }, {
+        withCredentials: true,
       });
 
       setCurrentUser(data.user);
@@ -243,6 +245,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
         password,
         skillsOffered,
         skillsWanted,
+      }, {
+        withCredentials: true,
       });
 
       setCurrentUser(data.user);
@@ -255,7 +259,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const logout = useCallback(async (silent: boolean = false) => {
     try {
-      await API.post("/auth/logout");
+      await API.post("/auth/logout", undefined, { withCredentials: true });
     } catch (error) {
       // Clear local session state even if the server cookie is already gone.
     }

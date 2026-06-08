@@ -4,7 +4,12 @@ const User = require("../models/User");
 const RefreshToken = require("../models/RefreshToken");
 const ApiError = require("../utils/apiError");
 const asyncHandler = require("../utils/asyncHandler");
-const { attachAuthCookies, clearAuthCookies, REFRESH_COOKIE_NAME } = require("../utils/cookies");
+const {
+  attachAuthCookies,
+  clearAuthCookies,
+  REFRESH_COOKIE_NAME,
+  LEGACY_REFRESH_COOKIE_NAME,
+} = require("../utils/cookies");
 const {
   signAccessToken,
   signRefreshToken,
@@ -92,6 +97,9 @@ const buildResetUrl = (token) => {
   const baseUrl = process.env.PASSWORD_RESET_URL;
   return `${baseUrl.replace(/\/+$/, "")}/${token}`;
 };
+
+const getRefreshCookie = (req) =>
+  req.cookies?.[REFRESH_COOKIE_NAME] || req.cookies?.[LEGACY_REFRESH_COOKIE_NAME];
 
 const register = asyncHandler(async (req, res) => {
   const { userId, name, email, password } = req.body;
@@ -233,7 +241,7 @@ const login = asyncHandler(async (req, res) => {
 });
 
 const logout = asyncHandler(async (req, res) => {
-  const refreshToken = req.cookies?.[REFRESH_COOKIE_NAME];
+  const refreshToken = getRefreshCookie(req);
   if (refreshToken) {
     try {
       const payload = verifyRefreshToken(refreshToken);
@@ -251,7 +259,10 @@ const logout = asyncHandler(async (req, res) => {
 });
 
 const refresh = asyncHandler(async (req, res) => {
-  const refreshToken = req.cookies?.[REFRESH_COOKIE_NAME];
+  console.log("Cookies:", req.cookies);
+  console.log("Refresh token:", req.cookies?.refreshToken);
+
+  const refreshToken = getRefreshCookie(req);
   if (!refreshToken) {
     throw new ApiError(401, "Refresh token missing");
   }

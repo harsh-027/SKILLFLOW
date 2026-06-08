@@ -17,11 +17,34 @@ if (!process.env.JWT_ACCESS_SECRET || !process.env.JWT_REFRESH_SECRET) {
 connectDB();
 
 const app = express();
+const clientUrl =
+  process.env.CLIENT_URL ||
+  process.env.CLIENT_ORIGIN ||
+  "https://skillflow-lime.vercel.app";
 const allowedOrigins = [
+  clientUrl,
+  "https://skillflow-lime.vercel.app",
   "http://localhost:5173",
   "http://localhost:5174",
-  process.env.CLIENT_ORIGIN
 ].filter(Boolean);
+const corsOptions = {
+  origin(origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+
+    return callback(new Error("CORS origin not allowed"));
+  },
+  credentials: true,
+};
+
+console.log("Auth environment:", {
+  NODE_ENV: process.env.NODE_ENV,
+  CLIENT_URL: process.env.CLIENT_URL,
+  CLIENT_ORIGIN: process.env.CLIENT_ORIGIN,
+  JWT_ACCESS_SECRET: Boolean(process.env.JWT_ACCESS_SECRET),
+  JWT_REFRESH_SECRET: Boolean(process.env.JWT_REFRESH_SECRET),
+});
 
 app.set("trust proxy", 1);
 app.use(
@@ -29,18 +52,8 @@ app.use(
     crossOriginResourcePolicy: { policy: "cross-origin" },
   })
 );
-app.use(
-  cors({
-    origin(origin, callback) {
-      if (!origin || allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      }
-
-      return callback(new Error("CORS origin not allowed"));
-    },
-    credentials: true,
-  })
-);
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions));
 app.use(cookieParser());
 app.use(express.json({ limit: process.env.JSON_BODY_LIMIT || "5mb" }));
 app.use(express.urlencoded({ extended: true, limit: process.env.FORM_BODY_LIMIT || "1mb" }));
@@ -54,6 +67,10 @@ app.use("/api", apiRateLimiter, writeRateLimiter);
 
 app.get("/", (req, res) => {
   res.status(200).json({ message: "Skill Exchange API is running" });
+});
+
+app.get("/api/debug/cookies", (req, res) => {
+  res.status(200).json({ cookies: req.cookies || {} });
 });
 
 const mountApiRoutes = (basePath) => {

@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL , 
+  baseURL: import.meta.env.VITE_API_BASE_URL || "https://skillflow-6wqe.onrender.com/api",
   withCredentials: true,
   headers: {
     "Content-Type": "application/json",
@@ -41,10 +41,18 @@ API.interceptors.response.use(
       return Promise.reject(error);
     }
 
+    originalRequest.withCredentials = true;
+
     if (isRefreshing) {
       return new Promise((resolve, reject) => {
         queuedRequests.push({
-          resolve: () => resolve(API(originalRequest)),
+          resolve: () =>
+            resolve(
+              API({
+                ...originalRequest,
+                withCredentials: true,
+              })
+            ),
           reject,
         });
       });
@@ -54,9 +62,12 @@ API.interceptors.response.use(
     isRefreshing = true;
 
     try {
-      await API.post("/auth/refresh");
+      await API.post("/auth/refresh", undefined, { withCredentials: true });
       flushQueue();
-      return API(originalRequest);
+      return API({
+        ...originalRequest,
+        withCredentials: true,
+      });
     } catch (refreshError) {
       flushQueue(refreshError);
       return Promise.reject(refreshError);
