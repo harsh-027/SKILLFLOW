@@ -11,15 +11,27 @@ const parseBoolean = (value, fallback) => {
 
 const getCookieOptions = (maxAge) => ({
   httpOnly: true,
-  secure: parseBoolean(process.env.COOKIE_SECURE, process.env.NODE_ENV === "production"),
-  sameSite: "strict",
+  secure: parseBoolean(
+    process.env.COOKIE_SECURE,
+    process.env.NODE_ENV === "production"
+  ),
+  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
   maxAge,
   path: "/",
 });
 
 const attachAuthCookies = (res, accessToken, refreshToken) => {
-  res.cookie(ACCESS_COOKIE_NAME, accessToken, getCookieOptions(15 * 60 * 1000));
-  res.cookie(REFRESH_COOKIE_NAME, refreshToken, getCookieOptions(7 * 24 * 60 * 60 * 1000));
+  res.cookie(
+    ACCESS_COOKIE_NAME,
+    accessToken,
+    getCookieOptions(15 * 60 * 1000)
+  );
+
+  res.cookie(
+    REFRESH_COOKIE_NAME,
+    refreshToken,
+    getCookieOptions(7 * 24 * 60 * 60 * 1000)
+  );
 };
 
 const clearAuthCookies = (res) => {
