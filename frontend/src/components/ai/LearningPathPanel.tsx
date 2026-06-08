@@ -73,7 +73,6 @@ export default function LearningPathPanel({
         <div>
           <div className="dashboard-kicker">Learning roadmap</div>
           <h3 className="section-title">AI Learning Path Generator</h3>
-          <p className="section-sub">Generate a staged roadmap with clear steps, durations, and trackable progress.</p>
         </div>
       </div>
 

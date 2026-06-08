@@ -9,11 +9,13 @@ function RegisterPage() {
   const navigate = useNavigate();
   const { register } = useApp();
   const [form, setForm] = useState({ userId: "", name: "", email: "", password: "" });
+  const [acceptedPolicies, setAcceptedPolicies] = useState(false);
   const [errors, setErrors] = useState({
     userId: "",
     name: "",
     email: "",
     password: "",
+    policies: "",
     form: "",
   });
   const [submitting, setSubmitting] = useState(false);
@@ -27,7 +29,16 @@ function RegisterPage() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    setErrors({ userId: "", name: "", email: "", password: "", form: "" });
+    setErrors({ userId: "", name: "", email: "", password: "", policies: "", form: "" });
+
+    if (!acceptedPolicies) {
+      setErrors((prev) => ({
+        ...prev,
+        policies: "Please agree to the Terms & Conditions and Privacy Policy before creating your account.",
+      }));
+      return;
+    }
+
     setSubmitting(true);
     try {
       const user = await register({ ...form, skillsOffered: [], skillsWanted: [] });
@@ -45,6 +56,7 @@ function RegisterPage() {
             typeof responseErrors.password?.msg === "string"
               ? responseErrors.password.msg
               : "",
+          policies: "",
           form:
             typeof responseErrors.form === "string"
               ? responseErrors.form
@@ -56,6 +68,7 @@ function RegisterPage() {
           name: "",
           email: "",
           password: "",
+          policies: "",
           form:
             error.response?.data?.message ||
             "Unable to create your account right now. Please try again.",
@@ -178,6 +191,37 @@ function RegisterPage() {
               ) : null}
             </div>
 
+            <div className="auth-policy-field">
+              <input
+                id="register-policies"
+                name="policies"
+                type="checkbox"
+                checked={acceptedPolicies}
+                onChange={(event) => {
+                  setAcceptedPolicies(event.target.checked);
+                  setErrors((prev) => ({ ...prev, policies: "", form: "" }));
+                }}
+                aria-invalid={Boolean(errors.policies)}
+                aria-describedby={errors.policies ? "register-policies-error" : undefined}
+                aria-required="true"
+              />
+              <label htmlFor="register-policies">
+                I agree to the{" "}
+                <Link to="/terms" className="auth-link">
+                  Terms & Conditions
+                </Link>{" "}
+                and{" "}
+                <Link to="/privacy" className="auth-link">
+                  Privacy Policy
+                </Link>
+              </label>
+            </div>
+            {errors.policies ? (
+              <p className="auth-error-text" id="register-policies-error">
+                {errors.policies}
+              </p>
+            ) : null}
+
             {errors.form ? <p className="auth-form-error">{errors.form}</p> : null}
             <button type="submit" className="btn-red auth-submit" disabled={submitting}>
               {submitting ? "Creating..." : "Create Account"}
@@ -190,9 +234,6 @@ function RegisterPage() {
               <Link to="/login" className="auth-link">
                 Sign in
               </Link>
-            </p>
-            <p className="auth-legal-copy">
-              By creating an account, you agree to our Terms and Privacy Policy.
             </p>
           </div>
       </motion.div>

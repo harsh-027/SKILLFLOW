@@ -15,20 +15,24 @@ const swapRequestSchema = new mongoose.Schema({
     type: String,
     required: true,
     trim: true,
+    maxlength: 120,
   },
   skillWanted: {
     type: String,
     required: true,
     trim: true,
+    maxlength: 120,
   },
   // Legacy fields kept optional for backward compatibility with older documents.
   offeredSkill: {
     type: String,
     trim: true,
+    maxlength: 120,
   },
   requestedSkill: {
     type: String,
     trim: true,
+    maxlength: 120,
   },
   status: {
     type: String,

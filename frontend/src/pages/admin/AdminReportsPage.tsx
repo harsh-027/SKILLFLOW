@@ -5,8 +5,8 @@ import API from "@/api/axios";
 
 type ReportRow = {
   _id: string;
-  targetType: "user" | "listing" | "exchange";
-  targetId: string;
+  targetType: "user" | "listing" | "exchange" | "platform";
+  targetId?: string;
   reason: string;
   status: "open" | "resolved";
   createdAt: string;
@@ -21,6 +21,7 @@ export default function AdminReportsPage() {
   const [typeFilter, setTypeFilter] = useState("All Types");
   const [statusFilter, setStatusFilter] = useState("All Status");
   const [loading, setLoading] = useState(true);
+  const [resolvingId, setResolvingId] = useState<string | null>(null);
 
   useEffect(() => {
     const loadReports = async () => {
@@ -52,10 +53,10 @@ export default function AdminReportsPage() {
         icon: ShieldAlert,
       },
       {
-        label: "Priority Cases",
-        value: String(reports.filter((report) => report.targetType === "exchange").length || 0),
+        label: "Platform Issues",
+        value: String(reports.filter((report) => report.targetType === "platform").length || 0),
         trend: String(reports.filter((report) => report.targetType === "user").length || 0),
-        helper: "exchange disputes",
+        helper: "user feedback",
         icon: TriangleAlert,
       },
     ],
@@ -74,6 +75,20 @@ export default function AdminReportsPage() {
       }),
     [reports, statusFilter, typeFilter]
   );
+
+  const resolveReport = async (reportId: string) => {
+    try {
+      setResolvingId(reportId);
+      await API.patch(`/admin/reports/${reportId}/resolve`);
+      setReports((currentReports) =>
+        currentReports.map((report) =>
+          report._id === reportId ? { ...report, status: "resolved" } : report
+        )
+      );
+    } finally {
+      setResolvingId(null);
+    }
+  };
 
   if (loading) {
     return (
@@ -103,6 +118,7 @@ export default function AdminReportsPage() {
             <option>User</option>
             <option>Listing</option>
             <option>Exchange</option>
+            <option>Platform</option>
           </select>
 
           <select
@@ -192,7 +208,7 @@ export default function AdminReportsPage() {
                         Target ID
                       </p>
                       <p className="mt-2 break-all text-sm text-slate-300">
-                        {report.targetId}
+                        {report.targetId || "Platform issue"}
                       </p>
 
                       <p className="mt-4 text-xs uppercase tracking-[0.18em] text-slate-500">
@@ -204,8 +220,13 @@ export default function AdminReportsPage() {
                     </div>
 
                     <div className="flex gap-2">
-                      <button className="flex-1 rounded-full border border-emerald-400/20 bg-emerald-500/15 px-3 py-2 text-xs text-emerald-100 hover:bg-emerald-500/20">
-                        Resolve
+                      <button
+                        type="button"
+                        onClick={() => resolveReport(report._id)}
+                        disabled={report.status === "resolved" || resolvingId === report._id}
+                        className="flex-1 rounded-full border border-emerald-400/20 bg-emerald-500/15 px-3 py-2 text-xs text-emerald-100 hover:bg-emerald-500/20 disabled:cursor-not-allowed disabled:opacity-60"
+                      >
+                        {resolvingId === report._id ? "Resolving..." : "Resolve"}
                       </button>
                       <button className="flex-1 rounded-full border border-rose-400/20 bg-rose-500/15 px-3 py-2 text-xs text-rose-100 hover:bg-rose-500/20">
                         Escalate

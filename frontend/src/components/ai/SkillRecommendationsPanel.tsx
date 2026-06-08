@@ -21,7 +21,6 @@ export default function SkillRecommendationsPanel({
         <div>
           <div className="dashboard-kicker">Recommended next</div>
           <h3 className="section-title">AI Recommended Skills</h3>
-          <p className="section-sub">Fast local suggestions based on your skills and current roadmap target.</p>
         </div>
       </div>
 

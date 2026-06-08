@@ -61,19 +61,24 @@ app.get("/", (req, res) => {
   res.status(200).json({ message: "Skill Exchange API is running" });
 });
 
-app.use("/api/public", require("./routes/publicRoutes"));
-app.use("/api/auth", require("./routes/authRoutes"));
-app.use("/api/users", require("./routes/userRoutes"));
-app.use("/api/posts", require("./routes/postRoutes"));
-app.use("/api/swap-requests", require("./routes/swapRoutes"));
-app.use("/api/swaps", require("./routes/swapRoutes"));
-app.use("/api/messages", require("./routes/messageRoutes"));
-app.use("/api/listings", require("./routes/listingRoutes"));
-app.use("/api/exchanges", require("./routes/exchangeRoutes"));
-app.use("/api/reviews", require("./routes/reviewRoutes"));
-app.use("/api/reports", require("./routes/reportRoutes"));
-app.use("/api/admin", require("./routes/adminRoutes"));
-app.use("/api/ai", require("./routes/ai"));
+const mountApiRoutes = (basePath) => {
+  app.use(`${basePath}/public`, require("./routes/publicRoutes"));
+  app.use(`${basePath}/auth`, require("./routes/authRoutes"));
+  app.use(`${basePath}/users`, require("./routes/userRoutes"));
+  app.use(`${basePath}/posts`, require("./routes/postRoutes"));
+  app.use(`${basePath}/swap-requests`, require("./routes/swapRoutes"));
+  app.use(`${basePath}/swaps`, require("./routes/swapRoutes"));
+  app.use(`${basePath}/messages`, require("./routes/messageRoutes"));
+  app.use(`${basePath}/listings`, require("./routes/listingRoutes"));
+  app.use(`${basePath}/exchanges`, require("./routes/exchangeRoutes"));
+  app.use(`${basePath}/reviews`, require("./routes/reviewRoutes"));
+  app.use(`${basePath}/reports`, require("./routes/reportRoutes"));
+  app.use(`${basePath}/admin`, require("./routes/adminRoutes"));
+  app.use(`${basePath}/ai`, require("./routes/ai"));
+};
+
+mountApiRoutes("/api/v1");
+mountApiRoutes("/api");
 
 app.use(notFoundHandler);
 app.use(errorHandler);

@@ -10,13 +10,15 @@ const reportSchema = new mongoose.Schema(
     },
     targetType: {
       type: String,
-      enum: ["user", "listing", "exchange"],
+      enum: ["user", "listing", "exchange", "platform"],
       required: true,
       index: true,
     },
     targetId: {
       type: mongoose.Schema.Types.ObjectId,
-      required: true,
+      required() {
+        return this.targetType !== "platform";
+      },
       index: true,
     },
     reason: {

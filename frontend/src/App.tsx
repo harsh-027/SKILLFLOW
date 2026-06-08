@@ -10,6 +10,8 @@ import RegisterPage from "@/pages/RegisterPage";
 import LoginPage from "@/pages/LoginPage";
 import ForgotPasswordPage from "@/pages/ForgotPasswordPage";
 import ResetPasswordPage from "@/pages/ResetPasswordPage";
+import PrivacyPolicyPage from "@/pages/PrivacyPolicyPage";
+import TermsPage from "@/pages/TermsPage";
 import DashboardPage from "@/pages/DashboardPage";
 import AiPage from "@/pages/AiPage";
 import CommunityPage from "@/pages/CommunityPage";
@@ -81,6 +83,8 @@ function AnimatedRoutes() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
+        <Route path="/privacy" element={<PrivacyPolicyPage />} />
+        <Route path="/terms" element={<TermsPage />} />
         <Route
           path="/ai"
           element={
@@ -174,11 +178,13 @@ function App() {
   const location = useLocation();
 
   const isLandingRoute = location.pathname === "/";
+  const isLegalRoute = location.pathname === "/privacy" || location.pathname === "/terms";
   const isAuthRoute =
     location.pathname === "/login" ||
     location.pathname === "/register" ||
     location.pathname === "/forgot-password" ||
-    location.pathname.startsWith("/reset-password/");
+    location.pathname.startsWith("/reset-password/") ||
+    isLegalRoute;
   const isAdminRoute = location.pathname.startsWith("/admin");
   const isDashboardShell = Boolean(currentUser) && isDashboardShellPath(location.pathname);
 

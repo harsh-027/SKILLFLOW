@@ -9,6 +9,7 @@ const {
   resetPassword,
 } = require("../controllers/authController");
 const authMiddleware = require("../middleware/authMiddleware");
+const botProtection = require("../middleware/botProtection");
 const { validateRequest } = require("../middleware/errorHandler");
 const { authRateLimiter, forgotPasswordRateLimiter } = require("../middleware/rateLimiters");
 const {
@@ -20,11 +21,12 @@ const {
 
 const router = express.Router();
 
-router.post("/register", authRateLimiter, registerValidator, validateRequest, register);
-router.post("/login", authRateLimiter, loginValidator, validateRequest, login);
+router.post("/register", authRateLimiter, botProtection, registerValidator, validateRequest, register);
+router.post("/login", authRateLimiter, botProtection, loginValidator, validateRequest, login);
 router.post(
   "/forgot-password",
   forgotPasswordRateLimiter,
+  botProtection,
   forgotPasswordValidator,
   validateRequest,
   forgotPassword
@@ -32,6 +34,7 @@ router.post(
 router.post(
   "/reset-password/:token",
   authRateLimiter,
+  botProtection,
   resetPasswordValidator,
   validateRequest,
   resetPassword

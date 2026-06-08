@@ -7,13 +7,15 @@ const {
   unfollowUser,
 } = require("../controllers/userController");
 const authMiddleware = require("../middleware/authMiddleware");
+const { validateRequest } = require("../middleware/errorHandler");
+const { objectIdParam, updateProfileValidator } = require("../validators/platformValidators");
 
 const router = express.Router();
 
 router.get("/", authMiddleware, getAllUsers);
-router.put("/me", authMiddleware, updateMyProfile);
-router.get("/:id", getUserById);
-router.put("/follow/:id", authMiddleware, followUser);
-router.put("/unfollow/:id", authMiddleware, unfollowUser);
+router.put("/me", authMiddleware, updateProfileValidator, validateRequest, updateMyProfile);
+router.get("/:id", objectIdParam(), validateRequest, getUserById);
+router.put("/follow/:id", authMiddleware, objectIdParam(), validateRequest, followUser);
+router.put("/unfollow/:id", authMiddleware, objectIdParam(), validateRequest, unfollowUser);
 
 module.exports = router;

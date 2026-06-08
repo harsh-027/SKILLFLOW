@@ -7,13 +7,15 @@ const {
   deleteSwapRequest,
 } = require("../controllers/swapController");
 const authMiddleware = require("../middleware/authMiddleware");
+const { validateRequest } = require("../middleware/errorHandler");
+const { createSwapRequestValidator, objectIdParam } = require("../validators/platformValidators");
 
 const router = express.Router();
 
-router.post("/", authMiddleware, createSwapRequest);
+router.post("/", authMiddleware, createSwapRequestValidator, validateRequest, createSwapRequest);
 router.get("/", authMiddleware, getMySwapRequests);
-router.put("/accept/:id", authMiddleware, acceptSwapRequest);
-router.put("/reject/:id", authMiddleware, rejectSwapRequest);
-router.delete("/:id", authMiddleware, deleteSwapRequest);
+router.put("/accept/:id", authMiddleware, objectIdParam(), validateRequest, acceptSwapRequest);
+router.put("/reject/:id", authMiddleware, objectIdParam(), validateRequest, rejectSwapRequest);
+router.delete("/:id", authMiddleware, objectIdParam(), validateRequest, deleteSwapRequest);
 
 module.exports = router;

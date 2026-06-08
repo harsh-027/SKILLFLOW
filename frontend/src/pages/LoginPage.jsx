@@ -167,7 +167,15 @@ function LoginPage() {
               </Link>
             </p>
             <p className="auth-legal-copy">
-              By signing in, you agree to our Terms and Privacy Policy.
+              By signing in, you agree to our{" "}
+              <Link to="/terms" className="auth-link">
+                Terms & Conditions
+              </Link>{" "}
+              and{" "}
+              <Link to="/privacy" className="auth-link">
+                Privacy Policy
+              </Link>
+              .
             </p>
           </div>
       </motion.div>

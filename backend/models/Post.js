@@ -10,6 +10,7 @@ const commentSchema = new mongoose.Schema({
     type: String,
     required: true,
     trim: true,
+    maxlength: 600,
   },
   createdAt: {
     type: Date,
@@ -34,6 +35,7 @@ const postSchema = new mongoose.Schema({
   image: {
     type: String,
     trim: true,
+    maxlength: 2 * 1024 * 1024,
   },
   likes: [
     {

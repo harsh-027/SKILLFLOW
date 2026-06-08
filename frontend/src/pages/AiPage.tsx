@@ -108,9 +108,7 @@ export default function AiPage() {
     <div className="page min-w-0 ai-page">
       <header className="dashboard-section-head ai-page-header">
         <div>
-          <div className="dashboard-kicker">AI workspace</div>
-          <h1 className="section-title">AI Lab</h1>
-          <p className="section-sub">Skills and learning paths.</p>
+          <h1 className="section-title">AI workspace</h1>
         </div>
       </header>
 

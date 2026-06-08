@@ -1,8 +1,13 @@
-const rateLimit = require("express-rate-limit");
+const { ipKeyGenerator, rateLimit } = require("express-rate-limit");
+
+const parsePositiveInt = (value, fallback) => {
+  const parsed = Number.parseInt(value, 10);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
+};
 
 const apiRateLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 300,
+  max: parsePositiveInt(process.env.API_RATE_LIMIT_MAX, 300),
   standardHeaders: true,
   legacyHeaders: false,
   message: {
@@ -12,7 +17,7 @@ const apiRateLimiter = rateLimit({
 
 const writeRateLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 80,
+  max: parsePositiveInt(process.env.WRITE_RATE_LIMIT_MAX, 80),
   standardHeaders: true,
   legacyHeaders: false,
   skip: (req) => ["GET", "HEAD", "OPTIONS"].includes(req.method),
@@ -23,7 +28,7 @@ const writeRateLimiter = rateLimit({
 
 const authRateLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 10,
+  max: parsePositiveInt(process.env.AUTH_RATE_LIMIT_MAX, 5),
   standardHeaders: true,
   legacyHeaders: false,
   message: {
@@ -33,7 +38,7 @@ const authRateLimiter = rateLimit({
 
 const forgotPasswordRateLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 5,
+  max: parsePositiveInt(process.env.FORGOT_PASSWORD_RATE_LIMIT_MAX, 5),
   standardHeaders: true,
   legacyHeaders: false,
   message: {
@@ -42,8 +47,9 @@ const forgotPasswordRateLimiter = rateLimit({
 });
 
 const aiRateLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 30,
+  windowMs: 60 * 1000,
+  max: parsePositiveInt(process.env.AI_RATE_LIMIT_MAX, 3),
+  keyGenerator: (req) => req.user?.id || ipKeyGenerator(req.ip),
   standardHeaders: true,
   legacyHeaders: false,
   message: {

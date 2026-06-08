@@ -3191,6 +3191,29 @@ textarea.input-dark { resize: vertical; min-height: 120px; }
   font-size: 13px;
   line-height: 1.5;
 }
+.auth-policy-field {
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+  padding: 14px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.032);
+  color: rgba(255, 255, 255, 0.62);
+  font-size: 13px;
+  line-height: 1.6;
+}
+.auth-policy-field input {
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+  accent-color: #ffffff;
+  cursor: pointer;
+}
+.auth-policy-field label {
+  min-width: 0;
+}
 .auth-submit {
   width: 100%;
   margin-top: 6px;
@@ -3225,6 +3248,185 @@ textarea.input-dark { resize: vertical; min-height: 120px; }
   color: rgba(255,255,255,0.48);
   font-size: 13px;
   line-height: 1.6;
+}
+
+.legal-page {
+  min-height: 100vh;
+  padding: 96px 16px 58px;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.08), transparent 36%),
+    var(--bg-root);
+}
+.legal-home-link {
+  position: fixed;
+  top: 24px;
+  left: 24px;
+  z-index: 20;
+  min-height: 42px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 12px;
+  border-radius: 12px;
+  background: rgba(3, 3, 3, 0.48);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.72);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  transition: color 0.2s ease, transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+.legal-home-link:hover {
+  background: rgba(12, 12, 12, 0.72);
+  border-color: rgba(255, 255, 255, 0.14);
+  color: var(--text-primary);
+  transform: translateX(-2px);
+}
+.legal-shell {
+  width: min(100%, 1120px);
+  margin: 0 auto;
+  display: grid;
+  gap: 24px;
+}
+.legal-hero {
+  display: grid;
+  gap: 14px;
+  padding: clamp(24px, 5vw, 42px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at 18% 0%, rgba(255, 255, 255, 0.13), transparent 38%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.11), rgba(255, 255, 255, 0.035)),
+    rgba(8, 8, 8, 0.58);
+  box-shadow: var(--shadow-card);
+  backdrop-filter: blur(24px) saturate(145%);
+  -webkit-backdrop-filter: blur(24px) saturate(145%);
+}
+.legal-eyebrow,
+.legal-updated {
+  color: rgba(255, 255, 255, 0.52);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.legal-hero h1 {
+  max-width: 780px;
+  color: #ffffff;
+  font-size: clamp(38px, 7vw, 72px);
+  letter-spacing: -0.05em;
+  text-shadow: none;
+}
+.legal-hero p {
+  max-width: 720px;
+  color: rgba(255, 255, 255, 0.66);
+  font-size: 16px;
+  line-height: 1.75;
+}
+.legal-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 0.36fr);
+  gap: 20px;
+  align-items: start;
+}
+.legal-content-card,
+.legal-side-card {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 22px;
+  background: var(--card-surface-bg);
+  box-shadow: var(--shadow-card);
+  backdrop-filter: blur(22px) saturate(140%);
+  -webkit-backdrop-filter: blur(22px) saturate(140%);
+}
+.legal-content-card {
+  display: grid;
+  gap: 0;
+  padding: clamp(22px, 4vw, 34px);
+}
+.legal-section {
+  display: grid;
+  gap: 10px;
+  padding: 22px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+.legal-section:first-child {
+  padding-top: 0;
+}
+.legal-section:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+.legal-section h2,
+.legal-side-card h2 {
+  color: #ffffff;
+  font-size: 22px;
+  letter-spacing: -0.03em;
+  text-shadow: none;
+}
+.legal-section p,
+.legal-list,
+.legal-service-item p {
+  color: rgba(255, 255, 255, 0.62);
+  font-size: 14px;
+  line-height: 1.75;
+}
+.legal-list {
+  display: grid;
+  gap: 8px;
+  padding-left: 18px;
+}
+.legal-list li::marker {
+  color: rgba(255, 255, 255, 0.82);
+}
+.legal-side-card {
+  position: sticky;
+  top: calc(var(--header-height) + 20px);
+  display: grid;
+  gap: 18px;
+  padding: 22px;
+}
+.legal-service-list {
+  display: grid;
+  gap: 14px;
+}
+.legal-service-item {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr);
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.035);
+}
+.legal-service-item svg {
+  color: rgba(255, 255, 255, 0.86);
+  margin-top: 2px;
+}
+.legal-service-item h3 {
+  color: #ffffff;
+  font-size: 15px;
+  letter-spacing: -0.02em;
+  text-shadow: none;
+}
+.legal-card-link {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 700;
+  text-align: center;
+  transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+.legal-card-link:hover {
+  transform: translateY(-1px);
+  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.085);
 }
 
 .not-found-page { min-height: 100vh; background: var(--bg-root); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 16px; }
@@ -4656,6 +4858,14 @@ html.sidebar-collapsed .community-composer-wrap-bottom {
 }
 
 @media (max-width: 960px) {
+  .legal-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .legal-side-card {
+    position: static;
+  }
+
   .learning-hero,
   .learning-result-hero,
   .learning-form-layout,
@@ -4681,6 +4891,21 @@ html.sidebar-collapsed .community-composer-wrap-bottom {
 }
 
 @media (max-width: 720px) {
+  .legal-page {
+    padding: 84px 12px 36px;
+  }
+
+  .legal-home-link {
+    top: 18px;
+    left: 16px;
+  }
+
+  .legal-hero,
+  .legal-content-card,
+  .legal-side-card {
+    border-radius: 16px;
+  }
+
   .learning-option-grid,
   .learning-stat-grid,
   .learning-resource-grid,
@@ -6917,6 +7142,103 @@ html.sidebar-collapsed .community-composer-wrap-bottom {
 .landing-review-message {
   color: rgba(255, 255, 255, 0.68);
   font-size: 13px;
+}
+
+.footer-issue-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 170;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.72);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.footer-issue-form {
+  width: min(520px, 100%);
+  display: grid;
+  gap: 16px;
+  padding: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 22px;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.13), transparent 38%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.11), rgba(255, 255, 255, 0.035)),
+    rgba(8, 8, 8, 0.93);
+  box-shadow: 0 28px 70px rgba(0, 0, 0, 0.52);
+}
+
+.footer-issue-form-head,
+.footer-issue-actions {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.footer-issue-form-head h2 {
+  margin-top: 8px;
+  color: #ffffff;
+  font-size: 30px;
+  letter-spacing: 0;
+  text-shadow: none;
+}
+
+.footer-issue-form-head button {
+  min-height: 32px;
+  padding: 0 12px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.footer-issue-form label {
+  display: grid;
+  gap: 8px;
+  color: rgba(255, 255, 255, 0.62);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.footer-issue-form textarea {
+  width: 100%;
+  min-height: 132px;
+  resize: vertical;
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.04);
+  color: #ffffff;
+  padding: 12px 14px;
+  outline: none;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.footer-issue-form textarea::placeholder {
+  color: rgba(255, 255, 255, 0.42);
+}
+
+.footer-issue-actions {
+  align-items: center;
+}
+
+.footer-issue-actions span {
+  color: rgba(255, 255, 255, 0.52);
+  font-size: 12px;
+}
+
+.footer-issue-actions button:disabled,
+.footer-issue-form-head button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
 }
 
 .resend-testimonial-card {
