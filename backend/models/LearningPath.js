@@ -46,13 +46,11 @@ const learningPathSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
-      index: true,
     },
     targetSkill: {
       type: String,
       required: true,
       trim: true,
-      index: true,
     },
     title: {
       type: String,
