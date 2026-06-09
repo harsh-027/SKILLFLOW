@@ -31,8 +31,8 @@ const createReview = asyncHandler(async (req, res) => {
     },
     { new: true, upsert: true, runValidators: true, setDefaultsOnInsert: true }
   )
-    .populate("fromUser", "name userId avatar")
-    .populate("toUser", "name userId avatar");
+    .populate("fromUser", "name userId avatar profileImage")
+    .populate("toUser", "name userId avatar profileImage");
 
   await recalculateRating(req.body.toUser);
   return res.status(201).json(review);
@@ -40,7 +40,7 @@ const createReview = asyncHandler(async (req, res) => {
 
 const getUserReviews = asyncHandler(async (req, res) => {
   const reviews = await Review.find({ toUser: req.params.id })
-    .populate("fromUser", "name userId avatar")
+    .populate("fromUser", "name userId avatar profileImage")
     .sort({ createdAt: -1 });
 
   return res.status(200).json(reviews);

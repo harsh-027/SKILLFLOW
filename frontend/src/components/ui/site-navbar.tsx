@@ -77,7 +77,7 @@ export default function SiteNavbar() {
 
   useEffect(() => {
     setAvatarFailed(false);
-  }, [currentUser?.avatar, currentUser?._id]);
+  }, [currentUser?.profileImage, currentUser?._id]);
 
   useEffect(() => {
     if (typeof window === "undefined") {
@@ -141,9 +141,9 @@ export default function SiteNavbar() {
               className={cn("sidebar-user-chip", isCollapsed && "collapsed")}
               title={currentUserLabel || "View profile"}
             >
-              {currentUser?.avatar && !avatarFailed ? (
+              {currentUser && !avatarFailed ? (
                 <img
-                  src={currentUser.avatar}
+                  src={currentUser.profileImage || "/assets/default-profile.png"}
                   alt={currentUserLabel}
                   className="sidebar-user-avatar"
                   onError={() => setAvatarFailed(true)}
@@ -223,8 +223,8 @@ export default function SiteNavbar() {
               className="landing-user-state"
               title={currentUserLabel || "View profile"}
             >
-              {currentUser?.avatar && !avatarFailed ? (
-                <img src={currentUser.avatar} alt={currentUserLabel} onError={() => setAvatarFailed(true)} />
+              {currentUser && !avatarFailed ? (
+                <img src={currentUser.profileImage || "/assets/default-profile.png"} alt={currentUserLabel} onError={() => setAvatarFailed(true)} />
               ) : (
                 <span>{getUserInitials(currentUser)}</span>
               )}

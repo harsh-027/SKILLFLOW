@@ -22,8 +22,8 @@ const createExchange = asyncHandler(async (req, res) => {
   });
 
   const populated = await exchange.populate([
-    { path: "userA", select: "name userId avatar" },
-    { path: "userB", select: "name userId avatar" },
+    { path: "userA", select: "name userId avatar profileImage" },
+    { path: "userB", select: "name userId avatar profileImage" },
   ]);
 
   return res.status(201).json(populated);
@@ -33,8 +33,8 @@ const getMyExchanges = asyncHandler(async (req, res) => {
   const exchanges = await Exchange.find({
     $or: [{ userA: req.user._id }, { userB: req.user._id }],
   })
-    .populate("userA", "name userId avatar")
-    .populate("userB", "name userId avatar")
+    .populate("userA", "name userId avatar profileImage")
+    .populate("userB", "name userId avatar profileImage")
     .sort({ createdAt: -1 });
 
   return res.status(200).json(exchanges);

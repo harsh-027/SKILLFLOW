@@ -11,8 +11,8 @@ type Draft = {
   name: string;
   bio: string;
   location: string;
-  avatar: string;
-  banner: string;
+  profileImage: string;
+  bannerImage: string;
   skillsOffered: string[];
   skillsWanted: string[];
 };
@@ -26,7 +26,7 @@ type SwapRequest = {
   skillWanted: string;
 };
 
-type ImageField = "avatar" | "banner";
+type ImageField = "profileImage" | "bannerImage";
 
 const readFileAsDataUrl = (file: File): Promise<string> =>
   new Promise((resolve, reject) => {
@@ -45,8 +45,8 @@ const createDraftFromUser = (user: ProfileUser): Draft => ({
   name: user.name || "",
   bio: user.bio || "",
   location: user.location || "",
-  avatar: user.avatar || "",
-  banner: user.banner || "",
+  profileImage: user.profileImage || user.avatar || "",
+  bannerImage: user.bannerImage || user.banner || "",
   skillsOffered: [...(user.skillsOffered || [])],
   skillsWanted: [...(user.skillsWanted || [])],
 });
@@ -83,8 +83,8 @@ function ProfilePage() {
     name: "",
     bio: "",
     location: "",
-    avatar: "",
-    banner: "",
+    profileImage: "",
+    bannerImage: "",
     skillsOffered: [],
     skillsWanted: [],
   });
@@ -139,8 +139,8 @@ function ProfilePage() {
       name: draft.name.trim(),
       bio: draft.bio.trim(),
       location: draft.location.trim(),
-      avatar: draft.avatar,
-      banner: draft.banner,
+      profileImage: draft.profileImage,
+      bannerImage: draft.bannerImage,
       skillsOffered: draft.skillsOffered,
       skillsWanted: draft.skillsWanted,
     });
@@ -151,8 +151,8 @@ function ProfilePage() {
         name: draft.name.trim(),
         bio: draft.bio.trim(),
         location: draft.location.trim(),
-        avatar: draft.avatar,
-        banner: draft.banner,
+        profileImage: draft.profileImage,
+        bannerImage: draft.bannerImage,
         skillsOffered: draft.skillsOffered,
         skillsWanted: draft.skillsWanted,
       }
@@ -186,8 +186,8 @@ function ProfilePage() {
     }
   };
 
-  if (bootstrapping || loadingUser) return <section className="page"><div className="card">Loading profile...</div></section>;
-  if (!profileUser) return <section className="page"><div className="card"><h2 className="section-title">User not found</h2><Link className="btn-outline-red" to="/users">Back to Users</Link></div></section>;
+  if (bootstrapping || loadingUser) return <section className="page"><div className="glass-card card">Loading profile...</div></section>;
+  if (!profileUser) return <section className="page"><div className="glass-card card"><h2 className="section-title">User not found</h2><Link className="btn-outline-red" to="/users">Back to Users</Link></div></section>;
 
   const handleCancelEditing = () => {
     setDraft(createDraftFromUser(profileUser));
@@ -200,8 +200,8 @@ function ProfilePage() {
         name: draft.name || profileUser.name,
         bio: draft.bio || profileUser.bio,
         location: draft.location || profileUser.location,
-        avatar: draft.avatar || profileUser.avatar,
-        banner: draft.banner || profileUser.banner,
+        profileImage: draft.profileImage || profileUser.profileImage,
+        bannerImage: draft.bannerImage || profileUser.bannerImage,
         skillsOffered: draft.skillsOffered?.length ? draft.skillsOffered : profileUser.skillsOffered,
         skillsWanted: draft.skillsWanted?.length ? draft.skillsWanted : profileUser.skillsWanted,
       }
@@ -221,13 +221,13 @@ function ProfilePage() {
     <section className="page">
       <div className={`profile-showcase-layout ${isOwnProfile && editing ? "is-editing" : ""}`}>
         <div className="profile-showcase-column">
-          <article className="card profile-showcase-card">
+          <article className="glass-card card profile-showcase-card">
             <div
-              className={`profile-showcase-cover ${displayProfile.banner ? "has-image" : ""}`}
+              className={`profile-showcase-cover ${displayProfile.bannerImage ? "has-image" : ""}`}
               style={
-                displayProfile.banner
+                displayProfile.bannerImage
                   ? {
-                      backgroundImage: `linear-gradient(180deg, rgba(0,0,0,0.18), rgba(23,23,23,0.92)), url(${displayProfile.banner})`,
+                      backgroundImage: `linear-gradient(180deg, rgba(0,0,0,0.18), rgba(23,23,23,0.92)), url(${displayProfile.bannerImage || "/assets/default-banner.png"})`,
                       backgroundSize: "cover",
                       backgroundPosition: "center",
                     }
@@ -272,7 +272,7 @@ function ProfilePage() {
                     </svg>
                     <div className="profile-avatar-ring profile-showcase-avatar-frame">
                       <img
-                        src={displayProfile.avatar || "/default-avatar.png"}
+                        src={displayProfile.profileImage || "/assets/default-profile.png"}
                         alt={preferredProfileLabel}
                         className="profile-showcase-avatar"
                       />
@@ -364,7 +364,7 @@ function ProfilePage() {
         </div>
 
         {isOwnProfile && editing ? (
-          <form onSubmit={handleSaveProfile} className="profile-showcase-editor">
+          <form onSubmit={handleSaveProfile} className="glass-card profile-showcase-editor">
             <div className="profile-editor-head">
               <p className="field-label">Edit profile</p>
               </div>
@@ -405,7 +405,7 @@ function ProfilePage() {
                     accept="image/*"
                     onChange={(event: ChangeEvent<HTMLInputElement>) => {
                       const file: File | null = event.target.files?.[0] ?? null;
-                      handleImageSelection("avatar", file);
+                      handleImageSelection("profileImage", file);
                     }}
                   />
                 </label>
@@ -422,7 +422,7 @@ function ProfilePage() {
                     accept="image/*"
                     onChange={(event: ChangeEvent<HTMLInputElement>) => {
                       const file: File | null = event.target.files?.[0] ?? null;
-                      handleImageSelection("banner", file);
+                      handleImageSelection("bannerImage", file);
                     }}
                   />
                 </label>

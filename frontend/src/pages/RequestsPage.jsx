@@ -19,7 +19,7 @@ function RequestCard({ request, currentTab, onRespond, onDelete, currentUserId }
   const statusClassName = request.status === "accepted" ? "badge badge-accepted" : request.status === "rejected" ? "badge badge-rejected" : "badge badge-pending";
 
   return (
-    <article className="request-card">
+    <article className="glass-card request-card">
       <div>
         <p className="request-from">{getPreferredUserLabel(sender)} to {getPreferredUserLabel(receiver)}</p>
         <p className="request-offering">Offering <strong>{offeredValue}</strong> for <strong>{wantedValue}</strong></p>

@@ -19,7 +19,7 @@ export default function SectionCard({
 }: SectionCardProps) {
   return (
     <section
-      className={`overflow-hidden rounded-[8px] border border-white/14 bg-white/[0.035] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] ${className}`}
+      className={`glass-card overflow-hidden rounded-[8px] ${className}`}
     >
       {title || description || action ? (
         <div className="flex flex-col gap-4 border-b border-white/10 px-5 py-4 sm:flex-row sm:items-start sm:justify-between">

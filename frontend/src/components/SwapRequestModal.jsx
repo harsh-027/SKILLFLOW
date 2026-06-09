@@ -18,7 +18,7 @@ function SwapRequestModal({ isOpen, currentUser, targetUser, submitting = false,
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-box" onClick={(event) => event.stopPropagation()}>
+      <div className="glass-card modal-box" onClick={(event) => event.stopPropagation()}>
         <h3 className="modal-title">Request Skill Swap</h3>
         <form onSubmit={handleSubmit} style={{ display: "grid", gap: "12px" }}>
           <select className="input-dark" value={skillOffered} onChange={(event) => setSkillOffered(event.target.value)} required>

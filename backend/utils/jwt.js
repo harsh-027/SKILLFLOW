@@ -1,7 +1,7 @@
 const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
 
-const ACCESS_TOKEN_TTL = "15m";
+const ACCESS_TOKEN_TTL = process.env.JWT_ACCESS_TOKEN_TTL || "7d";
 
 const signAccessToken = ({ userId, role }) =>
   jwt.sign({ userId, role, type: "access" }, process.env.JWT_ACCESS_SECRET, {

@@ -45,8 +45,8 @@ const sendMessage = async (req, res) => {
     });
 
     const populated = await message.populate([
-      { path: "sender", select: "name avatar" },
-      { path: "receiver", select: "name avatar" },
+      { path: "sender", select: "name avatar profileImage" },
+      { path: "receiver", select: "name avatar profileImage" },
     ]);
 
     return res.status(201).json(populated);
@@ -79,8 +79,8 @@ const getConversation = async (req, res) => {
         { sender: otherUserId, receiver: currentUserId },
       ],
     })
-      .populate("sender", "name avatar")
-      .populate("receiver", "name avatar")
+      .populate("sender", "name avatar profileImage")
+      .populate("receiver", "name avatar profileImage")
       .sort({ createdAt: 1 });
 
     return res.status(200).json(messages);

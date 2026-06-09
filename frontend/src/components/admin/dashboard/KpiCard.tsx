@@ -16,7 +16,7 @@ export default function KpiCard({
   icon: Icon,
 }: KpiCardProps) {
   return (
-    <article className="group relative flex min-h-[148px] flex-col justify-between overflow-hidden rounded-[8px] border border-white/14 bg-[linear-gradient(145deg,rgba(255,255,255,0.075),rgba(255,255,255,0.025))] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.07)] transition duration-300 hover:border-white/25 hover:bg-white/[0.07]">
+    <article className="glass-card group relative flex min-h-[148px] flex-col justify-between overflow-hidden rounded-[8px] p-5 transition duration-300 hover:border-white/25">
       <div className="pointer-events-none absolute -right-8 -top-10 h-28 w-28 rounded-full border border-white/10 opacity-30" />
       <div className="flex items-start justify-between gap-3">
         <div>

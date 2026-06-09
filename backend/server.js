@@ -36,13 +36,6 @@ const corsOptions = {
   },
 };
 
-console.log("Auth environment:", {
-  NODE_ENV: process.env.NODE_ENV,
-  CLIENT_URL: process.env.CLIENT_URL,
-  CLIENT_ORIGIN: process.env.CLIENT_ORIGIN,
-  JWT_ACCESS_SECRET: Boolean(process.env.JWT_ACCESS_SECRET),
-});
-
 app.set("trust proxy", 1);
 app.use(
   helmet({

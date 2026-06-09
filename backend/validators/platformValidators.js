@@ -1,4 +1,4 @@
-const { body, param, query } = require("express-validator");
+const { body, param } = require("express-validator");
 
 const objectIdParam = (field = "id") =>
   param(field).isMongoId().withMessage(`${field} must be a valid MongoDB id.`);
@@ -12,11 +12,12 @@ const safeImageValue = (value) => {
   const isHttpImage =
     /^https?:\/\/[^\s]+$/i.test(trimmed) &&
     /\.(?:png|jpe?g|webp|gif)(?:[?#].*)?$/i.test(trimmed);
+  const isLocalAssetImage = /^\/assets\/[\w.-]+\.(?:png|jpe?g|webp|gif)$/i.test(trimmed);
   const isSafeDataImage =
     /^data:image\/(?:png|jpe?g|webp|gif);base64,[A-Za-z0-9+/=]+$/i.test(trimmed) &&
     Buffer.byteLength(trimmed, "utf8") <= 2 * 1024 * 1024;
 
-  return isHttpImage || isSafeDataImage;
+  return isHttpImage || isLocalAssetImage || isSafeDataImage;
 };
 
 const stringArrayField = (field, maxItems = 25, maxLength = 80) =>
@@ -78,6 +79,8 @@ const updateProfileValidator = [
   body("location").optional().trim().isLength({ max: 120 }).withMessage("Location must be 120 characters or fewer."),
   body("avatar").optional().custom(safeImageValue).withMessage("Avatar must be a valid image URL or safe image data URL."),
   body("banner").optional().custom(safeImageValue).withMessage("Banner must be a valid image URL or safe image data URL."),
+  body("profileImage").optional().custom(safeImageValue).withMessage("Profile image must be a valid image URL or safe image data URL."),
+  body("bannerImage").optional().custom(safeImageValue).withMessage("Banner image must be a valid image URL or safe image data URL."),
   stringArrayField("skillsOffered"),
   stringArrayField("skillsWanted"),
   stringArrayField("interests"),
@@ -126,14 +129,6 @@ const createLearningPathValidator = [
     .withMessage("targetSkill must be between 2 and 120 characters."),
 ];
 
-const recommendedSkillsValidator = [
-  query("skill")
-    .optional()
-    .trim()
-    .isLength({ min: 2, max: 120 })
-    .withMessage("skill must be between 2 and 120 characters."),
-];
-
 module.exports = {
   objectIdParam,
   createListingValidator,
@@ -149,5 +144,4 @@ module.exports = {
   createSwapRequestValidator,
   adminToggleValidator,
   createLearningPathValidator,
-  recommendedSkillsValidator,
 };

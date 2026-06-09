@@ -1,19 +1,14 @@
-import { startTransition, useEffect, useMemo, useState } from "react";
-import AiSectionSkeleton from "@/components/ai/AiSectionSkeleton";
+import { useEffect, useMemo, useState } from "react";
 import LearningPathPanel from "@/components/ai/LearningPathPanel";
-import SkillRecommendationsPanel from "@/components/ai/SkillRecommendationsPanel";
 import { useApp } from "@/context/AppContext";
-import { createAiLearningPath, fetchRecommendedSkills } from "@/services/aiService";
-import type { AiLearningPath, AiSkillRecommendation } from "@/types/ai";
+import { createAiLearningPath } from "@/services/aiService";
+import type { AiLearningPath } from "@/types/ai";
 
 export default function AiPage() {
-  const { currentUser, addToast, updateProfile, bootstrapping } = useApp();
+  const { currentUser, addToast, bootstrapping } = useApp();
   const [roadmapSkill, setRoadmapSkill] = useState("");
-  const [recommendations, setRecommendations] = useState<AiSkillRecommendation[]>([]);
   const [learningPath, setLearningPath] = useState<AiLearningPath | null>(null);
-  const [loadingRecommendations, setLoadingRecommendations] = useState(true);
   const [loadingPath, setLoadingPath] = useState(false);
-  const [pendingWishlistKeys, setPendingWishlistKeys] = useState<string[]>([]);
 
   const skillSuggestions = useMemo(() => {
     if (!currentUser) return [];
@@ -33,56 +28,6 @@ export default function AiPage() {
       setRoadmapSkill(skillSuggestions[0]);
     }
   }, [roadmapSkill, skillSuggestions]);
-
-  useEffect(() => {
-    if (!currentUser || !roadmapSkill) {
-      return;
-    }
-
-    let active = true;
-    setLoadingRecommendations(true);
-
-    fetchRecommendedSkills(roadmapSkill)
-      .then((recommendationData) => {
-        if (!active) return;
-
-        startTransition(() => {
-          setRecommendations(recommendationData.recommendations || []);
-        });
-      })
-      .catch(() => {
-        if (active) {
-          addToast("Unable to load AI skills.", "error");
-        }
-      })
-      .finally(() => {
-        if (active) {
-          setLoadingRecommendations(false);
-        }
-      });
-
-    return () => {
-      active = false;
-    };
-  }, [addToast, currentUser, roadmapSkill]);
-
-  const handleAddToWishlist = async (recommendation: AiSkillRecommendation) => {
-    if (!currentUser) return;
-
-    if (currentUser.skillsWanted.includes(recommendation.name)) {
-      addToast(`${recommendation.name} is already saved.`, "info");
-      return;
-    }
-
-    setPendingWishlistKeys((prev) => [...prev, recommendation.id]);
-    try {
-      await updateProfile({
-        skillsWanted: [...currentUser.skillsWanted, recommendation.name],
-      });
-    } finally {
-      setPendingWishlistKeys((prev) => prev.filter((key) => key !== recommendation.id));
-    }
-  };
 
   const handleGenerateLearningPath = async (targetSkill: string) => {
     setLoadingPath(true);
@@ -112,7 +57,7 @@ export default function AiPage() {
         </div>
       </header>
 
-      <div className="dashboard-main-grid ai-page-grid">
+      <div className="dashboard-main-grid dashboard-main-grid-single ai-page-grid">
         <LearningPathPanel
           learningPath={learningPath}
           loading={loadingPath}
@@ -121,20 +66,6 @@ export default function AiPage() {
           onTargetSkillChange={setRoadmapSkill}
           suggestions={skillSuggestions}
         />
-
-        <aside className="dashboard-sidebar">
-          {loadingRecommendations ? (
-            <AiSectionSkeleton rows={3} compact />
-          ) : (
-            <SkillRecommendationsPanel
-              recommendations={recommendations}
-              wantedSkills={currentUser.skillsWanted || []}
-              pendingKeys={pendingWishlistKeys}
-              onAddToWishlist={handleAddToWishlist}
-              selectedSkill={roadmapSkill}
-            />
-          )}
-        </aside>
       </div>
     </div>
   );

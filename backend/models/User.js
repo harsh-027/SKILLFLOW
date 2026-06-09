@@ -71,6 +71,16 @@ const userSchema = new mongoose.Schema(
       default: "",
       trim: true,
     },
+    profileImage: {
+      type: String,
+      default: "/assets/default-profile.png",
+      trim: true,
+    },
+    bannerImage: {
+      type: String,
+      default: "/assets/default-banner.png",
+      trim: true,
+    },
     skillsOffered: {
       type: [String],
       default: [],

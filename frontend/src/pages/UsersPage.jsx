@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import SwapRequestModal from "../components/SwapRequestModal";
 import UserCard from "../components/UserCard";
 import { useApp } from "../context/AppContext";
@@ -7,7 +6,6 @@ import API from "../api/axios";
 import { getPreferredUserLabel, getSecondaryUserName } from "../lib/user-display";
 
 function UsersPage() {
-  const navigate = useNavigate();
   const { currentUser, sendRequest, addToast } = useApp();
   const [query, setQuery] = useState("");
   const [skillFilter, setSkillFilter] = useState("All Skills");
@@ -23,10 +21,7 @@ function UsersPage() {
         const { data } = await API.get("/users");
         setUsersList(Array.isArray(data) ? data.filter((user) => user.role !== "admin") : []);
       } catch (error) {
-        if (error.response?.status === 401) {
-          addToast("Please login to browse users.", "warning");
-          navigate("/login");
-        } else {
+        if (!error.response || (error.response.status !== 401 && error.response.status !== 403)) {
           addToast("Unable to load users.", "error");
         }
         setUsersList([]);
@@ -36,7 +31,7 @@ function UsersPage() {
     };
 
     fetchUsers();
-  }, [addToast, navigate]);
+  }, [addToast]);
 
   const skillOptions = useMemo(() => {
     const allSkills = usersList.flatMap((user) => [
@@ -73,7 +68,6 @@ function UsersPage() {
   const handleRequest = async (targetUser) => {
     if (!currentUser) {
       addToast("Please login to send swap requests.", "warning");
-      navigate("/login");
       return;
     }
 

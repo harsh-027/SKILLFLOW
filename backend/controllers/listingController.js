@@ -10,13 +10,13 @@ const createListing = asyncHandler(async (req, res) => {
     category: req.body.category.trim(),
   });
 
-  const populated = await listing.populate("userId", "name userId avatar rating");
+  const populated = await listing.populate("userId", "name userId avatar profileImage rating");
   return res.status(201).json(populated);
 });
 
 const getActiveListings = asyncHandler(async (req, res) => {
   const listings = await SkillListing.find({ status: "active" })
-    .populate("userId", "name userId avatar rating")
+    .populate("userId", "name userId avatar profileImage rating")
     .sort({ createdAt: -1 });
 
   return res.status(200).json(listings);

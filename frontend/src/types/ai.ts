@@ -1,10 +1,3 @@
-export type AiSkillRecommendation = {
-  id: string;
-  name: string;
-  confidence: number;
-  reason: string;
-};
-
 export type AiLearningPathStep = {
   title: string;
   description: string;

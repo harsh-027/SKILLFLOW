@@ -2,9 +2,9 @@ import { ChangeEvent, FormEvent, useCallback, useEffect, useMemo, useRef, useSta
 import { Heart, ImagePlus, MessageCircle, SendHorizontal, X } from "lucide-react";
 import API from "@/api/axios";
 import { useApp } from "@/context/AppContext";
-import { getPreferredUserLabel, getUserInitials } from "@/lib/user-display";
+import { getPreferredUserLabel } from "@/lib/user-display";
 
-type BasicUser = { _id?: string; userId?: string; name?: string; avatar?: string; };
+type BasicUser = { _id?: string; userId?: string; name?: string; avatar?: string; profileImage?: string; };
 type CommunityComment = { _id: string; user: string | BasicUser; text: string; };
 type CommunityPost = {
   _id: string;
@@ -186,7 +186,7 @@ export default function CommunityPage() {
         <div className="community-post-list">
           {loadingPosts ? (
             Array.from({ length: 3 }).map((_, index) => (
-              <div className="card" key={index}>
+              <div className="glass-card card" key={index}>
                 <p className="muted">Loading post...</p>
               </div>
             ))
@@ -228,30 +228,12 @@ export default function CommunityPage() {
                           isCurrentUser ? "flex-row-reverse text-right" : "flex-row"
                         }`}
                       >
-                        {resolvedAuthor?.avatar ? (
                           <img
-                            src={resolvedAuthor.avatar}
+                            src={resolvedAuthor?.profileImage || resolvedAuthor?.avatar || "/assets/default-profile.png"}
                             alt={getPreferredUserLabel(resolvedAuthor)}
                             className="w-8 h-8 rounded-full"
                             style={{ width: "32px", height: "32px", objectFit: "cover", flexShrink: 0 }}
                           />
-                        ) : (
-                          <div
-                            className="w-8 h-8 rounded-full flex-center"
-                            style={{
-                              width: "32px",
-                              height: "32px",
-                              justifyContent: "center",
-                              background: "linear-gradient(135deg, var(--accent-gradient-start), var(--accent-gradient-end))",
-                              color: "var(--accent-contrast)",
-                              fontSize: "12px",
-                              fontWeight: 700,
-                              flexShrink: 0,
-                            }}
-                          >
-                            {getUserInitials(resolvedAuthor)}
-                          </div>
-                        )}
                         <div style={{ flex: 1, textAlign: isCurrentUser ? "right" : "left" }}>
                           <p className="text-sm font-semibold">{getPreferredUserLabel(resolvedAuthor)}</p>
                           <p className="text-xs opacity-60">{formatDate(post.createdAt)}</p>
@@ -373,14 +355,14 @@ export default function CommunityPage() {
               })
             : null}
           {!loadingPosts && !sortedPosts.length ? (
-            <div className="card community-empty-card">
+            <div className="glass-card card community-empty-card">
               <p className="muted">No posts yet.</p>
             </div>
           ) : null}
         </div>
         {currentUser ? (
           <div className="community-composer-wrap community-composer-wrap-bottom">
-            <form onSubmit={handleSubmit} className="community-composer">
+            <form onSubmit={handleSubmit} className="glass-card community-composer">
               <input
                 ref={composerFileRef}
                 type="file"

@@ -1,4 +1,6 @@
 import API from "../api/axios";
+import { AUTH_SESSION_EXPIRED_EVENT } from "../api/axios";
+import { getTokenExpiresAt, isTokenExpired } from "@/lib/auth-session";
 import {
   createContext,
   useCallback,
@@ -21,6 +23,8 @@ export interface User {
   location?: string;
   avatar?: string;
   banner?: string;
+  profileImage?: string;
+  bannerImage?: string;
   skillsOffered: string[];
   skillsWanted: string[];
   rating: number;
@@ -150,10 +154,32 @@ export function AppProvider({ children }: { children: ReactNode }) {
     window.localStorage.setItem("token", token);
   }, []);
 
+  const removeToast = useCallback((toastId: string) => {
+    setToasts((prev) => prev.filter((toast) => toast.id !== toastId));
+  }, []);
+
+  const addToast = useCallback(
+    (message: string, type: string = "info") => {
+      const toastId = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+      setToasts((prev) => [...prev, { id: toastId, message, type }]);
+      window.setTimeout(() => removeToast(toastId), 3200);
+    },
+    [removeToast]
+  );
+
   const refreshCurrentUser = useCallback(async () => {
-    if (!getStoredToken()) {
+    const token = getStoredToken();
+
+    if (!token) {
       setCurrentUser(null);
       persistCurrentUser(null);
+      return null;
+    }
+
+    if (isTokenExpired(token)) {
+      setCurrentUser(null);
+      persistCurrentUser(null);
+      persistToken(null);
       return null;
     }
 
@@ -162,13 +188,28 @@ export function AppProvider({ children }: { children: ReactNode }) {
       setCurrentUser(data);
       persistCurrentUser(data);
       return data;
-    } catch (error) {
-      setCurrentUser(null);
-      persistCurrentUser(null);
-      persistToken(null);
+    } catch (error: any) {
+      if (error.response?.status === 401 || error.response?.status === 403) {
+        setCurrentUser(null);
+        persistCurrentUser(null);
+        persistToken(null);
+      }
       return null;
     }
   }, [persistCurrentUser, persistToken]);
+
+  const clearSession = useCallback(
+    (message?: string) => {
+      setCurrentUser(null);
+      persistCurrentUser(null);
+      persistToken(null);
+
+      if (message) {
+        addToast(message, "warning");
+      }
+    },
+    [addToast, persistCurrentUser, persistToken]
+  );
 
   useEffect(() => {
     const loadData = async () => {
@@ -206,6 +247,35 @@ export function AppProvider({ children }: { children: ReactNode }) {
     loadData();
   }, [refreshCurrentUser]);
 
+  useEffect(() => {
+    const handleSessionExpired = (event: Event) => {
+      const message =
+        event instanceof CustomEvent && typeof event.detail?.message === "string"
+          ? event.detail.message
+          : "Your session has expired. Please sign in again.";
+
+      clearSession(message);
+    };
+
+    window.addEventListener(AUTH_SESSION_EXPIRED_EVENT, handleSessionExpired);
+    return () => window.removeEventListener(AUTH_SESSION_EXPIRED_EVENT, handleSessionExpired);
+  }, [clearSession]);
+
+  useEffect(() => {
+    const token = getStoredToken();
+    const expiresAt = getTokenExpiresAt(token);
+    if (!expiresAt) {
+      return;
+    }
+
+    const timeoutId = window.setTimeout(
+      () => clearSession("Your session has expired. Please sign in again."),
+      Math.max(expiresAt - Date.now(), 0)
+    );
+
+    return () => window.clearTimeout(timeoutId);
+  }, [clearSession, currentUser]);
+
   const getUserById = useCallback(
     (id: string) => users.find((user) => user._id === id),
     [users]
@@ -217,19 +287,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
         (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
       ),
     [posts]
-  );
-
-  const removeToast = useCallback((toastId: string) => {
-    setToasts((prev) => prev.filter((toast) => toast.id !== toastId));
-  }, []);
-
-  const addToast = useCallback(
-    (message: string, type: string = "info") => {
-      const toastId = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
-      setToasts((prev) => [...prev, { id: toastId, message, type }]);
-      window.setTimeout(() => removeToast(toastId), 3200);
-    },
-    [removeToast]
   );
 
   const login = useCallback(
@@ -334,14 +391,24 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const updateProfile = useCallback(
     async (updates: Partial<User>) => {
-      let avatar = typeof updates.avatar === "string" ? updates.avatar : undefined;
-      if (avatar) {
-        avatar = await uploadImageIfNeeded(avatar);
+      let profileImage =
+        typeof updates.profileImage === "string"
+          ? updates.profileImage
+          : typeof updates.avatar === "string"
+            ? updates.avatar
+            : undefined;
+      if (profileImage) {
+        profileImage = await uploadImageIfNeeded(profileImage);
       }
 
-      let banner = typeof updates.banner === "string" ? updates.banner : undefined;
-      if (banner) {
-        banner = await uploadImageIfNeeded(banner);
+      let bannerImage =
+        typeof updates.bannerImage === "string"
+          ? updates.bannerImage
+          : typeof updates.banner === "string"
+            ? updates.banner
+            : undefined;
+      if (bannerImage) {
+        bannerImage = await uploadImageIfNeeded(bannerImage);
       }
 
       const payload = {
@@ -349,8 +416,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
         ...(typeof updates.name === "string" ? { name: updates.name } : {}),
         ...(typeof updates.bio === "string" ? { bio: updates.bio } : {}),
         ...(typeof updates.location === "string" ? { location: updates.location } : {}),
-        ...(typeof avatar === "string" ? { avatar } : {}),
-        ...(typeof banner === "string" ? { banner } : {}),
+        ...(typeof profileImage === "string" ? { profileImage } : {}),
+        ...(typeof bannerImage === "string" ? { bannerImage } : {}),
         ...(Array.isArray(updates.skillsOffered)
           ? { skillsOffered: updates.skillsOffered }
           : {}),

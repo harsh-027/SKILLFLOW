@@ -4,7 +4,7 @@ import { ArrowRight, ArrowUpRight, BriefcaseBusiness, Compass, Layers3, Sparkles
 import DashboardPostCard from "@/components/ui/post-card";
 import { useApp } from "@/context/AppContext";
 
-type BasicUser = { _id: string; name: string; avatar?: string; location?: string; bio?: string; skillsOffered: string[]; skillsWanted: string[]; };
+type BasicUser = { _id: string; name: string; avatar?: string; profileImage?: string; location?: string; bio?: string; skillsOffered: string[]; skillsWanted: string[]; };
 type PostItem = { _id: string; user: string | BasicUser; content?: string; image?: string; createdAt: string; likes: string[]; comments: Array<{ _id: string; user: string | BasicUser; text: string }>; };
 
 export default function DashboardPage() {
@@ -27,7 +27,7 @@ export default function DashboardPage() {
     });
   }, [sortedPosts, currentUser]);
 
-  if (bootstrapping) return <div className="grid gap-4 md:grid-cols-2"><div className="card">Loading dashboard...</div><div className="card">Loading activity...</div></div>;
+  if (bootstrapping) return <div className="grid gap-4 md:grid-cols-2"><div className="glass-card card">Loading dashboard...</div><div className="glass-card card">Loading activity...</div></div>;
   if (!currentUser) return null;
 
   const totalSkillsCount = new Set([...(currentUser.skillsOffered || []), ...(currentUser.skillsWanted || [])]).size;
@@ -65,7 +65,7 @@ export default function DashboardPage() {
     <div className="page min-w-0 dashboard-page">
       <section className="dashboard-overview-grid">
         {overviewCards.map(({ label, value, note, icon: Icon }) => (
-          <article key={label} className="dashboard-overview-card">
+          <article key={label} className="glass-card dashboard-overview-card">
             <div className="dashboard-overview-head">
               <span className="dashboard-overview-label">{label}</span>
               <div className="dashboard-overview-icon"><Icon size={16} /></div>
@@ -78,7 +78,7 @@ export default function DashboardPage() {
 
       <section className="dashboard-quick-links">
         {quickLinks.map(({ title, copy, to, icon: Icon }) => (
-          <Link key={title} to={to} className="dashboard-quick-link">
+          <Link key={title} to={to} className="glass-card dashboard-quick-link">
             <div className="dashboard-quick-link-head">
               <div className="dashboard-quick-link-icon"><Icon size={17} /></div>
               <ArrowRight size={16} />
@@ -91,7 +91,7 @@ export default function DashboardPage() {
 
       <div className="dashboard-main-grid dashboard-main-grid-single">
         <div className="dashboard-primary-column">
-          <article className="card dashboard-feed-card min-w-0">
+          <article className="glass-card card dashboard-feed-card min-w-0">
             <div className="dashboard-section-head">
               <div>
                 <div className="dashboard-kicker">Activity log</div>

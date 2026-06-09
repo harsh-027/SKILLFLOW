@@ -44,8 +44,8 @@ const createSwapRequest = async (req, res) => {
     });
 
     const populated = await swapRequest.populate([
-      { path: "sender", select: "name email avatar" },
-      { path: "receiver", select: "name email avatar" },
+      { path: "sender", select: "name email avatar profileImage" },
+      { path: "receiver", select: "name email avatar profileImage" },
     ]);
 
     return res.status(201).json(populated);

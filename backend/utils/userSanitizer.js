@@ -1,4 +1,11 @@
-const sanitizeUser = (user) => ({
+const DEFAULT_PROFILE_IMAGE = "/assets/default-profile.png";
+const DEFAULT_BANNER_IMAGE = "/assets/default-banner.png";
+
+const sanitizeUser = (user) => {
+  const profileImage = user.profileImage || user.avatar || DEFAULT_PROFILE_IMAGE;
+  const bannerImage = user.bannerImage || user.banner || DEFAULT_BANNER_IMAGE;
+
+  return ({
   _id: user._id,
   userId: user.userId,
   name: user.name,
@@ -8,8 +15,10 @@ const sanitizeUser = (user) => ({
   isVerified: Boolean(user.isVerified),
   bio: user.bio || "",
   location: user.location || "",
-  avatar: user.avatar || "",
-  banner: user.banner || "",
+  avatar: user.avatar || profileImage,
+  banner: user.banner || bannerImage,
+  profileImage,
+  bannerImage,
   skillsOffered: Array.isArray(user.skillsOffered) ? user.skillsOffered : [],
   skillsWanted: Array.isArray(user.skillsWanted) ? user.skillsWanted : [],
   interests: Array.isArray(user.interests) ? user.interests : [],
@@ -20,6 +29,7 @@ const sanitizeUser = (user) => ({
   mfaEnabled: Boolean(user.mfaEnabled),
   createdAt: user.createdAt,
   updatedAt: user.updatedAt,
-});
+  });
+};
 
-module.exports = { sanitizeUser };
+module.exports = { DEFAULT_PROFILE_IMAGE, DEFAULT_BANNER_IMAGE, sanitizeUser };

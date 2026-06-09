@@ -12,9 +12,9 @@ function UserCard({ user, currentUser, onRequest }) {
   const displayLabel = getPreferredUserLabel(user);
 
   return (
-    <article className="card user-card">
+    <article className="glass-card card user-card">
       <div className="flex-center gap-12 mb-16">
-        <img src={user.avatar} alt={displayLabel} className="profile-avatar-ring" style={{ width: "52px", height: "52px", fontSize: "18px", margin: 0 }} />
+        <img src={user.profileImage || "/assets/default-profile.png"} alt={displayLabel} className="profile-avatar-ring" style={{ width: "52px", height: "52px", fontSize: "18px", margin: 0 }} />
         <div>
           <h3 className="profile-name">{displayLabel}</h3>
           {user.name ? <p className="profile-meta">{user.name}</p> : null}
