@@ -47,13 +47,12 @@
   --text-muted: #7d7d86;
   --border-subtle: rgba(255,255,255,0.05);
   --border-card: rgba(255,255,255,0.07);
-  --surface-elevated: rgba(18,18,20,0.42);
-  --surface-overlay: rgba(255,255,255,0.055);
-  --surface-border-strong: rgba(255,255,255,0.28);
+  --surface-elevated: rgba(18,18,20,0.74);
+  --surface-overlay: rgba(255,255,255,0.03);
+  --surface-border-strong: rgba(255,255,255,0.12);
   --card-surface-bg:
-    linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0.025) 42%, rgba(255,255,255,0.015)),
-    linear-gradient(135deg, rgba(255,255,255,0.07), rgba(255,255,255,0.018)),
-    rgba(8, 8, 12, 0.24);
+    linear-gradient(180deg, rgba(255,255,255,0.075), rgba(255,255,255,0.018)),
+    linear-gradient(135deg, rgba(18, 18, 22, 0.68), rgba(8, 8, 11, 0.54));
   --header-bg: rgba(10,10,11,0.72);
   --input-placeholder: rgba(255,255,255,0.3);
   --comment-bg: rgba(255,255,255,0.025);
@@ -85,10 +84,10 @@
   --radius-lg: 16px;
   --radius-pill: 9999px;
   --shadow-red: 0 12px 28px rgba(255,255,255,0.08);
-  --shadow-card: 0 18px 46px rgba(0,0,0,0.34), 0 1px 0 rgba(255,255,255,0.05);
-  --shadow-card-strong: 0 24px 64px rgba(0,0,0,0.42), 0 1px 0 rgba(255,255,255,0.08);
-  --glass-card-border: rgba(255,255,255,0.22);
-  --glass-card-highlight: rgba(255,255,255,0.18);
+  --shadow-card: 0 14px 34px rgba(0,0,0,0.28);
+  --shadow-card-strong: 0 18px 42px rgba(0,0,0,0.34);
+  --glass-card-border: rgba(255,255,255,0.12);
+  --glass-card-highlight: rgba(255,255,255,0.1);
 }
 
 /* Base document sizing and typography for the full React mount tree. */
@@ -366,15 +365,9 @@ html.sidebar-collapsed .app-header { left: var(--sidebar-width-collapsed); }
 .dashboard-overview-card, .dashboard-quick-link, .community-composer,
 .resend-feature-card, .resend-testimonial-card, .resend-dashboard-card,
 .resend-ai-panel, .resend-ai-detail-card, .resend-review-card,
-.resend-review-empty, .landing-review-form, .footer-issue-form,
-.sidebar-user-chip {
+.resend-review-empty, .landing-review-form, .footer-issue-form {
   background: var(--card-surface-bg); border: 1px solid var(--glass-card-border); border-radius: 24px;
-  backdrop-filter: blur(30px) saturate(165%) contrast(1.05); -webkit-backdrop-filter: blur(30px) saturate(165%) contrast(1.05);
-  box-shadow:
-    var(--shadow-card),
-    inset 0 1px 0 var(--glass-card-highlight),
-    inset 0 0 0 1px rgba(255,255,255,0.045);
-  min-width: 0;
+  backdrop-filter: blur(22px) saturate(135%); -webkit-backdrop-filter: blur(22px) saturate(135%); box-shadow: var(--shadow-card), inset 0 1px 0 var(--glass-card-highlight); min-width: 0;
   transition: all 0.3s ease; position: relative; overflow: hidden;
 }
 .blur-card::before,
@@ -408,10 +401,9 @@ html.sidebar-collapsed .app-header { left: var(--sidebar-width-collapsed); }
   inset: 0;
   border-radius: inherit;
   background:
-    radial-gradient(120% 95% at 18% 0%, rgba(255,255,255,0.16), transparent 42%),
-    linear-gradient(180deg, rgba(255,255,255,0.16), rgba(255,255,255,0.035) 34%, transparent 64%),
+    linear-gradient(180deg, rgba(255,255,255,0.12), transparent 34%),
     var(--surface-overlay);
-  opacity: 0.56;
+  opacity: 0.28;
   pointer-events: none;
 }
 .card { padding: 20px; }
@@ -431,38 +423,6 @@ html.sidebar-collapsed .app-header { left: var(--sidebar-width-collapsed); }
   font-family: var(--font-primary); font-weight: 600; margin-bottom: 8px;
 }
 .card-stat-value { font-family: var(--font-mono); font-weight: 500; font-size: 48px; line-height: 1; color: var(--red-bright); letter-spacing: 2px; }
-
-/* Final material pass for surfaces with page-specific layout rules later in the file. */
-.glass-card,
-.blur-card,
-.card,
-.post-card,
-.profile-mini-card,
-.request-card,
-.modal-box,
-.auth-card,
-.dashboard-overview-card,
-.dashboard-quick-link,
-.community-composer,
-.resend-feature-card,
-.resend-testimonial-card,
-.resend-dashboard-card,
-.resend-ai-panel,
-.resend-ai-detail-card,
-.resend-review-card,
-.resend-review-empty,
-.landing-review-form,
-.footer-issue-form,
-.sidebar-user-chip {
-  background: var(--card-surface-bg) !important;
-  border: 1px solid var(--glass-card-border) !important;
-  backdrop-filter: blur(30px) saturate(165%) contrast(1.05) !important;
-  -webkit-backdrop-filter: blur(30px) saturate(165%) contrast(1.05) !important;
-  box-shadow:
-    var(--shadow-card),
-    inset 0 1px 0 var(--glass-card-highlight),
-    inset 0 0 0 1px rgba(255,255,255,0.045) !important;
-}
 
 /* Shared inputs, badges, and chip primitives used across many feature pages. */
 .input-dark {
