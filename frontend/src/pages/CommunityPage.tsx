@@ -2,7 +2,7 @@ import { ChangeEvent, FormEvent, useCallback, useEffect, useMemo, useRef, useSta
 import { Heart, ImagePlus, MessageCircle, SendHorizontal, X } from "lucide-react";
 import API from "@/api/axios";
 import { useApp } from "@/context/AppContext";
-import { getPreferredUserLabel } from "@/lib/user-display";
+import { getPreferredUserLabel, getProfileImage } from "@/lib/user-display";
 
 type BasicUser = { _id?: string; userId?: string; name?: string; avatar?: string; profileImage?: string; };
 type CommunityComment = { _id: string; user: string | BasicUser; text: string; };
@@ -229,7 +229,7 @@ export default function CommunityPage() {
                         }`}
                       >
                           <img
-                            src={resolvedAuthor?.profileImage || resolvedAuthor?.avatar || "/assets/default-profile.png"}
+                            src={getProfileImage(resolvedAuthor)}
                             alt={getPreferredUserLabel(resolvedAuthor)}
                             className="w-8 h-8 rounded-full"
                             style={{ width: "32px", height: "32px", objectFit: "cover", flexShrink: 0 }}

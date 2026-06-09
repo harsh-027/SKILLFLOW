@@ -17,7 +17,7 @@ import {
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { useApp } from "@/context/AppContext";
 import { isDashboardShellPath } from "@/lib/navigation";
-import { getPreferredUserLabel, getUserInitials } from "@/lib/user-display";
+import { getPreferredUserLabel, getProfileImage, getUserInitials } from "@/lib/user-display";
 import { cn } from "@/lib/utils";
 
 type NavItem = {
@@ -77,7 +77,7 @@ export default function SiteNavbar() {
 
   useEffect(() => {
     setAvatarFailed(false);
-  }, [currentUser?.profileImage, currentUser?._id]);
+  }, [currentUser?.profileImage, currentUser?.avatar, currentUser?._id]);
 
   useEffect(() => {
     if (typeof window === "undefined") {
@@ -143,7 +143,7 @@ export default function SiteNavbar() {
             >
               {currentUser && !avatarFailed ? (
                 <img
-                  src={currentUser.profileImage || "/assets/default-profile.png"}
+                  src={getProfileImage(currentUser)}
                   alt={currentUserLabel}
                   className="sidebar-user-avatar"
                   onError={() => setAvatarFailed(true)}
@@ -224,7 +224,7 @@ export default function SiteNavbar() {
               title={currentUserLabel || "View profile"}
             >
               {currentUser && !avatarFailed ? (
-                <img src={currentUser.profileImage || "/assets/default-profile.png"} alt={currentUserLabel} onError={() => setAvatarFailed(true)} />
+                <img src={getProfileImage(currentUser)} alt={currentUserLabel} onError={() => setAvatarFailed(true)} />
               ) : (
                 <span>{getUserInitials(currentUser)}</span>
               )}

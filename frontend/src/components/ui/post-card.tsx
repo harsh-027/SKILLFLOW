@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { Heart, MessageCircle, SendHorizontal } from "lucide-react";
 import TrashSolidIcon from "@/components/ui/trash-solid-icon";
-import { getPreferredUserLabel } from "@/lib/user-display";
+import { getPreferredUserLabel, getProfileImage } from "@/lib/user-display";
 
 type BasicUser = { _id?: string; userId?: string; name?: string; avatar?: string; profileImage?: string; };
 type PostComment = { _id: string; user: string | BasicUser; text: string; };
@@ -26,7 +26,7 @@ export default function DashboardPostCard({ post, author, currentUser, getUserBy
     <article className="glass-card post-card">
       <div className="flex-between gap-12" style={{ alignItems: "flex-start" }}>
         <div className="flex-center gap-12">
-          <img src={resolvedAuthor?.profileImage || resolvedAuthor?.avatar || "/assets/default-profile.png"} alt={getPreferredUserLabel(resolvedAuthor)} className="profile-avatar-ring" style={{ width: "42px", height: "42px", fontSize: "16px", margin: 0 }} />
+          <img src={getProfileImage(resolvedAuthor)} alt={getPreferredUserLabel(resolvedAuthor)} className="profile-avatar-ring" style={{ width: "42px", height: "42px", fontSize: "16px", margin: 0 }} />
           <div>
             <h4 className="post-card-author">{getPreferredUserLabel(resolvedAuthor)}</h4>
             <p className="post-card-date">{formatDate(post.createdAt)}</p>

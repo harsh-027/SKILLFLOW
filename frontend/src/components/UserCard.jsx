@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { getPreferredUserLabel } from "../lib/user-display";
+import { getPreferredUserLabel, getProfileImage } from "../lib/user-display";
 
 function SkillSet({ title, values }) {
   return <div><p className="meta-title">{title}</p><div className="skill-list">{values.map((value) => <span className="skill-tag" key={`${title}-${value}`}>{value}</span>)}</div></div>;
@@ -14,7 +14,7 @@ function UserCard({ user, currentUser, onRequest }) {
   return (
     <article className="glass-card card user-card">
       <div className="flex-center gap-12 mb-16">
-        <img src={user.profileImage || "/assets/default-profile.png"} alt={displayLabel} className="profile-avatar-ring" style={{ width: "52px", height: "52px", fontSize: "18px", margin: 0 }} />
+        <img src={getProfileImage(user)} alt={displayLabel} className="profile-avatar-ring" style={{ width: "52px", height: "52px", fontSize: "18px", margin: 0 }} />
         <div>
           <h3 className="profile-name">{displayLabel}</h3>
           {user.name ? <p className="profile-meta">{user.name}</p> : null}

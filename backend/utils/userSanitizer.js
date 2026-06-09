@@ -1,9 +1,21 @@
 const DEFAULT_PROFILE_IMAGE = "/assets/default-profile.png";
 const DEFAULT_BANNER_IMAGE = "/assets/default-banner.png";
 
+const resolveImage = (primary, legacy, fallback) => {
+  if (primary && primary !== fallback) {
+    return primary;
+  }
+
+  if (legacy && legacy !== fallback) {
+    return legacy;
+  }
+
+  return fallback;
+};
+
 const sanitizeUser = (user) => {
-  const profileImage = user.profileImage || user.avatar || DEFAULT_PROFILE_IMAGE;
-  const bannerImage = user.bannerImage || user.banner || DEFAULT_BANNER_IMAGE;
+  const profileImage = resolveImage(user.profileImage, user.avatar, DEFAULT_PROFILE_IMAGE);
+  const bannerImage = resolveImage(user.bannerImage, user.banner, DEFAULT_BANNER_IMAGE);
 
   return ({
   _id: user._id,

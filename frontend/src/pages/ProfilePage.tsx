@@ -5,7 +5,7 @@ import API from "../api/axios";
 import SkillTagInput from "../components/SkillTagInput";
 import SwapRequestModal from "../components/SwapRequestModal";
 import { type User, useApp } from "../context/AppContext";
-import { getPreferredUserLabel, getSecondaryUserName } from "../lib/user-display";
+import { getBannerImage, getPreferredUserLabel, getProfileImage, getSecondaryUserName } from "../lib/user-display";
 
 type Draft = {
   name: string;
@@ -45,8 +45,8 @@ const createDraftFromUser = (user: ProfileUser): Draft => ({
   name: user.name || "",
   bio: user.bio || "",
   location: user.location || "",
-  profileImage: user.profileImage || user.avatar || "",
-  bannerImage: user.bannerImage || user.banner || "",
+  profileImage: getProfileImage(user),
+  bannerImage: getBannerImage(user),
   skillsOffered: [...(user.skillsOffered || [])],
   skillsWanted: [...(user.skillsWanted || [])],
 });
@@ -200,8 +200,8 @@ function ProfilePage() {
         name: draft.name || profileUser.name,
         bio: draft.bio || profileUser.bio,
         location: draft.location || profileUser.location,
-        profileImage: draft.profileImage || profileUser.profileImage,
-        bannerImage: draft.bannerImage || profileUser.bannerImage,
+        profileImage: draft.profileImage || getProfileImage(profileUser),
+        bannerImage: draft.bannerImage || getBannerImage(profileUser),
         skillsOffered: draft.skillsOffered?.length ? draft.skillsOffered : profileUser.skillsOffered,
         skillsWanted: draft.skillsWanted?.length ? draft.skillsWanted : profileUser.skillsWanted,
       }
@@ -227,7 +227,7 @@ function ProfilePage() {
               style={
                 displayProfile.bannerImage
                   ? {
-                      backgroundImage: `linear-gradient(180deg, rgba(0,0,0,0.18), rgba(23,23,23,0.92)), url(${displayProfile.bannerImage || "/assets/default-banner.png"})`,
+                      backgroundImage: `linear-gradient(180deg, rgba(0,0,0,0.18), rgba(23,23,23,0.92)), url(${getBannerImage(displayProfile)})`,
                       backgroundSize: "cover",
                       backgroundPosition: "center",
                     }
@@ -272,7 +272,7 @@ function ProfilePage() {
                     </svg>
                     <div className="profile-avatar-ring profile-showcase-avatar-frame">
                       <img
-                        src={displayProfile.profileImage || "/assets/default-profile.png"}
+                        src={getProfileImage(displayProfile)}
                         alt={preferredProfileLabel}
                         className="profile-showcase-avatar"
                       />

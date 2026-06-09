@@ -1,7 +1,34 @@
 type UserLike = {
   userId?: string;
   name?: string;
+  avatar?: string;
+  banner?: string;
+  profileImage?: string;
+  bannerImage?: string;
 };
+
+export const DEFAULT_PROFILE_IMAGE = "/assets/default-profile.png";
+export const DEFAULT_BANNER_IMAGE = "/assets/default-banner.png";
+
+function resolveImage(primary: string | undefined, legacy: string | undefined, fallback: string): string {
+  if (primary && primary !== fallback) {
+    return primary;
+  }
+
+  if (legacy && legacy !== fallback) {
+    return legacy;
+  }
+
+  return fallback;
+}
+
+export function getProfileImage(user?: UserLike | null): string {
+  return resolveImage(user?.profileImage, user?.avatar, DEFAULT_PROFILE_IMAGE);
+}
+
+export function getBannerImage(user?: UserLike | null): string {
+  return resolveImage(user?.bannerImage, user?.banner, DEFAULT_BANNER_IMAGE);
+}
 
 export function getPreferredUserLabel(user?: UserLike | null): string {
   if (user?.userId && user.userId.trim()) {
