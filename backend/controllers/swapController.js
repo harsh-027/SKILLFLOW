@@ -1,6 +1,21 @@
 const SwapRequest = require("../models/SwapRequest");
 const User = require("../models/User");
 
+const userPreviewPopulation = [
+  { path: "sender", select: "name email avatar profileImage" },
+  { path: "receiver", select: "name email avatar profileImage" },
+];
+
+const backfillLegacySkills = (swapRequest) => {
+  if (!swapRequest.skillOffered) {
+    swapRequest.skillOffered = swapRequest.offeredSkill || "Not specified";
+  }
+
+  if (!swapRequest.skillWanted) {
+    swapRequest.skillWanted = swapRequest.requestedSkill || "Not specified";
+  }
+};
+
 const createSwapRequest = async (req, res) => {
   try {
     const { receiverId, skillOffered, skillWanted } = req.body;
@@ -20,33 +35,32 @@ const createSwapRequest = async (req, res) => {
       return res.status(404).json({ message: "Receiver user not found" });
     }
 
+    const trimmedSkillOffered = skillOffered.trim();
+    const trimmedSkillWanted = skillWanted.trim();
     const existingPending = await SwapRequest.findOne({
       sender: req.user.id,
       receiver: receiverId,
-      skillOffered: skillOffered.trim(),
-      skillWanted: skillWanted.trim(),
+      skillOffered: trimmedSkillOffered,
+      skillWanted: trimmedSkillWanted,
       status: "pending",
     });
 
-    if (existingPending && existingPending.receiver.toString() === receiverId) {
+    if (existingPending) {
       return res.status(409).json({ message: "You already sent a pending request to this user" });
     }
 
     const swapRequest = await SwapRequest.create({
       sender: req.user.id,
       receiver: receiverId,
-      skillOffered: skillOffered.trim(),
-      skillWanted: skillWanted.trim(),
+      skillOffered: trimmedSkillOffered,
+      skillWanted: trimmedSkillWanted,
       // Legacy mirrors for old UI/read paths.
-      offeredSkill: skillOffered.trim(),
-      requestedSkill: skillWanted.trim(),
+      offeredSkill: trimmedSkillOffered,
+      requestedSkill: trimmedSkillWanted,
       status: "pending",
     });
 
-    const populated = await swapRequest.populate([
-      { path: "sender", select: "name email avatar profileImage" },
-      { path: "receiver", select: "name email avatar profileImage" },
-    ]);
+    const populated = await swapRequest.populate(userPreviewPopulation);
 
     return res.status(201).json(populated);
   } catch (error) {
@@ -89,13 +103,7 @@ const acceptSwapRequest = async (req, res) => {
         .json({ message: `Cannot accept a request with status '${swapRequest.status}'` });
     }
 
-    // Backfill legacy requests that predate skillOffered/skillWanted fields.
-    if (!swapRequest.skillOffered) {
-      swapRequest.skillOffered = swapRequest.offeredSkill || "Not specified";
-    }
-    if (!swapRequest.skillWanted) {
-      swapRequest.skillWanted = swapRequest.requestedSkill || "Not specified";
-    }
+    backfillLegacySkills(swapRequest);
 
     swapRequest.status = "accepted";
     await swapRequest.save();
@@ -123,13 +131,7 @@ const rejectSwapRequest = async (req, res) => {
         .json({ message: `Cannot reject a request with status '${swapRequest.status}'` });
     }
 
-    // Backfill legacy requests that predate skillOffered/skillWanted fields.
-    if (!swapRequest.skillOffered) {
-      swapRequest.skillOffered = swapRequest.offeredSkill || "Not specified";
-    }
-    if (!swapRequest.skillWanted) {
-      swapRequest.skillWanted = swapRequest.requestedSkill || "Not specified";
-    }
+    backfillLegacySkills(swapRequest);
 
     swapRequest.status = "rejected";
     await swapRequest.save();

@@ -49,6 +49,8 @@ const defaultStats = [
   { label: "Skills", value: "0" },
   { label: "Swaps", value: "0" },
 ];
+const defaultRawStats = { builders: 0, skills: 0, swaps: 0, paths: 0, posts: 0 };
+const reviewStarIndexes = Array.from({ length: 5 }, (_, index) => index);
 
 const aiDetails = [
   {
@@ -93,7 +95,7 @@ function renderNavItem(item) {
 function LandingPage() {
   const { user, logout, currentUser } = useApp();
   const [landingStats, setLandingStats] = useState(defaultStats);
-  const [rawStats, setRawStats] = useState({ builders: 0, skills: 0, swaps: 0, paths: 0, posts: 0 });
+  const [rawStats, setRawStats] = useState(defaultRawStats);
   const [siteReviews, setSiteReviews] = useState([]);
   const [reviewForm, setReviewForm] = useState(emptyReviewForm);
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
@@ -113,7 +115,7 @@ function LandingPage() {
       .then(({ data }) => {
         if (!active) return;
         setLandingStats(Array.isArray(data.displayStats) ? data.displayStats : defaultStats);
-        setRawStats(data.stats || { builders: 0, skills: 0, swaps: 0, paths: 0, posts: 0 });
+        setRawStats(data.stats || defaultRawStats);
       })
       .catch(() => {
         if (active) {
@@ -354,7 +356,7 @@ function LandingPage() {
               {siteReviews.map((review) => (
                 <article key={review._id} className="resend-review-card">
                   <div className="resend-review-stars" aria-label={`${review.rating} out of 5 stars`}>
-                    {Array.from({ length: 5 }).map((_, index) => (
+                    {reviewStarIndexes.map((index) => (
                       <Star
                         key={`${review._id}-${index}`}
                         size={15}
@@ -408,7 +410,7 @@ function LandingPage() {
             <label>
               Rating
               <div className="landing-review-rating" role="radiogroup" aria-label="Rating">
-                {Array.from({ length: 5 }).map((_, index) => {
+                {reviewStarIndexes.map((index) => {
                   const ratingValue = index + 1;
                   const isSelected = reviewForm.rating === ratingValue;
                   const isFilled = ratingValue <= reviewForm.rating;

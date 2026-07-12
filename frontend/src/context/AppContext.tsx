@@ -1,15 +1,15 @@
-import API from "../api/axios";
-import { AUTH_SESSION_EXPIRED_EVENT } from "../api/axios";
-import { getTokenExpiresAt, isTokenExpired } from "@/lib/auth-session";
 import {
   createContext,
+  ReactNode,
   useCallback,
   useContext,
   useEffect,
   useMemo,
   useState,
-  ReactNode,
 } from "react";
+
+import API, { AUTH_SESSION_EXPIRED_EVENT } from "../api/axios";
+import { getTokenExpiresAt, isTokenExpired } from "@/lib/auth-session";
 
 export interface User {
   _id: string;
@@ -106,7 +106,7 @@ function getStoredUser(): User | null {
 
   try {
     return JSON.parse(storedUser) as User;
-  } catch (error) {
+  } catch {
     window.localStorage.removeItem("skillflow-current-user");
     return null;
   }
@@ -343,7 +343,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const logout = useCallback(async (silent: boolean = false) => {
     try {
       await API.post("/auth/logout");
-    } catch (error) {
+    } catch {
       // Clear local session state even if the token is already invalid.
     }
 
@@ -511,29 +511,53 @@ export function AppProvider({ children }: { children: ReactNode }) {
     [addToast]
   );
 
-  const value: AppContextType = {
-    users,
-    posts,
-    sortedPosts,
-    requests,
-    user: currentUser,
-    currentUser,
-    bootstrapping,
-    toasts,
-    login,
-    register,
-    logout,
-    updateProfile,
-    createPost,
-    toggleLike,
-    addComment,
-    deletePost,
-    sendRequest,
-    addToast,
-    removeToast,
-    getUserById,
-    refreshCurrentUser,
-  };
+  const value = useMemo<AppContextType>(
+    () => ({
+      users,
+      posts,
+      sortedPosts,
+      requests,
+      user: currentUser,
+      currentUser,
+      bootstrapping,
+      toasts,
+      login,
+      register,
+      logout,
+      updateProfile,
+      createPost,
+      toggleLike,
+      addComment,
+      deletePost,
+      sendRequest,
+      addToast,
+      removeToast,
+      getUserById,
+      refreshCurrentUser,
+    }),
+    [
+      addComment,
+      addToast,
+      bootstrapping,
+      createPost,
+      currentUser,
+      deletePost,
+      getUserById,
+      login,
+      logout,
+      posts,
+      refreshCurrentUser,
+      register,
+      removeToast,
+      requests,
+      sendRequest,
+      sortedPosts,
+      toasts,
+      toggleLike,
+      updateProfile,
+      users,
+    ]
+  );
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }
