@@ -1,34 +1,16 @@
 import { FormEvent, useState } from "react";
-import { MessageSquare, Send } from "lucide-react";
+import { Send } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
 import API from "@/api/axios";
 import { useApp } from "@/context/AppContext";
 
-const footerColumns = [
-  {
-    title: "Workspace",
-    links: [
-      { label: "Dashboard", to: "/home" },
-      { label: "AI Lab", to: "/ai" },
-      { label: "Community", to: "/community" },
-    ],
-  },
-  {
-    title: "Community",
-    links: [
-      { label: "People", to: "/users" },
-      { label: "Swap Requests", to: "/requests" },
-      { label: "Create Post", to: "/create-post" },
-    ],
-  },
-  {
-    title: "Account",
-    links: [
-      { label: "Log In", to: "/login" },
-      { label: "Register", to: "/register" },
-    ],
-  },
+const footerLinks = [
+  { label: "Dashboard", to: "/home" },
+  { label: "AI Lab", to: "/ai" },
+  { label: "Community", to: "/community" },
+  { label: "Privacy", to: "/privacy" },
+  { label: "Terms", to: "/terms" },
 ];
 
 function LandingFooter() {
@@ -49,10 +31,7 @@ function LandingFooter() {
   };
 
   const closeIssueModal = () => {
-    if (isSubmittingIssue) {
-      return;
-    }
-
+    if (isSubmittingIssue) return;
     setIsIssueModalOpen(false);
     setIssueText("");
   };
@@ -68,10 +47,7 @@ function LandingFooter() {
 
     try {
       setIsSubmittingIssue(true);
-      await API.post("/reports", {
-        targetType: "platform",
-        reason,
-      });
+      await API.post("/reports", { targetType: "platform", reason });
       addToast("Issue sent to admin.", "success");
       setIsIssueModalOpen(false);
       setIssueText("");
@@ -84,36 +60,31 @@ function LandingFooter() {
 
   return (
     <footer id="landing-footer" className="resend-footer">
+      <div className="landing-review-float" aria-label="Report an issue">
+        <span>Report issue</span>
+        <button type="button" onClick={openIssueModal}>
+          Report
+        </button>
+      </div>
+
       <div className="resend-footer-shell">
-        <div className="resend-footer-cta">
-          <h2>“Spotted something off? Let us know.</h2>
-          <button type="button" className="resend-button resend-button-primary" onClick={openIssueModal}>
-            Report an issue
-            <MessageSquare size={16} />
-          </button>
+        <div className="resend-footer-top">
+          <Link to="/" className="resend-footer-logo">SkillFlow</Link>
         </div>
 
         <div className="resend-footer-links">
-          {footerColumns.map((column) => (
-            <div key={column.title} className="resend-footer-column">
-              <h3>{column.title}</h3>
-              {column.links.map((link) => (
-                <Link key={link.label} to={link.to}>
-                  {link.label}
-                </Link>
-              ))}
-            </div>
+          {footerLinks.map((link) => (
+            <Link key={link.label} to={link.to}>
+              {link.label}
+            </Link>
           ))}
         </div>
 
         <div className="resend-footer-meta">
-          <div className="resend-footer-brand">
-            <span>© 2026 SkillFlow. All rights reserved.</span>
-          </div>
-
-          <Link to={currentUser ? "/home" : "/register"} className="resend-footer-brand">
-            {currentUser ? "Open workspace" : "Create account"}
-          </Link>
+          <span>© 2026 SkillFlow</span>
+          <a href="https://your-portfolio-link.com" target="_blank" rel="noreferrer" className="resend-footer-built">
+            Built by Harshit
+          </a>
         </div>
       </div>
 
@@ -161,12 +132,7 @@ function LandingFooter() {
 
 function Footer() {
   const location = useLocation();
-
-  if (location.pathname === "/") {
-    return <LandingFooter />;
-  }
-
-  return null;
+  return location.pathname === "/" ? <LandingFooter /> : null;
 }
 
 export default Footer;

@@ -3,8 +3,8 @@ import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import SplineBackground from "@/components/SplineBackground";
 import ToastContainer from "@/components/ToastContainer";
+import GridOverlay from "@/components/layout/GridOverlay";
 
 import { useApp } from "@/context/AppContext";
 import { isDashboardShellPath } from "@/lib/navigation";
@@ -198,7 +198,6 @@ function App() {
   if (isAdminRoute) {
     return (
       <div className="resend-shell min-h-screen">
-        <SplineBackground />
         <AnimatedRoutes />
         <ToastContainer />
       </div>
@@ -208,7 +207,6 @@ function App() {
   if (isDashboardShell) {
     return (
       <div className="resend-shell relative min-h-screen overflow-x-hidden">
-        <SplineBackground />
         <div className="relative z-10 app-layout">
           <Navbar />
           <div className="app-body">
@@ -225,19 +223,19 @@ function App() {
 
   return (
     <div className="resend-shell relative min-h-screen overflow-x-hidden">
-      {!isAuthRoute ? <SplineBackground /> : null}
       <div className="relative z-10 app-surface-layer">
+        {isLandingRoute ? <GridOverlay /> : null}
         {!isLandingRoute && !isAuthRoute ? <Navbar /> : null}
         <main
           className={
             isLandingRoute || isAuthRoute
-              ? "w-full p-0"
+              ? "relative z-10 w-full p-0"
               : "mx-auto w-full max-w-7xl px-4 pb-8 pt-24 sm:px-6"
           }
         >
           <AnimatedRoutes />
         </main>
-        <Footer />
+        {!isLandingRoute ? <Footer /> : null}
         <ToastContainer />
       </div>
     </div>

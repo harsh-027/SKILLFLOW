@@ -1,32 +1,11 @@
 import { ArrowLeft } from "lucide-react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import SplineBackground from "@/components/SplineBackground";
+import { DecorIcon } from "@/components/decor-icon";
 
 export default function AuthShell({ children }) {
   return (
-    <section className="auth-page">
-      <SplineBackground className="auth-spline-background" />
-      <motion.div
-        className="auth-spotlight auth-spotlight-top"
-        animate={{ x: [0, 18, 0], y: [0, -14, 0], scale: [1, 1.03, 1] }}
-        transition={{ duration: 16, repeat: Infinity, ease: "easeInOut" }}
-      />
-      <motion.div
-        className="auth-spotlight auth-spotlight-bottom"
-        animate={{ x: [0, -16, 0], y: [0, 12, 0], scale: [1, 0.98, 1] }}
-        transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
-      />
-      <motion.div
-        className="auth-orb auth-orb-left"
-        animate={{ x: [0, 12, 0], y: [0, 20, 0] }}
-        transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
-      />
-      <motion.div
-        className="auth-orb auth-orb-right"
-        animate={{ x: [0, -10, 0], y: [0, -18, 0] }}
-        transition={{ duration: 22, repeat: Infinity, ease: "easeInOut" }}
-      />
+    <section className="auth-page auth-efferd-page">
       <div className="auth-vignette" />
       <div className="auth-grain" />
 
@@ -43,12 +22,20 @@ export default function AuthShell({ children }) {
       </motion.div>
 
       <motion.div
-        className="auth-stage"
+        className="auth-stage auth-efferd-stage"
         initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
       >
-        {children}
+        <div className="auth-efferd-panel">
+          <div className="auth-efferd-line auth-efferd-line-left" />
+          <div className="auth-efferd-line auth-efferd-line-right" />
+          <div className="auth-efferd-line auth-efferd-line-top" />
+          <div className="auth-efferd-line auth-efferd-line-bottom" />
+          <DecorIcon position="top-left" />
+          <DecorIcon position="bottom-right" />
+          {children}
+        </div>
       </motion.div>
     </section>
   );
