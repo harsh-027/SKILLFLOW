@@ -82,7 +82,7 @@ function LandingFooter() {
 
         <div className="resend-footer-meta">
           <span>© 2026 SkillFlow</span>
-          <a href="https://your-portfolio-link.com" target="_blank" rel="noreferrer" className="resend-footer-built">
+          <a href="https://portfolio-sage-nine-3nthvpharo.vercel.app/" target="_blank" rel="noreferrer" className="resend-footer-built">
             Built by Harshit
           </a>
         </div>
