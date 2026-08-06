@@ -49,7 +49,7 @@ function TermsPage() {
               <p>
                 You can use SkillFlow to create an account, upload a profile image, make
                 posts and messages, upload images, and use AI features for skill
-                recommendations and learning paths.
+                recommendations and study planners.
               </p>
             </section>
 
@@ -76,7 +76,7 @@ function TermsPage() {
             <section className="legal-section">
               <h2>AI Features</h2>
               <p>
-                AI recommendations and learning paths are informational only. They may
+                AI recommendations and study planners are informational only. They may
                 not always be correct, complete, or suitable for your exact needs, so use
                 your own judgment before following them.
               </p>

@@ -7,7 +7,7 @@ import { useApp } from "@/context/AppContext";
 
 const footerLinks = [
   { label: "Dashboard", to: "/home" },
-  { label: "AI Lab", to: "/ai" },
+  { label: "Study Planner", to: "/study-planner" },
   { label: "Community", to: "/community" },
   { label: "Privacy", to: "/privacy" },
   { label: "Terms", to: "/terms" },

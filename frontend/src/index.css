@@ -957,6 +957,352 @@ textarea.input-dark { resize: vertical; min-height: 120px; }
   font-size: 13px;
 }
 
+.study-planner-page {
+  display: grid;
+  gap: 18px;
+}
+
+.study-planner-shell {
+  display: grid;
+  gap: 18px;
+}
+
+.study-hero,
+.study-stat-card,
+.study-task-card,
+.study-session-row,
+.study-progress-card,
+.study-day-column {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--glass-card-border);
+  background: var(--card-surface-bg);
+  backdrop-filter: blur(22px) saturate(135%);
+  -webkit-backdrop-filter: blur(22px) saturate(135%);
+  box-shadow: var(--shadow-card), inset 0 1px 0 var(--glass-card-highlight);
+}
+
+.study-hero {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 28px;
+  border-radius: 24px;
+}
+
+.study-hero-copy {
+  display: grid;
+  gap: 12px;
+  max-width: 740px;
+}
+
+.study-hero-copy h1 {
+  max-width: 760px;
+  color: var(--text-primary);
+  font-size: clamp(32px, 5vw, 58px);
+  line-height: 1.02;
+  letter-spacing: 0;
+}
+
+.study-hero-copy p {
+  color: var(--text-secondary);
+  font-size: 15px;
+  line-height: 1.65;
+}
+
+.study-hero-actions,
+.study-actions,
+.study-card-actions,
+.study-modal-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.study-hero-actions {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.study-stat-grid {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.study-stat-card {
+  display: grid;
+  gap: 8px;
+  min-height: 158px;
+  padding: 18px;
+  border-radius: 20px;
+}
+
+.study-stat-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 0;
+  background: transparent;
+  transition: transform 0.22s ease, background 0.22s ease, color 0.22s ease, box-shadow 0.22s ease;
+}
+
+.study-stat-card:nth-child(1) .study-stat-icon { color: #86efac; background: transparent; }
+.study-stat-card:nth-child(2) .study-stat-icon { color: #93c5fd; background: transparent; }
+.study-stat-card:nth-child(3) .study-stat-icon { color: #fdba74; background: transparent; }
+.study-stat-card:nth-child(4) .study-stat-icon { color: #c4b5fd; background: transparent; }
+
+.study-stat-card:hover .study-stat-icon,
+.study-empty-state:hover svg,
+.study-hero .learning-badge:hover svg {
+  transform: translateY(-2px) scale(1.08);
+  box-shadow: none;
+}
+
+.study-empty-state svg { color: #67e8f9; transition: transform 0.22s ease, color 0.22s ease; }
+.study-hero .learning-badge svg { color: #f0abfc; transition: transform 0.22s ease; }
+.study-view-tabs svg { color: #a7f3d0; }
+.study-card-actions svg { color: #bfdbfe; }
+.study-card-actions button:last-child svg { color: #fca5a5; }
+
+.study-layout {
+  display: grid;
+  grid-template-columns: minmax(320px, 0.78fr) minmax(0, 1.22fr);
+  gap: 22px;
+  align-items: start;
+  margin-bottom: 22px;
+}
+
+.study-task-panel {
+  position: relative;
+  z-index: 1;
+}
+
+.study-main-stack,
+.study-task-list,
+.study-form,
+.study-timeline,
+.study-day-items {
+  display: grid;
+  gap: 12px;
+}
+
+.study-form-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.study-form .input-dark {
+  min-height: 48px;
+}
+
+.study-form textarea.input-dark {
+  min-height: 84px;
+}
+
+.study-task-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  border-radius: 18px;
+}
+
+.study-task-card.complete {
+  border-color: rgba(34, 197, 94, 0.3);
+}
+
+.study-task-card strong,
+.study-session-body strong,
+.study-calendar-task strong {
+  display: block;
+  color: var(--text-primary);
+  font-size: 15px;
+}
+
+.study-task-card span,
+.study-session-body span,
+.study-session-time span,
+.study-calendar-task span,
+.study-empty-state span {
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.study-view-tabs {
+  margin-bottom: 0;
+}
+
+.study-view-tabs .tab-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.study-session-row {
+  display: grid;
+  grid-template-columns: 110px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  padding: 14px;
+  border-radius: 18px;
+}
+
+.study-session-time {
+  display: grid;
+  gap: 3px;
+}
+
+.study-session-time strong {
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+.study-priority {
+  padding: 7px 10px;
+  border-radius: var(--radius-pill);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.study-priority.high {
+  color: #fecaca;
+  border-color: rgba(248, 113, 113, 0.28);
+  background: rgba(248, 113, 113, 0.1);
+}
+
+.study-priority.medium {
+  color: #fde68a;
+  border-color: rgba(245, 158, 11, 0.28);
+  background: rgba(245, 158, 11, 0.08);
+}
+
+.study-priority.low {
+  color: #bfdbfe;
+  border-color: rgba(96, 165, 250, 0.28);
+  background: rgba(96, 165, 250, 0.08);
+}
+
+.study-calendar-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(7, minmax(148px, 1fr));
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.study-day-column {
+  min-height: 188px;
+  padding: 14px;
+  border-radius: 18px;
+}
+
+.study-calendar-task {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.035);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.study-calendar-task:hover {
+  transform: translateY(-1px);
+  border-color: var(--surface-border-strong);
+}
+
+.study-day-empty {
+  display: grid;
+  place-items: center;
+  min-height: 88px;
+  border: 1px dashed rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.study-progress-panel {
+  display: grid;
+  gap: 16px;
+  position: relative;
+  z-index: 0;
+  margin-top: 4px;
+}
+
+.study-progress-grid {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.study-progress-card {
+  padding: 16px;
+  border-radius: 18px;
+}
+
+.study-empty-state {
+  display: grid;
+  place-items: center;
+  gap: 8px;
+  min-height: 188px;
+  padding: 22px;
+  border: 1px dashed var(--border-card);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.02);
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+.study-empty-state.compact {
+  min-height: 150px;
+}
+
+.study-empty-state strong {
+  color: var(--text-primary);
+}
+
+.study-skeleton {
+  height: 74px;
+  border-radius: 18px;
+  background: linear-gradient(90deg, rgba(255,255,255,0.04), rgba(255,255,255,0.1), rgba(255,255,255,0.04));
+  background-size: 220% 100%;
+  animation: studySkeleton 1.2s ease-in-out infinite;
+}
+
+.study-ai-modal {
+  width: min(720px, calc(100vw - 32px));
+}
+
+.study-modal-head {
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.study-day-picker {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+}
+
+@keyframes studySkeleton {
+  to {
+    background-position: -220% 0;
+  }
+}
+
 @media (max-width: 1100px) {
   .dashboard-hero,
   .dashboard-main-grid,
@@ -971,6 +1317,19 @@ textarea.input-dark { resize: vertical; min-height: 120px; }
   .dashboard-sidebar {
     position: static;
     top: auto;
+  }
+
+  .study-stat-grid,
+  .study-progress-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .study-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .study-task-panel {
+    position: static;
   }
 }
 
@@ -987,6 +1346,31 @@ textarea.input-dark { resize: vertical; min-height: 120px; }
 
   .ai-path-progress {
     text-align: left;
+  }
+
+  .study-hero,
+  .study-session-row,
+  .study-task-card {
+    grid-template-columns: 1fr;
+  }
+
+  .study-hero {
+    align-items: stretch;
+  }
+
+  .study-hero-actions,
+  .study-card-actions {
+    justify-content: flex-start;
+  }
+
+  .study-stat-grid,
+  .study-progress-grid,
+  .study-form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .study-day-picker {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
 

@@ -2,6 +2,7 @@ const DASHBOARD_ROUTES = [
   "/home",
   "/dashboard",
   "/ai",
+  "/study-planner",
   "/community",
   "/users",
   "/requests",

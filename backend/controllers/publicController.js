@@ -1,7 +1,7 @@
-const LearningPath = require("../models/LearningPath");
 const Post = require("../models/Post");
 const SiteReview = require("../models/SiteReview");
 const SkillListing = require("../models/SkillListing");
+const StudyPlanner = require("../models/StudyPlanner");
 const SwapRequest = require("../models/SwapRequest");
 const User = require("../models/User");
 const asyncHandler = require("../utils/asyncHandler");
@@ -13,11 +13,11 @@ const compactNumber = (value) =>
   }).format(value);
 
 const getLandingStats = asyncHandler(async (req, res) => {
-  const [builderCount, listingCount, swapCount, pathCount, postCount, skillBuckets] = await Promise.all([
+  const [builderCount, listingCount, swapCount, plannerCount, postCount, skillBuckets] = await Promise.all([
     User.countDocuments({ isBanned: false }),
     SkillListing.countDocuments({ status: "active" }),
     SwapRequest.countDocuments({}),
-    LearningPath.countDocuments({}),
+    StudyPlanner.countDocuments({}),
     Post.countDocuments({}),
     User.aggregate([
       { $match: { isBanned: false } },
@@ -54,7 +54,7 @@ const getLandingStats = asyncHandler(async (req, res) => {
       builders: builderCount,
       skills: uniqueSkillCount,
       swaps: swapCount,
-      paths: pathCount,
+      planners: plannerCount,
       posts: postCount,
     },
     displayStats: [

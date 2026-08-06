@@ -122,11 +122,40 @@ const adminToggleValidator = [
   body("value").optional().isBoolean().withMessage("value must be a boolean."),
 ];
 
-const createLearningPathValidator = [
-  body("targetSkill")
-    .trim()
-    .isLength({ min: 2, max: 120 })
-    .withMessage("targetSkill must be between 2 and 120 characters."),
+const optionalDateField = (field) =>
+  body(field).optional({ nullable: true, checkFalsy: true }).isISO8601().withMessage(`${field} must be a valid date.`);
+
+const optionalHoursField = (field, max = 1000) =>
+  body(field).optional().isFloat({ min: 0, max }).withMessage(`${field} must be between 0 and ${max}.`);
+
+const createStudyPlannerValidator = [
+  body("title").trim().isLength({ min: 2, max: 160 }).withMessage("Title must be between 2 and 160 characters."),
+  body("subject").trim().isLength({ min: 1, max: 120 }).withMessage("Subject is required."),
+  body("description").optional().trim().isLength({ max: 1200 }).withMessage("Description must be 1200 characters or fewer."),
+  body("notes").optional().trim().isLength({ max: 1200 }).withMessage("Notes must be 1200 characters or fewer."),
+  body("priority").optional().isIn(["Low", "Medium", "High"]).withMessage("priority must be Low, Medium, or High."),
+  body("status").optional().isIn(["Pending", "In Progress", "Completed"]).withMessage("status must be Pending, In Progress, or Completed."),
+  optionalDateField("dueDate"),
+  optionalDateField("scheduledDate"),
+  body("startTime").optional({ checkFalsy: true }).matches(/^([01]\d|2[0-3]):[0-5]\d$/).withMessage("startTime must use HH:mm format."),
+  optionalHoursField("estimatedHours"),
+  optionalHoursField("actualHours"),
+  optionalHoursField("durationHours", 24),
+];
+
+const generateStudyPlannerValidator = [
+  body("examDate").isISO8601().withMessage("Exam date is required."),
+  body("subjects").custom((value) => {
+    if (Array.isArray(value)) {
+      return value.some((item) => typeof item === "string" && item.trim());
+    }
+    return typeof value === "string" && value.trim().length >= 1;
+  }).withMessage("At least one subject is required."),
+  body("currentSkillLevel").trim().isLength({ min: 2, max: 80 }).withMessage("Current skill level is required."),
+  body("hoursAvailablePerDay").isFloat({ min: 0.5, max: 16 }).withMessage("Hours available per day must be between 0.5 and 16."),
+  body("preferredStudyDays").optional().isArray({ min: 1, max: 7 }).withMessage("Choose between 1 and 7 study days."),
+  body("preferredStudyDays.*").optional().isIn(["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]),
+  body("preferredSessionLength").isFloat({ min: 0.5, max: 8 }).withMessage("Preferred session length must be between 0.5 and 8."),
 ];
 
 module.exports = {
@@ -143,5 +172,6 @@ module.exports = {
   conversationParamValidator,
   createSwapRequestValidator,
   adminToggleValidator,
-  createLearningPathValidator,
+  createStudyPlannerValidator,
+  generateStudyPlannerValidator,
 };

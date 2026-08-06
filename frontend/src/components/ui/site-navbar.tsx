@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState, type ComponentType } from "react";
 import {
   Compass,
+  CalendarCheck2,
   LayoutDashboard,
   LogIn,
   LogOut,
@@ -10,7 +11,6 @@ import {
   PanelLeftOpen,
   PlusSquare,
   Search,
-  Sparkles,
   Users,
   X,
 } from "lucide-react";
@@ -33,7 +33,7 @@ const sharedLinks: NavItem[] = [
 
 const privateLinks: NavItem[] = [
   { to: "/home", label: "Dashboard", icon: LayoutDashboard },
-  { to: "/ai", label: "AI Lab", icon: Sparkles },
+  { to: "/study-planner", label: "Study Planner", icon: CalendarCheck2 },
   { to: "/requests", label: "Requests", icon: Compass },
   { to: "/create-post", label: "Create Post", icon: PlusSquare },
 ];

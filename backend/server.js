@@ -71,7 +71,7 @@ const mountApiRoutes = (basePath) => {
   app.use(`${basePath}/reviews`, require("./routes/reviewRoutes"));
   app.use(`${basePath}/reports`, require("./routes/reportRoutes"));
   app.use(`${basePath}/admin`, require("./routes/adminRoutes"));
-  app.use(`${basePath}/ai`, require("./routes/ai"));
+  app.use(`${basePath}/study-planner`, require("./routes/studyPlannerRoutes"));
 };
 
 mountApiRoutes("/api/v1");

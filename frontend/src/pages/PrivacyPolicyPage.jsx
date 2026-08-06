@@ -8,7 +8,7 @@ const collectedItems = [
   "Profile image",
   "Posts and messages you create",
   "Images you upload in posts or messages",
-  "AI prompts used for recommendations and learning paths",
+  "AI prompts used for recommendations and study planners",
 ];
 
 const serviceItems = [
@@ -20,7 +20,7 @@ const serviceItems = [
   {
     icon: Sparkles,
     title: "Groq API",
-    text: "AI prompts may be sent to Groq so SkillFlow can generate skill recommendations and learning paths.",
+    text: "AI prompts may be sent to Groq so SkillFlow can generate skill recommendations and study planners.",
   },
   {
     icon: Mail,
@@ -71,7 +71,7 @@ function PrivacyPolicyPage() {
               <p>
                 We use this information to create accounts, show profiles, publish posts
                 and messages, send reset emails, and provide AI features such as skill
-                recommendations and learning paths.
+                recommendations and study planners.
               </p>
             </section>
 
@@ -97,7 +97,7 @@ function PrivacyPolicyPage() {
               <h2>AI Features</h2>
               <p>
                 SkillFlow uses the Groq API for AI features. When you enter prompts for
-                skill recommendations or learning path generation, that text may be
+                skill recommendations or study planner generation, that text may be
                 processed through Groq to create a response.
               </p>
               <p>

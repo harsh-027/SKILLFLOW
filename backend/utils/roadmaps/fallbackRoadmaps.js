@@ -141,7 +141,7 @@ const FALLBACK_ROADMAPS = {
           },
           {
             title: "Specialization Layer",
-            description: "Deepen into FastAPI, data engineering, or machine learning paths.",
+            description: "Deepen into FastAPI, data engineering, or machine learning tracks.",
             duration: "3 Weeks",
             difficulty: "Advanced",
           },

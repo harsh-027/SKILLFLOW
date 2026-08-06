@@ -17,7 +17,7 @@ const ResetPasswordPage = lazy(() => import("@/pages/ResetPasswordPage"));
 const PrivacyPolicyPage = lazy(() => import("@/pages/PrivacyPolicyPage"));
 const TermsPage = lazy(() => import("@/pages/TermsPage"));
 const DashboardPage = lazy(() => import("@/pages/DashboardPage"));
-const AiPage = lazy(() => import("@/pages/AiPage"));
+const StudyPlannerPage = lazy(() => import("@/pages/StudyPlannerPage"));
 const CommunityPage = lazy(() => import("@/pages/CommunityPage"));
 const UsersPage = lazy(() => import("@/pages/UsersPage"));
 const RequestsPage = lazy(() => import("@/pages/RequestsPage"));
@@ -95,7 +95,15 @@ function AnimatedRoutes() {
             path="/ai"
             element={
               <ProtectedRoute>
-                <AiPage />
+                <StudyPlannerPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/study-planner"
+            element={
+              <ProtectedRoute>
+                <StudyPlannerPage />
               </ProtectedRoute>
             }
           />
