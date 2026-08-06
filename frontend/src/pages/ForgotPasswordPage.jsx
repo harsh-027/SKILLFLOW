@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowLeft, LoaderCircle } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { motion } from "framer-motion";
 
 import API from "../api/axios";
+import { InlineLoadingIndicator } from "@/components/LoadingIndicator";
 import { useApp } from "../context/AppContext";
 import AuthShell from "@/components/auth/AuthShell";
 
@@ -72,10 +73,7 @@ function ForgotPasswordPage() {
 
           <button type="submit" className="btn-red auth-submit" disabled={submitting}>
             {submitting ? (
-              <>
-                <LoaderCircle size={16} className="spin-icon" />
-                Sending link...
-              </>
+              <InlineLoadingIndicator label="Sending link..." />
             ) : (
               "Send reset link"
             )}

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import API from "../api/axios";
 import { useApp } from "../context/AppContext";
+import LoadingIndicator from "@/components/LoadingIndicator";
 import TrashSolidIcon from "../components/ui/trash-solid-icon";
 import { getPreferredUserLabel } from "../lib/user-display";
 
@@ -109,12 +110,8 @@ function RequestsPage() {
       </div>
       <div>
         {loading ? (
-          <div style={{ display: "grid", gap: "12px" }}>
-            {Array.from({ length: 4 }).map((_, index) => (
-              <div className="card" key={index}>
-                <p className="muted">Loading request...</p>
-              </div>
-            ))}
+          <div className="card">
+            <LoadingIndicator label="Loading requests..." />
           </div>
         ) : requests.length ? requests.map((request) => <RequestCard key={request._id} request={request} currentTab={activeTab} currentUserId={currentUser?._id} onRespond={(status) => handleRespond(request._id, status)} onDelete={() => handleDelete(request._id)} />) : <div className="card"><p className="muted">No requests in this tab yet.</p></div>}
       </div>

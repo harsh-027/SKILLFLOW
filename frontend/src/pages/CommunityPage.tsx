@@ -1,6 +1,7 @@
 import { ChangeEvent, FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Heart, ImagePlus, MessageCircle, SendHorizontal, X } from "lucide-react";
 import API from "@/api/axios";
+import LoadingIndicator from "@/components/LoadingIndicator";
 import { useApp } from "@/context/AppContext";
 import { getPreferredUserLabel, getProfileImage } from "@/lib/user-display";
 
@@ -185,11 +186,9 @@ export default function CommunityPage() {
       <div className="community-feed-shell">
         <div className="community-post-list">
           {loadingPosts ? (
-            Array.from({ length: 3 }).map((_, index) => (
-              <div className="glass-card card" key={index}>
-                <p className="muted">Loading post...</p>
-              </div>
-            ))
+            <div className="glass-card card">
+              <LoadingIndicator label="Loading posts..." />
+            </div>
           ) : null}
           {!loadingPosts && sortedPosts.length
             ? sortedPosts.map((post) => {

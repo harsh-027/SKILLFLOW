@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import SwapRequestModal from "../components/SwapRequestModal";
 import UserCard from "../components/UserCard";
+import LoadingIndicator from "@/components/LoadingIndicator";
 import { useApp } from "../context/AppContext";
 import API from "../api/axios";
 import { getPreferredUserLabel, getSecondaryUserName } from "../lib/user-display";
@@ -135,12 +136,8 @@ function UsersPage() {
       </div>
 
       {loadingUsers ? (
-        <div className="user-grid">
-          {Array.from({ length: 6 }).map((_, index) => (
-            <div className="card" key={index}>
-              <p className="muted">Loading user...</p>
-            </div>
-          ))}
+        <div className="card">
+          <LoadingIndicator label="Loading users..." />
         </div>
       ) : (
         <div className="user-grid">

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 
 import API from "@/api/axios";
+import LoadingIndicator from "@/components/LoadingIndicator";
 import SectionCard from "@/components/admin/dashboard/SectionCard";
 import SkillCategoryChart from "@/components/admin/dashboard/SkillCategoryChart";
 import UserGrowthChart from "@/components/admin/dashboard/UserGrowthChart";
@@ -57,7 +58,7 @@ export default function AdminAnalyticsPage() {
   const topCategory = analytics?.skillCategories?.[0];
 
   if (loading) {
-    return <div className="loading-copy">Loading analytics overview...</div>;
+    return <LoadingIndicator label="Loading analytics overview..." className="loading-copy" />;
   }
 
   return (

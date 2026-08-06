@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import API from "../api/axios";
+import LoadingIndicator from "@/components/LoadingIndicator";
 import MessageBox from "../components/MessageBox";
 import { useApp } from "../context/AppContext";
 import { getPreferredUserLabel } from "../lib/user-display";
@@ -53,7 +54,7 @@ function Messages() {
         </header>
         {loadingConversation ? (
           <div className="card">
-            <p className="muted">Loading conversation...</p>
+            <LoadingIndicator label="Loading conversation..." />
           </div>
         ) : (
           <>

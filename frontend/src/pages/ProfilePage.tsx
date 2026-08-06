@@ -1,6 +1,7 @@
 import { type ChangeEvent, type FormEvent, useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { MapPin, PencilLine } from "lucide-react";
+import LoadingIndicator from "@/components/LoadingIndicator";
 import API from "../api/axios";
 import SkillTagInput from "../components/SkillTagInput";
 import SwapRequestModal from "../components/SwapRequestModal";
@@ -186,7 +187,7 @@ function ProfilePage() {
     }
   };
 
-  if (bootstrapping || loadingUser) return <section className="page"><div className="glass-card card">Loading profile...</div></section>;
+  if (bootstrapping || loadingUser) return <section className="page"><div className="glass-card card"><LoadingIndicator label="Loading profile..." /></div></section>;
   if (!profileUser) return <section className="page"><div className="glass-card card"><h2 className="section-title">User not found</h2><Link className="btn-outline-red" to="/users">Back to Users</Link></div></section>;
 
   const handleCancelEditing = () => {

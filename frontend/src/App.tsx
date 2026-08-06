@@ -5,6 +5,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ToastContainer from "@/components/ToastContainer";
 import GridOverlay from "@/components/layout/GridOverlay";
+import LoadingIndicator from "@/components/LoadingIndicator";
 
 import { useApp } from "@/context/AppContext";
 import { isDashboardShellPath } from "@/lib/navigation";
@@ -34,14 +35,14 @@ const AdminAnalyticsPage = lazy(() => import("@/pages/admin/AdminAnalyticsPage")
 const AdminSettingsPage = lazy(() => import("@/pages/admin/AdminSettingsPage"));
 
 function RouteFallback() {
-  return <div className="page"><div className="card">Loading...</div></div>;
+  return <div className="page"><div className="card"><LoadingIndicator /></div></div>;
 }
 
 function ProtectedRoute({ children }: { children: ReactNode }) {
   const { currentUser, bootstrapping } = useApp();
 
   if (bootstrapping) {
-    return <div className="page"><div className="card">Loading...</div></div>;
+    return <div className="page"><div className="card"><LoadingIndicator /></div></div>;
   }
 
   if (!currentUser) {
@@ -55,7 +56,7 @@ function AdminRoute({ children }: { children: ReactNode }) {
   const { currentUser, bootstrapping } = useApp();
 
   if (bootstrapping) {
-    return <div className="page"><div className="card">Loading...</div></div>;
+    return <div className="page"><div className="card"><LoadingIndicator /></div></div>;
   }
 
   if (!currentUser) {

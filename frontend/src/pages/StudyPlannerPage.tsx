@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import LoadingIndicator from "@/components/LoadingIndicator";
 import StudyPlannerPanel from "@/components/study/StudyPlannerPanel";
 import { useApp } from "@/context/AppContext";
 import {
@@ -86,7 +87,7 @@ export default function StudyPlannerPage() {
   };
 
   if (bootstrapping) {
-    return <div className="page"><div className="card">Loading study planner...</div></div>;
+    return <div className="page"><div className="card"><LoadingIndicator label="Loading study planner..." /></div></div>;
   }
 
   if (!currentUser) return null;

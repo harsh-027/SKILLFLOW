@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { ArrowUpRight, BarChart3, Flag, RefreshCw, ShieldAlert, Tags, Users } from "lucide-react";
 
 import API from "@/api/axios";
+import LoadingIndicator from "@/components/LoadingIndicator";
 import KpiCard from "@/components/admin/dashboard/KpiCard";
 import SkillCategoryChart from "@/components/admin/dashboard/SkillCategoryChart";
 import UserGrowthChart from "@/components/admin/dashboard/UserGrowthChart";
@@ -135,7 +136,7 @@ export default function AdminDashboardPage() {
   );
 
   if (loading) {
-    return <div className="loading-copy">Loading admin dashboard...</div>;
+    return <LoadingIndicator label="Loading admin dashboard..." className="loading-copy" />;
   }
 
   return (

@@ -1,9 +1,10 @@
 import { useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, Eye, EyeOff, LoaderCircle } from "lucide-react";
+import { ArrowLeft, Eye, EyeOff } from "lucide-react";
 import { motion } from "framer-motion";
 
 import API from "../api/axios";
+import { InlineLoadingIndicator } from "@/components/LoadingIndicator";
 import { useApp } from "../context/AppContext";
 import AuthShell from "@/components/auth/AuthShell";
 
@@ -182,10 +183,7 @@ function ResetPasswordPage() {
             disabled={submitting || !token}
           >
             {submitting ? (
-              <>
-                <LoaderCircle size={16} className="spin-icon" />
-                Resetting password...
-              </>
+              <InlineLoadingIndicator label="Resetting password..." />
             ) : (
               "Reset password"
             )}

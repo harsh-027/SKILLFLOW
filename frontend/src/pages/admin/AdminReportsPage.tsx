@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Flag, RefreshCw, ShieldAlert, TriangleAlert } from "lucide-react";
 import KpiCard from "@/components/admin/dashboard/KpiCard";
+import LoadingIndicator, { InlineLoadingIndicator } from "@/components/LoadingIndicator";
 import API from "@/api/axios";
 
 type ReportRow = {
@@ -92,9 +93,7 @@ export default function AdminReportsPage() {
 
   if (loading) {
     return (
-      <div className="loading-copy">
-        Loading reports queue...
-      </div>
+      <LoadingIndicator label="Loading reports queue..." className="loading-copy" />
     );
   }
 
@@ -226,7 +225,7 @@ export default function AdminReportsPage() {
                         disabled={report.status === "resolved" || resolvingId === report._id}
                         className="flex-1 rounded-full border border-emerald-400/20 bg-emerald-500/15 px-3 py-2 text-xs text-emerald-100 hover:bg-emerald-500/20 disabled:cursor-not-allowed disabled:opacity-60"
                       >
-                        {resolvingId === report._id ? "Resolving..." : "Resolve"}
+                        {resolvingId === report._id ? <InlineLoadingIndicator label="Resolving..." /> : "Resolve"}
                       </button>
                       <button className="flex-1 rounded-full border border-rose-400/20 bg-rose-500/15 px-3 py-2 text-xs text-rose-100 hover:bg-rose-500/20">
                         Escalate

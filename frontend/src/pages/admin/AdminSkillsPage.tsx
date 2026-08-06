@@ -3,6 +3,7 @@ import { Layers3, ListChecks, RefreshCw, Sparkles } from "lucide-react";
 
 import API from "@/api/axios";
 import KpiCard from "@/components/admin/dashboard/KpiCard";
+import LoadingIndicator from "@/components/LoadingIndicator";
 
 type Listing = {
   _id: string;
@@ -71,7 +72,7 @@ export default function AdminSkillsPage() {
   );
 
   if (loading) {
-    return <div className="loading-copy">Loading skills marketplace data...</div>;
+    return <LoadingIndicator label="Loading skills marketplace data..." className="loading-copy" />;
   }
 
   return (

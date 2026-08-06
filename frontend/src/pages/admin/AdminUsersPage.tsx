@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { RefreshCw, ShieldAlert, UserCheck, Users } from "lucide-react";
 import UsersTable from "@/components/admin/dashboard/UsersTable";
 import KpiCard from "@/components/admin/dashboard/KpiCard";
+import LoadingIndicator from "@/components/LoadingIndicator";
 import API from "@/api/axios";
 
 type AdminUser = {
@@ -94,9 +95,7 @@ export default function AdminUsersPage() {
 
   if (loading) {
     return (
-      <div className="loading-copy">
-        Loading user operations...
-      </div>
+      <LoadingIndicator label="Loading user operations..." className="loading-copy" />
     );
   }
 

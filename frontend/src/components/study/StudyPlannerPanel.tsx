@@ -14,6 +14,7 @@ import {
   Trash2,
   X,
 } from "lucide-react";
+import LoadingIndicator, { InlineLoadingIndicator } from "@/components/LoadingIndicator";
 import type {
   AiStudyScheduleInput,
   StudyPlannerEntry,
@@ -139,6 +140,7 @@ function StatCard({
     </motion.div>
   );
 }
+
 
 export default function StudyPlannerPanel({
   entries,
@@ -328,7 +330,7 @@ export default function StudyPlannerPanel({
             <textarea className="input-dark" value={form.notes} onChange={(event) => setForm({ ...form, notes: event.target.value })} placeholder="Notes" />
             <div className="study-actions">
               <button type="submit" className="btn-red" disabled={saving || !form.title.trim() || !form.subject.trim()}>
-                {saving ? "Saving..." : editingId ? "Save Changes" : "Add Task"}
+                {saving ? <InlineLoadingIndicator label="Saving..." /> : editingId ? "Save Changes" : "Add Task"}
               </button>
               {editingId ? (
                 <button type="button" className="btn-ghost" onClick={() => { setEditingId(null); setForm(emptyForm); }}>
@@ -349,7 +351,7 @@ export default function StudyPlannerPanel({
             </div>
             <div className="study-task-list">
               {loading ? (
-                Array.from({ length: 3 }).map((_, index) => <div key={index} className="study-skeleton" />)
+                <LoadingIndicator label="Loading tasks..." className="study-skeleton" />
               ) : todayTasks.length ? (
                 <AnimatePresence>
                   {todayTasks.map((entry) => (
@@ -502,7 +504,7 @@ export default function StudyPlannerPanel({
               <div className="study-actions">
                 <button type="submit" className="btn-red" disabled={generating || !aiForm.examDate || !aiForm.subjects.trim()}>
                   <Sparkles size={16} />
-                  {generating ? "Generating..." : "Create Editable Schedule"}
+                  {generating ? <InlineLoadingIndicator label="Generating..." /> : "Create Editable Schedule"}
                 </button>
               </div>
             </motion.form>

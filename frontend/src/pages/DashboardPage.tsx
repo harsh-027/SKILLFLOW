@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, ArrowUpRight, BriefcaseBusiness, Compass, Layers3, Sparkles, UserRoundSearch } from "lucide-react";
 import DashboardPostCard from "@/components/ui/post-card";
+import LoadingIndicator from "@/components/LoadingIndicator";
 import { useApp } from "@/context/AppContext";
 
 type BasicUser = { _id: string; name: string; avatar?: string; profileImage?: string; location?: string; bio?: string; skillsOffered: string[]; skillsWanted: string[]; };
@@ -27,7 +28,7 @@ export default function DashboardPage() {
     });
   }, [sortedPosts, currentUser]);
 
-  if (bootstrapping) return <div className="grid gap-4 md:grid-cols-2"><div className="glass-card card">Loading dashboard...</div><div className="glass-card card">Loading activity...</div></div>;
+  if (bootstrapping) return <div className="grid gap-4 md:grid-cols-2"><div className="glass-card card"><LoadingIndicator label="Loading dashboard..." /></div><div className="glass-card card"><LoadingIndicator label="Loading activity..." /></div></div>;
   if (!currentUser) return null;
 
   const totalSkillsCount = new Set([...(currentUser.skillsOffered || []), ...(currentUser.skillsWanted || [])]).size;
