@@ -311,12 +311,7 @@ html.sidebar-collapsed .app-header { left: var(--sidebar-width-collapsed); }
 .sidebar-nav-item.collapsed { justify-content: center; padding: 12px; }
 .sidebar-nav-item:hover { background: rgba(var(--accent-rgb), 0.04); color: var(--text-primary); border-color: rgba(var(--accent-rgb), 0.08); }
 .sidebar-nav-item.active { background: rgba(var(--accent-rgb), 0.06); color: var(--red-bright); border-color: rgba(var(--accent-rgb), 0.12); box-shadow: inset 2px 0 0 rgba(var(--accent-rgb), 0.8); }
-.sidebar-nav-item:nth-child(1) svg { color: var(--icon-sky); }
-.sidebar-nav-item:nth-child(2) svg { color: var(--icon-green); }
-.sidebar-nav-item:nth-child(3) svg { color: var(--icon-pink); }
-.sidebar-nav-item:nth-child(4) svg { color: var(--icon-violet); }
-.sidebar-nav-item:nth-child(5) svg { color: var(--icon-amber); }
-.sidebar-nav-item:nth-child(6) svg { color: var(--icon-cyan); }
+.sidebar-nav-item svg { color: currentColor; }
 .sidebar-bottom { padding: 12px; border-top: 1px solid var(--border-subtle); }
 .sidebar-user-chip {
   display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: var(--surface-elevated);

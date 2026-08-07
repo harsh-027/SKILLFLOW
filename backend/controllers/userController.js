@@ -1,18 +1,54 @@
 const User = require("../models/User");
 const ApiError = require("../utils/apiError");
 const asyncHandler = require("../utils/asyncHandler");
+const { getPagination, paginatedResponse } = require("../utils/pagination");
 const { sanitizeUser } = require("../utils/userSanitizer");
 
 const getAllUsers = asyncHandler(async (req, res) => {
-  const users = await User.find({ _id: { $ne: req.user.id }, role: "user" })
-    .select("-password -mfaSecret")
-    .sort({ createdAt: -1 });
+  const { page, limit, skip } = getPagination(req.query);
+  const query = { _id: { $ne: req.user.id }, role: "user" };
+  const search = typeof req.query.search === "string" ? req.query.search.trim() : "";
+  const skill = typeof req.query.skill === "string" ? req.query.skill.trim() : "";
 
-  return res.status(200).json(users.map(sanitizeUser));
+  if (search) {
+    const searchRegex = new RegExp(search.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i");
+    query.$or = [
+      { name: searchRegex },
+      { userId: searchRegex },
+      { skillsOffered: searchRegex },
+      { skillsWanted: searchRegex },
+    ];
+  }
+
+  if (skill && skill !== "All Skills") {
+    query.$and = [
+      ...(query.$and || []),
+      { $or: [{ skillsOffered: skill }, { skillsWanted: skill }] },
+    ];
+  }
+
+  const [users, totalItems] = await Promise.all([
+    User.find(query)
+    .select("-password -mfaSecret")
+    .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+    .lean(),
+    User.countDocuments(query),
+  ]);
+
+  return res.status(200).json(
+    paginatedResponse({
+      items: users.map(sanitizeUser),
+      totalItems,
+      page,
+      limit,
+    })
+  );
 });
 
 const getUserById = asyncHandler(async (req, res) => {
-  const user = await User.findById(req.params.id).select("-password -mfaSecret");
+  const user = await User.findById(req.params.id).select("-password -mfaSecret").lean();
   if (!user) {
     throw new ApiError(404, "User not found");
   }

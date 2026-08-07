@@ -3,7 +3,9 @@ import { RefreshCw, ShieldAlert, UserCheck, Users } from "lucide-react";
 import UsersTable from "@/components/admin/dashboard/UsersTable";
 import KpiCard from "@/components/admin/dashboard/KpiCard";
 import LoadingIndicator from "@/components/LoadingIndicator";
+import PaginationControls from "@/components/PaginationControls";
 import API from "@/api/axios";
+import { defaultPaginationMeta, readPaginatedItems, readPaginationMeta } from "@/lib/pagination";
 
 type AdminUser = {
   _id: string;
@@ -14,25 +16,43 @@ type AdminUser = {
   isVerified: boolean;
 };
 
+const PAGE_LIMIT = 20;
+
 export default function AdminUsersPage() {
   const [users, setUsers] = useState<AdminUser[]>([]);
+  const [pagination, setPagination] = useState(defaultPaginationMeta);
+  const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState("All Roles");
   const [statusFilter, setStatusFilter] = useState("All Status");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    setPage(1);
+  }, [roleFilter, search, statusFilter]);
+
+  useEffect(() => {
     const loadUsers = async () => {
       try {
-        const { data } = await API.get("/admin/users");
-        setUsers(Array.isArray(data) ? data : []);
+        setLoading(true);
+        const { data } = await API.get("/admin/users", {
+          params: {
+            page,
+            limit: PAGE_LIMIT,
+            ...(search.trim() ? { search: search.trim() } : {}),
+            ...(roleFilter !== "All Roles" ? { role: roleFilter } : {}),
+            ...(statusFilter !== "All Status" ? { status: statusFilter } : {}),
+          },
+        });
+        setUsers(readPaginatedItems<AdminUser>(data));
+        setPagination(readPaginationMeta(data));
       } finally {
         setLoading(false);
       }
     };
 
     loadUsers();
-  }, []);
+  }, [page, roleFilter, search, statusFilter]);
 
   const rows = useMemo(
     () =>
@@ -176,6 +196,7 @@ export default function AdminUsersPage() {
         </div>
 
         <UsersTable rows={rows} />
+        <PaginationControls meta={pagination} onPageChange={setPage} />
       </section>
     </div>
   );

@@ -81,7 +81,8 @@ const getConversation = async (req, res) => {
     })
       .populate("sender", "name avatar profileImage")
       .populate("receiver", "name avatar profileImage")
-      .sort({ createdAt: 1 });
+      .sort({ createdAt: 1 })
+      .lean();
 
     return res.status(200).json(messages);
   } catch (error) {

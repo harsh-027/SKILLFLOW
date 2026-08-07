@@ -2,37 +2,57 @@ import { useEffect, useMemo, useState } from "react";
 import SwapRequestModal from "../components/SwapRequestModal";
 import UserCard from "../components/UserCard";
 import LoadingIndicator from "@/components/LoadingIndicator";
+import PaginationControls from "@/components/PaginationControls";
 import { useApp } from "../context/AppContext";
 import API from "../api/axios";
+import { defaultPaginationMeta, readPaginatedItems, readPaginationMeta } from "@/lib/pagination";
 import { getPreferredUserLabel, getSecondaryUserName } from "../lib/user-display";
+
+const PAGE_LIMIT = 20;
 
 function UsersPage() {
   const { currentUser, sendRequest, addToast } = useApp();
   const [query, setQuery] = useState("");
   const [skillFilter, setSkillFilter] = useState("All Skills");
   const [usersList, setUsersList] = useState([]);
+  const [pagination, setPagination] = useState(defaultPaginationMeta);
+  const [page, setPage] = useState(1);
   const [loadingUsers, setLoadingUsers] = useState(true);
   const [isSwapModalOpen, setIsSwapModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [sendingSwap, setSendingSwap] = useState(false);
 
   useEffect(() => {
+    setPage(1);
+  }, [query, skillFilter]);
+
+  useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const { data } = await API.get("/users");
-        setUsersList(Array.isArray(data) ? data.filter((user) => user.role !== "admin") : []);
+        setLoadingUsers(true);
+        const { data } = await API.get("/users", {
+          params: {
+            page,
+            limit: PAGE_LIMIT,
+            ...(query.trim() ? { search: query.trim() } : {}),
+            ...(skillFilter !== "All Skills" ? { skill: skillFilter } : {}),
+          },
+        });
+        setUsersList(readPaginatedItems(data).filter((user) => user.role !== "admin"));
+        setPagination(readPaginationMeta(data));
       } catch (error) {
         if (!error.response || (error.response.status !== 401 && error.response.status !== 403)) {
           addToast("Unable to load users.", "error");
         }
         setUsersList([]);
+        setPagination(defaultPaginationMeta);
       } finally {
         setLoadingUsers(false);
       }
     };
 
     fetchUsers();
-  }, [addToast]);
+  }, [addToast, page, query, skillFilter]);
 
   const skillOptions = useMemo(() => {
     const allSkills = usersList.flatMap((user) => [
@@ -140,16 +160,20 @@ function UsersPage() {
           <LoadingIndicator label="Loading users..." />
         </div>
       ) : (
-        <div className="user-grid">
-          {filteredUsers.map((user) => (
-            <UserCard
-              key={user._id}
-              user={user}
-              currentUser={currentUser}
-              onRequest={handleRequest}
-            />
-          ))}
-        </div>
+        <>
+          <div className="user-grid">
+            {filteredUsers.map((user) => (
+              <UserCard
+                key={user._id}
+                user={user}
+                currentUser={currentUser}
+                onRequest={handleRequest}
+              />
+            ))}
+          </div>
+          {!filteredUsers.length ? <div className="card"><p className="muted">No users match the current filters.</p></div> : null}
+          <PaginationControls meta={pagination} onPageChange={setPage} />
+        </>
       )}
 
       <SwapRequestModal

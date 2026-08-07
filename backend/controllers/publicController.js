@@ -74,7 +74,7 @@ const serializeSiteReview = (review) => ({
 });
 
 const getSiteReviews = asyncHandler(async (req, res) => {
-  const reviews = await SiteReview.find({}).sort({ createdAt: -1 }).limit(12);
+  const reviews = await SiteReview.find({}).sort({ createdAt: -1 }).limit(12).lean();
   return res.status(200).json(reviews.map(serializeSiteReview));
 });
 

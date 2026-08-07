@@ -169,6 +169,8 @@ const userSchema = new mongoose.Schema(
 
 userSchema.index({ createdAt: -1 });
 userSchema.index({ resetPasswordExpires: 1 });
+userSchema.index({ role: 1, createdAt: -1 });
+userSchema.index({ lastLoginAt: -1 });
 userSchema.index({ skillsOffered: 1 });
 userSchema.index({ skillsWanted: 1 });
 userSchema.index({ interests: 1 });

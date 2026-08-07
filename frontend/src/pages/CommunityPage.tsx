@@ -2,7 +2,9 @@ import { ChangeEvent, FormEvent, useCallback, useEffect, useMemo, useRef, useSta
 import { Heart, ImagePlus, MessageCircle, SendHorizontal, X } from "lucide-react";
 import API from "@/api/axios";
 import LoadingIndicator from "@/components/LoadingIndicator";
+import PaginationControls from "@/components/PaginationControls";
 import { useApp } from "@/context/AppContext";
+import { defaultPaginationMeta, readPaginatedItems, readPaginationMeta } from "@/lib/pagination";
 import { getPreferredUserLabel, getProfileImage } from "@/lib/user-display";
 
 type BasicUser = { _id?: string; userId?: string; name?: string; avatar?: string; profileImage?: string; };
@@ -18,6 +20,7 @@ type CommunityPost = {
 };
 
 const MAX_COMPOSER_IMAGE_SIZE = 5 * 1024 * 1024;
+const PAGE_LIMIT = 20;
 
 const readFileAsDataUrl = (file: File): Promise<string> =>
   new Promise((resolve, reject) => {
@@ -43,6 +46,8 @@ export default function CommunityPage() {
   const [content, setContent] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [posts, setPosts] = useState<CommunityPost[]>([]);
+  const [pagination, setPagination] = useState(defaultPaginationMeta);
+  const [page, setPage] = useState(1);
   const [loadingPosts, setLoadingPosts] = useState(true);
   const [commentDrafts, setCommentDrafts] = useState<Record<string, string>>({});
   const [openComments, setOpenComments] = useState<Record<string, boolean>>({});
@@ -51,26 +56,30 @@ export default function CommunityPage() {
   const composerRef = useRef<HTMLTextAreaElement | null>(null);
   const composerFileRef = useRef<HTMLInputElement | null>(null);
 
-  const loadPosts = useCallback(async (showSkeleton = false) => {
+  const loadPosts = useCallback(async (showSkeleton = false, nextPage = page) => {
     try {
       if (showSkeleton) {
         setLoadingPosts(true);
       }
-      const { data } = await API.get("/posts/feed");
-      setPosts(Array.isArray(data) ? data : []);
+      const { data } = await API.get("/posts/feed", {
+        params: { page: nextPage, limit: PAGE_LIMIT },
+      });
+      setPosts(readPaginatedItems<CommunityPost>(data));
+      setPagination(readPaginationMeta(data));
     } catch {
       setPosts([]);
+      setPagination(defaultPaginationMeta);
       addToast("Unable to load the community feed.", "error");
     } finally {
       if (showSkeleton) {
         setLoadingPosts(false);
       }
     }
-  }, [addToast]);
+  }, [addToast, page]);
 
   useEffect(() => {
-    loadPosts(true);
-  }, [loadPosts]);
+    loadPosts(true, page);
+  }, [loadPosts, page]);
 
   const resizeComposer = useCallback((element: HTMLTextAreaElement | null) => {
     if (!element) return;
@@ -135,7 +144,8 @@ export default function CommunityPage() {
       });
       setContent("");
       clearSelectedImage();
-      await loadPosts(false);
+      setPage(1);
+      await loadPosts(false, 1);
     } catch {
       addToast("Unable to create post.", "error");
     } finally {
@@ -358,6 +368,7 @@ export default function CommunityPage() {
               <p className="muted">No posts yet.</p>
             </div>
           ) : null}
+          {!loadingPosts ? <PaginationControls meta={pagination} onPageChange={setPage} /> : null}
         </div>
         {currentUser ? (
           <div className="community-composer-wrap community-composer-wrap-bottom">

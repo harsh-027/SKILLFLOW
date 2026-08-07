@@ -10,6 +10,7 @@ import {
 
 import API, { AUTH_SESSION_EXPIRED_EVENT } from "../api/axios";
 import { getTokenExpiresAt, isTokenExpired } from "@/lib/auth-session";
+import { readPaginatedItems } from "@/lib/pagination";
 
 export interface User {
   _id: string;
@@ -227,15 +228,17 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
         if (usersRes.status === "fulfilled" && Array.isArray(usersRes.value.data)) {
           setUsers(usersRes.value.data);
+        } else if (usersRes.status === "fulfilled") {
+          setUsers(readPaginatedItems<User>(usersRes.value.data));
         }
 
         const ownPosts =
-          ownPostsRes.status === "fulfilled" && Array.isArray(ownPostsRes.value.data)
-            ? ownPostsRes.value.data
+          ownPostsRes.status === "fulfilled"
+            ? readPaginatedItems<any>(ownPostsRes.value.data)
             : [];
         const communityPosts =
-          communityPostsRes.status === "fulfilled" && Array.isArray(communityPostsRes.value.data)
-            ? communityPostsRes.value.data
+          communityPostsRes.status === "fulfilled"
+            ? readPaginatedItems<any>(communityPostsRes.value.data)
             : [];
 
         setPosts(mergePostsById([ownPosts, communityPosts]));

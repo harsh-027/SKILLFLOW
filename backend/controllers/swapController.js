@@ -1,5 +1,6 @@
 const SwapRequest = require("../models/SwapRequest");
 const User = require("../models/User");
+const { getPagination, paginatedResponse } = require("../utils/pagination");
 
 const userPreviewPopulation = [
   { path: "sender", select: "name email avatar profileImage" },
@@ -70,17 +71,24 @@ const createSwapRequest = async (req, res) => {
 
 const getMySwapRequests = async (req, res) => {
   try {
+    const { page, limit, skip } = getPagination(req.query);
     const query =
       req.query.type === "sent"
         ? { sender: req.user.id }
         : { receiver: req.user.id };
 
-    const requests = await SwapRequest.find(query)
+    const [requests, totalItems] = await Promise.all([
+      SwapRequest.find(query)
       .populate("sender", "name")
       .populate("receiver", "name")
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+      .lean(),
+      SwapRequest.countDocuments(query),
+    ]);
 
-    return res.status(200).json(requests);
+    return res.status(200).json(paginatedResponse({ items: requests, totalItems, page, limit }));
   } catch (error) {
     return res.status(500).json({ message: "Failed to fetch swap requests", error: error.message });
   }

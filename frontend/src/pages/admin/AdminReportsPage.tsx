@@ -2,7 +2,9 @@ import { useEffect, useMemo, useState } from "react";
 import { Flag, RefreshCw, ShieldAlert, TriangleAlert } from "lucide-react";
 import KpiCard from "@/components/admin/dashboard/KpiCard";
 import LoadingIndicator, { InlineLoadingIndicator } from "@/components/LoadingIndicator";
+import PaginationControls from "@/components/PaginationControls";
 import API from "@/api/axios";
+import { defaultPaginationMeta, readPaginatedItems, readPaginationMeta } from "@/lib/pagination";
 
 type ReportRow = {
   _id: string;
@@ -17,25 +19,42 @@ type ReportRow = {
   };
 };
 
+const PAGE_LIMIT = 20;
+
 export default function AdminReportsPage() {
   const [reports, setReports] = useState<ReportRow[]>([]);
+  const [pagination, setPagination] = useState(defaultPaginationMeta);
+  const [page, setPage] = useState(1);
   const [typeFilter, setTypeFilter] = useState("All Types");
   const [statusFilter, setStatusFilter] = useState("All Status");
   const [loading, setLoading] = useState(true);
   const [resolvingId, setResolvingId] = useState<string | null>(null);
 
   useEffect(() => {
+    setPage(1);
+  }, [statusFilter, typeFilter]);
+
+  useEffect(() => {
     const loadReports = async () => {
       try {
-        const { data } = await API.get("/admin/reports");
-        setReports(Array.isArray(data) ? data : []);
+        setLoading(true);
+        const { data } = await API.get("/admin/reports", {
+          params: {
+            page,
+            limit: PAGE_LIMIT,
+            ...(typeFilter !== "All Types" ? { type: typeFilter } : {}),
+            ...(statusFilter !== "All Status" ? { status: statusFilter } : {}),
+          },
+        });
+        setReports(readPaginatedItems<ReportRow>(data));
+        setPagination(readPaginationMeta(data));
       } finally {
         setLoading(false);
       }
     };
 
     loadReports();
-  }, []);
+  }, [page, statusFilter, typeFilter]);
 
   const summaryCards = useMemo(
     () => [
@@ -237,6 +256,7 @@ export default function AdminReportsPage() {
             ))
           )}
         </div>
+        <PaginationControls meta={pagination} onPageChange={setPage} />
       </section>
     </div>
   );

@@ -3,10 +3,13 @@ import { Link } from "react-router-dom";
 import API from "../api/axios";
 import { useApp } from "../context/AppContext";
 import LoadingIndicator from "@/components/LoadingIndicator";
+import PaginationControls from "@/components/PaginationControls";
 import TrashSolidIcon from "../components/ui/trash-solid-icon";
+import { defaultPaginationMeta, readPaginatedItems, readPaginationMeta } from "../lib/pagination";
 import { getPreferredUserLabel } from "../lib/user-display";
 
 const formatDate = (timestamp) => new Date(timestamp).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" });
+const PAGE_LIMIT = 20;
 
 function RequestCard({ request, currentTab, onRespond, onDelete, currentUserId }) {
   const sender = request.sender;
@@ -54,24 +57,32 @@ function RequestCard({ request, currentTab, onRespond, onDelete, currentUserId }
 function RequestsPage() {
   const { addToast, currentUser } = useApp();
   const [requests, setRequests] = useState([]);
+  const [pagination, setPagination] = useState(defaultPaginationMeta);
+  const [page, setPage] = useState(1);
   const [activeTab, setActiveTab] = useState("received");
   const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setPage(1);
+  }, [activeTab]);
 
   useEffect(() => {
     const fetchRequests = async () => {
       try {
         setLoading(true);
         const endpoint = activeTab === "sent" ? "/swap-requests?type=sent" : "/swap-requests";
-        const { data } = await API.get(endpoint);
-        setRequests(Array.isArray(data) ? data : []);
+        const { data } = await API.get(endpoint, { params: { page, limit: PAGE_LIMIT } });
+        setRequests(readPaginatedItems(data));
+        setPagination(readPaginationMeta(data));
       } catch (error) {
         const message = error.response?.data?.message || "Failed to load swap requests.";
         addToast(message, "error");
         setRequests([]);
+        setPagination(defaultPaginationMeta);
       } finally { setLoading(false); }
     };
     fetchRequests();
-  }, [activeTab, addToast]);
+  }, [activeTab, addToast, page]);
 
   const handleRespond = async (requestId, status) => {
     try {
@@ -111,7 +122,12 @@ function RequestsPage() {
       <div>
         {loading ? (
           <LoadingIndicator label="" className="min-h-16" />
-        ) : requests.length ? requests.map((request) => <RequestCard key={request._id} request={request} currentTab={activeTab} currentUserId={currentUser?._id} onRespond={(status) => handleRespond(request._id, status)} onDelete={() => handleDelete(request._id)} />) : <div className="card"><p className="muted">No requests in this tab yet.</p></div>}
+        ) : requests.length ? (
+          <>
+            {requests.map((request) => <RequestCard key={request._id} request={request} currentTab={activeTab} currentUserId={currentUser?._id} onRespond={(status) => handleRespond(request._id, status)} onDelete={() => handleDelete(request._id)} />)}
+            <PaginationControls meta={pagination} onPageChange={setPage} />
+          </>
+        ) : <div className="card"><p className="muted">No requests in this tab yet.</p></div>}
       </div>
     </section>
   );

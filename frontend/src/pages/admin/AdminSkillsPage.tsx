@@ -4,12 +4,7 @@ import { Layers3, ListChecks, RefreshCw, Sparkles } from "lucide-react";
 import API from "@/api/axios";
 import KpiCard from "@/components/admin/dashboard/KpiCard";
 import LoadingIndicator from "@/components/LoadingIndicator";
-
-type Listing = {
-  _id: string;
-  category: string;
-  status: "active" | "removed";
-};
+import { readPaginationMeta } from "@/lib/pagination";
 
 type CategoryPoint = {
   name: string;
@@ -18,19 +13,22 @@ type CategoryPoint = {
 };
 
 export default function AdminSkillsPage() {
-  const [listings, setListings] = useState<Listing[]>([]);
+  const [totalListings, setTotalListings] = useState(0);
+  const [removedListings, setRemovedListings] = useState(0);
   const [skillCategories, setSkillCategories] = useState<CategoryPoint[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const loadSkillsData = async () => {
       try {
-        const [{ data: listingsData }, { data: analyticsData }] = await Promise.all([
-          API.get("/admin/listings"),
+        const [{ data: listingsData }, { data: removedData }, { data: analyticsData }] = await Promise.all([
+          API.get("/admin/listings", { params: { page: 1, limit: 1 } }),
+          API.get("/admin/listings", { params: { page: 1, limit: 1, status: "removed" } }),
           API.get("/admin/analytics"),
         ]);
 
-        setListings(Array.isArray(listingsData) ? listingsData : []);
+        setTotalListings(readPaginationMeta(listingsData).totalItems);
+        setRemovedListings(readPaginationMeta(removedData).totalItems);
         setSkillCategories(Array.isArray(analyticsData?.skillCategories) ? analyticsData.skillCategories : []);
       } finally {
         setLoading(false);
@@ -40,15 +38,14 @@ export default function AdminSkillsPage() {
     loadSkillsData();
   }, []);
 
-  const activeListings = listings.filter((listing) => listing.status === "active");
-  const removedListings = listings.filter((listing) => listing.status === "removed");
+  const activeListings = Math.max(totalListings - removedListings, 0);
   const topCategory = skillCategories[0];
 
   const kpiCards = useMemo(
     () => [
       {
         label: "Live Skills",
-        value: String(activeListings.length),
+        value: String(activeListings),
         trend: String(skillCategories.length),
         helper: "active categories",
         icon: Layers3,
@@ -62,13 +59,13 @@ export default function AdminSkillsPage() {
       },
       {
         label: "Removed Listings",
-        value: String(removedListings.length),
-        trend: String(listings.length),
+        value: String(removedListings),
+        trend: String(totalListings),
         helper: "total listings reviewed",
         icon: ListChecks,
       },
     ],
-    [activeListings.length, listings.length, removedListings.length, skillCategories.length, topCategory]
+    [activeListings, removedListings, skillCategories.length, topCategory, totalListings]
   );
 
   if (loading) {

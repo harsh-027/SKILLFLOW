@@ -6,6 +6,7 @@ const Report = require("../models/Report");
 const Post = require("../models/Post");
 const ApiError = require("../utils/apiError");
 const asyncHandler = require("../utils/asyncHandler");
+const { getPagination, paginatedResponse } = require("../utils/pagination");
 const { sanitizeUser } = require("../utils/userSanitizer");
 const { recordAuditLog } = require("../utils/audit");
 
@@ -89,7 +90,7 @@ const getSkillCategoryBreakdown = async () => {
 };
 
 const recalculateUserRating = async (userId) => {
-  const reviews = await Review.find({ toUser: userId }).select("rating");
+  const reviews = await Review.find({ toUser: userId }).select("rating").lean();
   const ratingsCount = reviews.length;
   const rating =
     ratingsCount === 0
@@ -102,8 +103,46 @@ const recalculateUserRating = async (userId) => {
 };
 
 const getAllUsers = asyncHandler(async (req, res) => {
-  const users = await User.find().select("-password -mfaSecret").sort({ createdAt: -1 });
-  return res.status(200).json(users.map(sanitizeUser));
+  const { page, limit, skip } = getPagination(req.query);
+  const query = {};
+  const search = typeof req.query.search === "string" ? req.query.search.trim() : "";
+  const role = typeof req.query.role === "string" ? req.query.role.trim().toLowerCase() : "";
+  const status = typeof req.query.status === "string" ? req.query.status.trim().toLowerCase() : "";
+
+  if (search) {
+    const searchRegex = new RegExp(search.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i");
+    query.$or = [{ name: searchRegex }, { email: searchRegex }, { userId: searchRegex }, { role: searchRegex }];
+  }
+
+  if (role && role !== "all roles") {
+    query.role = role;
+  }
+
+  if (status && status !== "all status") {
+    if (status === "suspended") {
+      query.isBanned = true;
+    } else if (status === "active") {
+      query.isBanned = false;
+      query.isVerified = true;
+    } else if (status === "review") {
+      query.isBanned = false;
+      query.isVerified = false;
+    }
+  }
+
+  const [users, totalItems] = await Promise.all([
+    User.find(query).select("-password -mfaSecret").sort({ createdAt: -1 }).skip(skip).limit(limit).lean(),
+    User.countDocuments(query),
+  ]);
+
+  return res.status(200).json(
+    paginatedResponse({
+      items: users.map(sanitizeUser),
+      totalItems,
+      page,
+      limit,
+    })
+  );
 });
 
 const getDashboard = asyncHandler(async (req, res) => {
@@ -128,7 +167,7 @@ const getDashboard = asyncHandler(async (req, res) => {
       isBanned: false,
       lastLoginAt: { $gte: sevenDaysAgo },
     }),
-    User.find().select("-password -mfaSecret").sort({ createdAt: -1 }).limit(8),
+    User.find().select("-password -mfaSecret").sort({ createdAt: -1 }).limit(8).lean(),
     getRecentGrowth(User),
     getSkillCategoryBreakdown(),
   ]);
@@ -232,11 +271,25 @@ const deleteUser = asyncHandler(async (req, res) => {
 });
 
 const getAllListings = asyncHandler(async (req, res) => {
-  const listings = await SkillListing.find()
-    .populate("userId", "name userId email")
-    .sort({ createdAt: -1 });
+  const { page, limit, skip } = getPagination(req.query);
+  const query = {};
+  const status = typeof req.query.status === "string" ? req.query.status.trim().toLowerCase() : "";
 
-  return res.status(200).json(listings);
+  if (["active", "removed"].includes(status)) {
+    query.status = status;
+  }
+
+  const [listings, totalItems] = await Promise.all([
+    SkillListing.find(query)
+    .populate("userId", "name userId email")
+    .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+    .lean(),
+    SkillListing.countDocuments(query),
+  ]);
+
+  return res.status(200).json(paginatedResponse({ items: listings, totalItems, page, limit }));
 });
 
 const removeListing = asyncHandler(async (req, res) => {
@@ -252,12 +305,20 @@ const removeListing = asyncHandler(async (req, res) => {
 });
 
 const getAllExchanges = asyncHandler(async (req, res) => {
-  const exchanges = await Exchange.find()
+  const { page, limit, skip } = getPagination(req.query);
+  const query = {};
+  const [exchanges, totalItems] = await Promise.all([
+    Exchange.find(query)
     .populate("userA", "name userId email")
     .populate("userB", "name userId email")
-    .sort({ createdAt: -1 });
+    .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+    .lean(),
+    Exchange.countDocuments(query),
+  ]);
 
-  return res.status(200).json(exchanges);
+  return res.status(200).json(paginatedResponse({ items: exchanges, totalItems, page, limit }));
 });
 
 const cancelExchange = asyncHandler(async (req, res) => {
@@ -273,11 +334,30 @@ const cancelExchange = asyncHandler(async (req, res) => {
 });
 
 const getAllReports = asyncHandler(async (req, res) => {
-  const reports = await Report.find()
-    .populate("reportedBy", "name userId email")
-    .sort({ createdAt: -1 });
+  const { page, limit, skip } = getPagination(req.query);
+  const query = {};
+  const type = typeof req.query.type === "string" ? req.query.type.trim().toLowerCase() : "";
+  const status = typeof req.query.status === "string" ? req.query.status.trim().toLowerCase() : "";
 
-  return res.status(200).json(reports);
+  if (type && type !== "all types") {
+    query.targetType = type;
+  }
+
+  if (status && status !== "all status") {
+    query.status = status;
+  }
+
+  const [reports, totalItems] = await Promise.all([
+    Report.find(query)
+    .populate("reportedBy", "name userId email")
+    .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+    .lean(),
+    Report.countDocuments(query),
+  ]);
+
+  return res.status(200).json(paginatedResponse({ items: reports, totalItems, page, limit }));
 });
 
 const resolveReport = asyncHandler(async (req, res) => {

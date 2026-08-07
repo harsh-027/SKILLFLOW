@@ -45,4 +45,7 @@ const swapRequestSchema = new mongoose.Schema({
   },
 });
 
+swapRequestSchema.index({ sender: 1, receiver: 1, status: 1, createdAt: -1 });
+swapRequestSchema.index({ receiver: 1, status: 1, createdAt: -1 });
+
 module.exports = mongoose.model("SwapRequest", swapRequestSchema);
