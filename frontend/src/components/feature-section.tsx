@@ -16,7 +16,7 @@ export function FeatureSection() {
 					className={cn(
 						"relative flex flex-col items-center justify-center p-2",
 						"after:absolute after:inset-y-0 after:right-0 after:h-full after:w-px after:bg-linear-to-b after:from-foreground/6 after:via-foreground/25 after:to-foreground/6",
-						"[&_svg]:size-6 [&_svg]:text-muted-foreground",
+						"[&_svg]:size-6",
 						{
 							"after:hidden": index === features.length - 1,
 							"after:hidden after:md:block": index === 1,
@@ -42,6 +42,7 @@ const features: FeatureType[] = [
 		title: "Find Skill Partners",
 		icon: (
 			<ZapIcon
+				className="text-amber-300"
 			/>
 		),
 		description: "Match with people learning what you teach.",
@@ -50,6 +51,7 @@ const features: FeatureType[] = [
 		title: "Trusted Exchanges",
 		icon: (
 			<ShieldCheckIcon
+				className="text-emerald-300"
 			/>
 		),
 		description: "Build confidence with verified peer swaps.",
@@ -58,6 +60,7 @@ const features: FeatureType[] = [
 		title: "Guided Progress",
 		icon: (
 			<ActivityIcon
+				className="text-sky-300"
 			/>
 		),
 		description: "Follow focused paths from goal to practice.",
@@ -66,6 +69,7 @@ const features: FeatureType[] = [
 		title: "Learn Together",
 		icon: (
 			<GlobeIcon
+				className="text-fuchsia-300"
 			/>
 		),
 		description: "Grow through community posts and requests.",

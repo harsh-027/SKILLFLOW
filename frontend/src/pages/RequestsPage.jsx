@@ -110,9 +110,7 @@ function RequestsPage() {
       </div>
       <div>
         {loading ? (
-          <div className="card">
-            <LoadingIndicator label="Loading requests..." />
-          </div>
+          <LoadingIndicator label="" className="min-h-16" />
         ) : requests.length ? requests.map((request) => <RequestCard key={request._id} request={request} currentTab={activeTab} currentUserId={currentUser?._id} onRespond={(status) => handleRespond(request._id, status)} onDelete={() => handleDelete(request._id)} />) : <div className="card"><p className="muted">No requests in this tab yet.</p></div>}
       </div>
     </section>
