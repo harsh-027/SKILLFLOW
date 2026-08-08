@@ -128,7 +128,7 @@ export default function SiteNavbar() {
                   title={link.label}
                   className={({ isActive }) => cn("sidebar-nav-item", isCollapsed && "collapsed", isActive && "active")}
                 >
-                  <Icon size={18} />
+                  <Icon className="sidebar-nav-icon" size={18} />
                   {!isCollapsed ? <span>{link.label}</span> : null}
                 </NavLink>
               );
