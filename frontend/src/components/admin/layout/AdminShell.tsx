@@ -65,12 +65,11 @@ export default function AdminShell({ children }: { children: ReactNode }) {
   }, [location.pathname]);
 
   return (
-    <div className="min-h-screen overflow-hidden bg-[#03090c] text-slate-100">
-      <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_18%_12%,rgba(39,82,61,0.2),transparent_30%),radial-gradient(circle_at_84%_8%,rgba(65,86,98,0.16),transparent_28%),linear-gradient(135deg,#03090c_0%,#071013_48%,#020506_100%)]" />
-      <div className="relative mx-auto flex min-h-screen max-w-[1720px] p-3 sm:p-5 lg:p-7">
-        <div className="flex min-h-[calc(100vh-1.5rem)] w-full overflow-hidden rounded-[10px] border border-white/15 bg-[#071014]/88 shadow-[0_30px_90px_rgba(0,0,0,0.5)] backdrop-blur-xl sm:min-h-[calc(100vh-2.5rem)] lg:min-h-[calc(100vh-3.5rem)]">
+    <div className="admin-shell min-h-screen overflow-hidden bg-[var(--bg-root)] text-[var(--text-primary)]">
+      <div className="relative flex min-h-screen">
+        <div className="flex min-h-screen w-full overflow-hidden">
         <aside
-          className={`w-0 shrink-0 border-r border-white/12 bg-black/10 transition-all duration-300 md:block ${
+          className={`w-0 shrink-0 border-r border-[var(--border-card)] bg-[var(--bg-sidebar)] transition-all duration-300 md:block ${
             collapsed ? "md:w-20" : "md:w-[260px]"
           }`}
         >
@@ -90,7 +89,7 @@ export default function AdminShell({ children }: { children: ReactNode }) {
           />
 
           <main className="flex-1 overflow-auto px-4 py-5 sm:px-6 lg:px-8 lg:py-6">
-            <div className="mx-auto flex w-full max-w-[1460px] flex-col gap-5 lg:gap-6">
+            <div className="mx-auto flex w-full max-w-[1400px] flex-col gap-5 lg:gap-6">
               {children}
             </div>
           </main>

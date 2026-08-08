@@ -8244,3 +8244,29 @@ body,
     @apply font-sans;
   }
 }
+
+.admin-shell :where(h1, h2, h3, h4) {
+  line-height: 1.2;
+  letter-spacing: 0;
+  text-shadow: none;
+}
+.admin-shell h1 { font-size: 1.25rem; }
+.admin-shell h2 { font-size: 1rem; }
+.admin-shell h3 { font-size: .95rem; }
+.admin-shell .glass-card,
+.admin-shell section[class*="border-white"],
+.admin-shell div[class*="border-white"][class*="bg-white"] {
+  border-color: var(--glass-card-border) !important;
+  background: var(--card-surface-bg) !important;
+  box-shadow: var(--shadow-card), inset 0 1px 0 var(--glass-card-highlight) !important;
+}
+.admin-shell :where(.text-white) { color: var(--text-primary) !important; }
+.admin-shell :where(.text-slate-400, .text-slate-500) { color: var(--text-muted) !important; }
+.admin-shell :where(input, select) {
+  border-color: var(--border-card) !important;
+  background: var(--surface-elevated) !important;
+  color: var(--text-primary) !important;
+}
+.admin-shell :where(input::placeholder) {
+  color: var(--text-muted) !important;
+}

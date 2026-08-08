@@ -63,32 +63,32 @@ export default function AdminSidebar({
       <aside
         className={`
           fixed left-0 top-0 z-50 flex h-screen flex-col
-          border-r border-white/12 bg-[#071014]/98
+          border-r border-[var(--border-card)] bg-[var(--bg-sidebar)]
           transition-all duration-300
 
           ${collapsed ? "w-20" : "w-[260px]"}
 
-          md:static md:h-full md:translate-x-0 md:border-r-0 md:bg-transparent
+          md:static md:h-full md:translate-x-0 md:border-r-0
           ${mobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}
         `}
       >
         <div className="flex items-center justify-between px-4 py-5">
           <div className="flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-[8px] border border-white/12 bg-white/[0.06] text-lg font-black text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">
+            <div className="flex h-10 w-10 items-center justify-center rounded-[8px] border border-[var(--border-card)] bg-[var(--surface-elevated)] text-lg font-black text-[var(--text-primary)]">
               S
             </div>
 
             {!collapsed && (
               <div className="leading-tight">
-                <p className="font-serif text-2xl font-black tracking-tight text-white">SkillFlow</p>
-                <p className="text-xs text-slate-500">Admin Panel</p>
+                <p className="text-lg font-bold tracking-tight text-[var(--text-primary)]">SkillFlow</p>
+                <p className="text-xs text-[var(--text-muted)]">Admin Panel</p>
               </div>
             )}
           </div>
 
           <button
             onClick={mobileOpen ? onCloseMobile : onToggleCollapse}
-            className="hidden h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-slate-300 transition hover:bg-white/[0.08] md:flex"
+            className="hidden h-9 w-9 items-center justify-center rounded-[8px] border border-[var(--border-card)] bg-[var(--surface-elevated)] text-[var(--text-secondary)] transition hover:bg-[var(--bg-card-hover)] md:flex"
             aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
           >
             {collapsed ? (
@@ -100,7 +100,7 @@ export default function AdminSidebar({
 
           <button
             onClick={onCloseMobile}
-            className="flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] md:hidden"
+            className="flex h-9 w-9 items-center justify-center rounded-[8px] border border-[var(--border-card)] bg-[var(--surface-elevated)] md:hidden"
             aria-label="Close sidebar"
           >
             <X className="h-4 w-4" />
@@ -118,8 +118,8 @@ export default function AdminSidebar({
 
                 ${
                   isActive
-                    ? "border border-white/10 bg-white/[0.09] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]"
-                    : "border border-transparent text-slate-300 hover:border-white/8 hover:bg-white/[0.04] hover:text-white"
+                    ? "border border-white/10 bg-white/[0.06] text-white shadow-[inset_2px_0_0_rgba(255,255,255,0.8)]"
+                    : "border border-transparent text-slate-300 hover:border-white/10 hover:bg-white/[0.04] hover:text-white"
                 }
 
                 ${collapsed ? "justify-center" : ""}
@@ -131,7 +131,7 @@ export default function AdminSidebar({
                   <div
                     className={`
                       flex h-8 w-8 items-center justify-center rounded-[7px]
-                      ${isActive ? "bg-white/[0.08] text-emerald-300" : collapsed ? "bg-transparent" : "bg-white/[0.03]"}
+                      ${isActive ? "bg-white/[0.08] text-white" : collapsed ? "bg-transparent" : "bg-white/[0.03] text-slate-400"}
                     `}
                   >
                     <Icon className="h-4 w-4" />
@@ -148,7 +148,7 @@ export default function AdminSidebar({
 
         <div className="space-y-3 p-4">
           {!collapsed ? (
-            <div className="rounded-[8px] border border-white/12 bg-white/[0.035] p-4">
+            <div className="rounded-[8px] border border-white/10 bg-white/[0.035] p-4">
               <p className="text-sm font-semibold text-white">Admin Workspace</p>
               <p className="mt-2 text-xs leading-5 text-slate-400">
                 Manage users, listings, reports, and platform signals.
@@ -162,7 +162,7 @@ export default function AdminSidebar({
               ${collapsed ? "justify-center" : ""}
             `}
           >
-            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-[#b36a40] to-[#6c3225] text-sm font-bold text-white">
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-[var(--accent-gradient-start)] to-[var(--accent-gradient-end)] text-sm font-bold text-[var(--accent-contrast)]">
               {currentUser?.name?.slice(0, 2).toUpperCase() || "AD"}
             </div>
 
@@ -181,7 +181,7 @@ export default function AdminSidebar({
           <div className="grid grid-cols-2 gap-2">
             <button
               type="button"
-              className="inline-flex h-10 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-slate-300 transition hover:bg-white/[0.08] hover:text-white"
+              className="inline-flex h-10 items-center justify-center rounded-[8px] border border-white/10 bg-white/[0.04] text-slate-300 transition hover:bg-white/[0.08] hover:text-white"
               aria-label="Help center"
               title="Help center"
             >
@@ -190,7 +190,7 @@ export default function AdminSidebar({
             <button
               type="button"
               onClick={handleLogout}
-              className="inline-flex h-10 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-slate-300 transition hover:border-rose-400/20 hover:bg-rose-400/10 hover:text-rose-200"
+              className="inline-flex h-10 items-center justify-center rounded-[8px] border border-white/10 bg-white/[0.04] text-slate-300 transition hover:border-rose-400/20 hover:bg-rose-400/10 hover:text-rose-300"
               aria-label="Log out"
               title="Log out"
             >
