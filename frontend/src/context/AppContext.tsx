@@ -26,6 +26,8 @@ export interface User {
   banner?: string;
   profileImage?: string;
   bannerImage?: string;
+  createdAt?: string;
+  updatedAt?: string;
   skillsOffered: string[];
   skillsWanted: string[];
   rating: number;
@@ -52,6 +54,14 @@ function mergePostsById(postGroups: any[][]) {
   return Array.from(postsById.values());
 }
 
+function replaceUserReference(value: any, updatedUser: User) {
+  if (typeof value === "object" && value !== null && value._id === updatedUser._id) {
+    return { ...value, ...updatedUser };
+  }
+
+  return value;
+}
+
 interface AppContextType {
   users: User[];
   posts: any[];
@@ -73,7 +83,7 @@ interface AppContextType {
   }) => Promise<User>;
   logout: (silent?: boolean) => Promise<void>;
 
-  updateProfile: (updates: Partial<User>) => Promise<void>;
+  updateProfile: (updates: Partial<User>) => Promise<User>;
 
   createPost: (data: { content?: string; image?: string }) => Promise<void>;
   toggleLike: (postId: string) => Promise<void>;
@@ -437,7 +447,20 @@ export function AppProvider({ children }: { children: ReactNode }) {
       setCurrentUser(data);
       persistCurrentUser(data);
       setUsers((prev) => prev.map((user) => (user._id === data._id ? data : user)));
+      setPosts((prev) =>
+        prev.map((post) => ({
+          ...post,
+          user: replaceUserReference(post.user, data),
+          comments: Array.isArray(post.comments)
+            ? post.comments.map((comment: any) => ({
+                ...comment,
+                user: replaceUserReference(comment.user, data),
+              }))
+            : post.comments,
+        }))
+      );
       addToast("Profile updated.", "success");
+      return data;
     },
     [addToast, persistCurrentUser, uploadImageIfNeeded]
   );

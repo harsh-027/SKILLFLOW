@@ -77,7 +77,7 @@ export default function SiteNavbar() {
 
   useEffect(() => {
     setAvatarFailed(false);
-  }, [currentUser?.profileImage, currentUser?.avatar, currentUser?._id]);
+  }, [currentUser?.profileImage, currentUser?.avatar, currentUser?.updatedAt, currentUser?._id]);
 
   useEffect(() => {
     if (typeof window === "undefined") {

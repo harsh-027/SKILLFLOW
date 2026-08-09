@@ -3,7 +3,7 @@ import { Heart, MessageCircle, SendHorizontal } from "lucide-react";
 import TrashSolidIcon from "@/components/ui/trash-solid-icon";
 import { getPreferredUserLabel, getProfileImage } from "@/lib/user-display";
 
-type BasicUser = { _id?: string; userId?: string; name?: string; avatar?: string; profileImage?: string; };
+type BasicUser = { _id?: string; userId?: string; name?: string; avatar?: string; profileImage?: string; updatedAt?: string; };
 type PostComment = { _id: string; user: string | BasicUser; text: string; };
 type FeedPost = { _id: string; content?: string; image?: string; createdAt: string; user: string | BasicUser; likes: string[]; comments: PostComment[]; };
 type PostCardProps = { post: FeedPost; currentUser: { _id: string } | null; author?: BasicUser | null; getUserById: (id: string) => BasicUser | undefined; onLike: (postId: string) => void; onComment?: (postId: string, text: string) => void; onDelete?: (postId: string) => void; showCommentComposer?: boolean; };

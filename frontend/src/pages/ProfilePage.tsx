@@ -136,7 +136,7 @@ function ProfilePage() {
 
   setSaving(true);
   try {
-    await updateProfile({
+    const updatedUser = await updateProfile({
       name: draft.name.trim(),
       bio: draft.bio.trim(),
       location: draft.location.trim(),
@@ -145,20 +145,8 @@ function ProfilePage() {
       skillsOffered: draft.skillsOffered,
       skillsWanted: draft.skillsWanted,
     });
-    setProfileUser((prev: ProfileUser | null) =>
-  prev
-    ? {
-        ...prev,
-        name: draft.name.trim(),
-        bio: draft.bio.trim(),
-        location: draft.location.trim(),
-        profileImage: draft.profileImage,
-        bannerImage: draft.bannerImage,
-        skillsOffered: draft.skillsOffered,
-        skillsWanted: draft.skillsWanted,
-      }
-    : prev
-    );
+    setProfileUser(updatedUser);
+    setDraft(createDraftFromUser(updatedUser));
       setEditing(false);
     } finally {
       setSaving(false);

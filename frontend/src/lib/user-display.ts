@@ -5,6 +5,7 @@ type UserLike = {
   banner?: string;
   profileImage?: string;
   bannerImage?: string;
+  updatedAt?: string;
 };
 
 export const DEFAULT_PROFILE_IMAGE = "/assets/default-profile.png";
@@ -22,12 +23,21 @@ function resolveImage(primary: string | undefined, legacy: string | undefined, f
   return fallback;
 }
 
+function versionImageUrl(imageUrl: string, updatedAt?: string): string {
+  if (!updatedAt || imageUrl.startsWith("data:") || imageUrl === DEFAULT_PROFILE_IMAGE || imageUrl === DEFAULT_BANNER_IMAGE) {
+    return imageUrl;
+  }
+
+  const separator = imageUrl.includes("?") ? "&" : "?";
+  return `${imageUrl}${separator}v=${encodeURIComponent(updatedAt)}`;
+}
+
 export function getProfileImage(user?: UserLike | null): string {
-  return resolveImage(user?.profileImage, user?.avatar, DEFAULT_PROFILE_IMAGE);
+  return versionImageUrl(resolveImage(user?.profileImage, user?.avatar, DEFAULT_PROFILE_IMAGE), user?.updatedAt);
 }
 
 export function getBannerImage(user?: UserLike | null): string {
-  return resolveImage(user?.bannerImage, user?.banner, DEFAULT_BANNER_IMAGE);
+  return versionImageUrl(resolveImage(user?.bannerImage, user?.banner, DEFAULT_BANNER_IMAGE), user?.updatedAt);
 }
 
 export function getPreferredUserLabel(user?: UserLike | null): string {

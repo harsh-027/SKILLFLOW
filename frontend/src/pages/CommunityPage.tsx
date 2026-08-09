@@ -7,7 +7,7 @@ import { useApp } from "@/context/AppContext";
 import { defaultPaginationMeta, readPaginatedItems, readPaginationMeta } from "@/lib/pagination";
 import { getPreferredUserLabel, getProfileImage } from "@/lib/user-display";
 
-type BasicUser = { _id?: string; userId?: string; name?: string; avatar?: string; profileImage?: string; };
+type BasicUser = { _id?: string; userId?: string; name?: string; avatar?: string; profileImage?: string; updatedAt?: string; };
 type CommunityComment = { _id: string; user: string | BasicUser; text: string; };
 type CommunityPost = {
   _id: string;
