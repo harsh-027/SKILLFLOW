@@ -118,11 +118,13 @@ button:disabled, input:disabled, textarea:disabled, select:disabled { cursor: no
 .btn-outline-red, .secondary-button { background: var(--color-surface) !important; color: var(--color-text) !important; border: 1px solid var(--color-border) !important; }
 .btn-red, .btn-outline-red, .btn-ghost, .resend-button, .primary-button, .secondary-button { min-height: 36px; padding: 7px 12px; border-radius: 3px; }
 .btn-ghost { background: var(--color-surface) !important; color: var(--color-text) !important; border: 1px solid var(--color-border) !important; }
-.btn-red:hover, .resend-button-primary:hover { background: var(--color-red-hover) !important; }
 .btn-red, .btn-outline-red, .btn-ghost, .resend-button, .primary-button, .secondary-button,
 button, a { transition: color var(--motion-fast) ease, background-color var(--motion-fast) ease,
-  border-color var(--motion-fast) ease, transform var(--motion-fast) var(--motion-ease-out); }
-.btn-red:active, .btn-outline-red:active, .btn-ghost:active, button:active { transform: scale(.98); }
+  border-color var(--motion-fast) ease, box-shadow var(--motion-fast) ease,
+  transform var(--motion-fast) var(--motion-ease-out); }
+button:not(:disabled):hover, a:hover { filter: brightness(.97); }
+button:not(:disabled):active, a:active { transform: scale(.97); }
+button:focus-visible, a:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }
 
 .input-dark, input, textarea, select { background: var(--color-surface) !important; color: var(--color-text) !important; border: 1px solid var(--color-border); border-radius: var(--radius-sm); }
 .input-dark { width: 100%; min-height: 38px; padding: 8px 10px; }
@@ -251,7 +253,7 @@ input::placeholder, textarea::placeholder { color: #777; }
 .landing-header { position: sticky; top: 0; z-index: 20; background: rgba(247, 247, 247, .94); border-bottom: 1px solid var(--color-border); }
 .landing-header-inner { width: min(1120px, calc(100% - 48px)); min-height: 68px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: var(--space-6); }
 .landing-brand { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; font-weight: 700; letter-spacing: -.03em; }
-.landing-brand-mark { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: var(--color-signal-red); color: #fff; font-size: 14px; }
+.landing-brand-mark { display: block; width: 28px; height: 28px; object-fit: contain; }
 .landing-brand-name { font-size: 17px; }
 .landing-main-nav { display: flex; align-items: center; gap: var(--space-6); color: var(--color-text-secondary); font-size: 14px; }
 .landing-main-nav a, .landing-text-link { text-decoration: none; }
@@ -262,7 +264,6 @@ input::placeholder, textarea::placeholder { color: #777; }
 .landing-button-dark { background: var(--color-text); color: #fff; }
 .landing-button-accent { background: var(--color-signal-red); color: #fff; }
 .landing-button-light { border-color: var(--color-border); background: var(--color-surface); color: var(--color-text); }
-.landing-button:hover { transform: translateY(-1px); }
 .landing-hero { padding: clamp(64px, 11vw, 132px) 0 clamp(56px, 9vw, 108px); }
 .landing-hero-grid { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(320px, .85fr); align-items: center; gap: clamp(40px, 8vw, 120px); }
 .landing-eyebrow { margin: 0 0 16px; color: var(--color-signal-red); font-size: 12px; font-weight: 750; letter-spacing: .12em; text-transform: uppercase; }

@@ -57,7 +57,7 @@ function LandingPage() {
       <header className="landing-header">
         <div className="landing-header-inner">
           <Link to="/" className="landing-brand" aria-label="SkillFlow home">
-            <span className="landing-brand-mark">S</span><span className="landing-brand-name">SkillFlow</span>
+            <img src="/logo.svg" alt="" className="landing-brand-mark" aria-hidden="true" /><span className="landing-brand-name">SkillFlow</span>
           </Link>
           <nav className="landing-main-nav" aria-label="Main navigation">
             <a href="#how-it-works">How it works</a><a href="#features">Features</a><a href="#faqs">FAQs</a>
