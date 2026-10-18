@@ -114,7 +114,7 @@ function ProfilePage() {
   }, [profileUser]);
 
   const isOwnProfile = currentUser?._id === id;
-  const handleRequest = async () => { if (!profileUser || !currentUser) { addToast("Please login to request a swap.", "warning"); navigate("/login"); return; } setIsSwapModalOpen(true); };
+  const handleRequest = async () => { if (!profileUser || !currentUser) { addToast("Please login to request a swap.", "warning"); navigate("/", { state: { authModal: "login" } }); return; } setIsSwapModalOpen(true); };
   const handleCloseSwapModal = () => { if (sendingSwap) return; setIsSwapModalOpen(false); };
   const handleSubmitSwap = async ({ skillOffered, skillWanted }: SwapRequest) => {
   if (!profileUser) return;
@@ -216,7 +216,7 @@ function ProfilePage() {
               style={
                 displayProfile.bannerImage
                   ? {
-                      backgroundImage: `linear-gradient(180deg, rgba(0,0,0,0.18), rgba(23,23,23,0.92)), url(${getBannerImage(displayProfile)})`,
+                      backgroundImage: `url(${getBannerImage(displayProfile)})`,
                       backgroundSize: "cover",
                       backgroundPosition: "center",
                     }

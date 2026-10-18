@@ -88,7 +88,7 @@ function ForgotPasswordPage() {
         ) : null}
 
         <div className="auth-inline-row auth-footer-row">
-          <Link to="/login" className="auth-link auth-link-inline">
+          <Link to="/" state={{ authModal: "login" }} className="auth-link auth-link-inline">
             <ArrowLeft size={16} />
             Back to login
           </Link>

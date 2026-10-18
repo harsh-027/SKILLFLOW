@@ -7,8 +7,6 @@ import {
   LogOut,
   MessageSquareText,
   Menu,
-  PanelLeftClose,
-  PanelLeftOpen,
   PlusSquare,
   Search,
   Users,
@@ -43,33 +41,12 @@ export default function SiteNavbar() {
   const currentUser = user;
   const [open, setOpen] = useState(false);
   const [avatarFailed, setAvatarFailed] = useState(false);
-  const [isCollapsed, setIsCollapsed] = useState(() => {
-    if (typeof window === "undefined") {
-      return false;
-    }
-
-    return window.localStorage.getItem("skillflow-sidebar-collapsed") === "true";
-  });
   const location = useLocation();
   const isAuthPage = location.pathname === "/login" || location.pathname === "/register";
   const isDashboardShell = Boolean(currentUser) && isDashboardShellPath(location.pathname);
   const currentUserLabel = getPreferredUserLabel(currentUser);
 
   const links = useMemo(() => (currentUser ? [...sharedLinks, ...privateLinks] : []), [currentUser]);
-  const dashboardLinks = useMemo(
-    () =>
-      currentUser
-        ? [
-            privateLinks[0],
-            privateLinks[1],
-            sharedLinks[0],
-            sharedLinks[1],
-            privateLinks[2],
-            privateLinks[3],
-          ]
-        : [],
-    [currentUser]
-  );
 
   useEffect(() => {
     setOpen(false);
@@ -79,107 +56,35 @@ export default function SiteNavbar() {
     setAvatarFailed(false);
   }, [currentUser?.profileImage, currentUser?.avatar, currentUser?.updatedAt, currentUser?._id]);
 
-  useEffect(() => {
-    if (typeof window === "undefined") {
-      return;
-    }
-
-    window.localStorage.setItem("skillflow-sidebar-collapsed", String(isCollapsed));
-    document.documentElement.classList.toggle("sidebar-collapsed", isCollapsed);
-
-    return () => {
-      document.documentElement.classList.remove("sidebar-collapsed");
-    };
-  }, [isCollapsed]);
-
   if (isDashboardShell) {
     return (
-      <>
-        <aside className={cn("app-sidebar", isCollapsed && "collapsed")}>
-          <div className="sidebar-logo">
-            <div className={cn("sidebar-logo-row", isCollapsed && "collapsed")}>
-              <button
-                type="button"
-                className="sidebar-toggle"
-                onClick={() => setIsCollapsed((prev) => !prev)}
-                aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-                title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-              >
-                {isCollapsed ? <PanelLeftOpen size={18} /> : <PanelLeftClose size={18} />}
-              </button>
-
-              {!isCollapsed ? (
-                <div>
-                  <Link to="/" className="sidebar-logo-text">
-                    SkillFlow
-                  </Link>
-                </div>
-              ) : null}
-            </div>
-          </div>
-
-          <nav className="sidebar-nav">
-            {dashboardLinks.map((link) => {
-              const Icon = link.icon;
-              return (
-                <NavLink
-                  key={link.to}
-                  to={link.to}
-                  title={link.label}
-                  className={({ isActive }) => cn("sidebar-nav-item", isCollapsed && "collapsed", isActive && "active")}
-                >
-                  <Icon className="sidebar-nav-icon" size={18} />
-                  {!isCollapsed ? <span>{link.label}</span> : null}
-                </NavLink>
-              );
-            })}
-          </nav>
-
-          <div className="sidebar-bottom">
-            <Link
-              to={`/profile/${currentUser?._id}`}
-              className={cn("sidebar-user-chip", isCollapsed && "collapsed")}
-              title={currentUserLabel || "View profile"}
-            >
-              {currentUser && !avatarFailed ? (
-                <img
-                  src={getProfileImage(currentUser)}
-                  alt={currentUserLabel}
-                  className="sidebar-user-avatar"
-                  onError={() => setAvatarFailed(true)}
-                />
-              ) : (
-                <div className="sidebar-user-avatar">{getUserInitials(currentUser)}</div>
-              )}
-              {!isCollapsed ? (
-                <div>
-                  <div className="sidebar-user-name">{currentUserLabel}</div>
-                  <div className="sidebar-user-sub">View profile</div>
-                </div>
-              ) : null}
-            </Link>
-          </div>
-        </aside>
-
-        <header className="app-header">
+      <header className="app-header skillflow-topbar">
+        <div className="skillflow-topbar-inner">
+          <Link to="/home" className="topbar-brand">SkillFlow</Link>
           <div className="header-search">
             <Search size={16} color="var(--text-muted)" />
             <input type="search" placeholder="Search people, skills, and momentum" />
           </div>
-
-          <div className="header-right">
-            <button
-              type="button"
-              onClick={() => void logout()}
-              className="btn-outline-red btn-icon-only"
-              aria-label="Logout"
-              title="Logout"
-            >
-              <LogOut size={16} />
-            </button>
+          <nav className="topbar-nav" aria-label="Primary navigation">
+            {privateLinks.slice(0, 2).map((link) => {
+              const Icon = link.icon;
+              return <NavLink key={link.to} to={link.to} className={({ isActive }) => cn("topbar-nav-link", isActive && "active")}><Icon size={17} /><span>{link.label}</span></NavLink>;
+            })}
+            {sharedLinks.map((link) => {
+              const Icon = link.icon;
+              return <NavLink key={link.to} to={link.to} className={({ isActive }) => cn("topbar-nav-link", isActive && "active")}><Icon size={17} /><span>{link.label}</span></NavLink>;
+            })}
+          </nav>
+          <div className="topbar-profile-actions">
+            <Link to={`/profile/${currentUser?._id}`} className="topbar-profile" title="View profile">
+              {currentUser && !avatarFailed ? <img src={getProfileImage(currentUser)} alt={currentUserLabel} onError={() => setAvatarFailed(true)} /> : <span>{getUserInitials(currentUser)}</span>}
+              <span className="topbar-profile-name">{currentUserLabel}</span>
+            </Link>
+            <button type="button" onClick={() => void logout()} className="btn-ghost topbar-logout" aria-label="Logout" title="Logout"><LogOut size={16} /></button>
+            <button type="button" onClick={() => setOpen((prev) => !prev)} className="btn-ghost topbar-menu" aria-label="Toggle navigation"><Menu size={18} /></button>
           </div>
-        </header>
-      </>
+        </div>
+      </header>
     );
   }
 
@@ -242,8 +147,8 @@ export default function SiteNavbar() {
           </div>
         ) : (
           <div className="landing-auth-actions">
-            <Link to="/register" className="btn-outline-red">Get Started</Link>
-            <Link to="/login" className="btn-red" style={{ padding: "8px 16px" }}>
+            <Link to="/" state={{ authModal: "register" }} className="btn-outline-red">Get Started</Link>
+            <Link to="/" state={{ authModal: "login" }} className="btn-red" style={{ padding: "8px 16px" }}>
               <LogIn size={16} />
               Sign In
             </Link>

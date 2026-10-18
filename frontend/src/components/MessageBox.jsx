@@ -15,10 +15,10 @@ function MessageBox({ messages, currentUserId }) {
           <div key={message._id} style={{ display: "flex", flexDirection: "column", alignItems: mine ? "flex-end" : "flex-start" }}>
             <div
               style={{
-                background: mine ? "linear-gradient(135deg, var(--accent-gradient-start), var(--accent-gradient-end))" : "var(--bg-card)",
-                border: mine ? "none" : "1px solid var(--border-card)",
-                color: mine ? "var(--accent-contrast)" : "var(--text-primary)",
-                borderRadius: mine ? "16px 16px 4px 16px" : "16px 16px 16px 4px",
+                background: mine ? "#eeeeee" : "#ffffff",
+                border: "1px solid #cccccc",
+                color: "#111111",
+                borderRadius: "3px",
                 padding: "10px 16px",
                 maxWidth: "70%",
                 alignSelf: mine ? "flex-end" : "flex-start",

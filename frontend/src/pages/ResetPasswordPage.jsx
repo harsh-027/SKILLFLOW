@@ -65,7 +65,7 @@ function ResetPasswordPage() {
       await logout(true);
       setCompleted(true);
       addToast(data.message || "Password reset complete. Please log in again.", "success");
-      window.setTimeout(() => navigate("/login", { replace: true }), 1200);
+      window.setTimeout(() => navigate("/", { state: { authModal: "login" }, replace: true }), 1200);
     } catch (requestError) {
       const responseErrors = requestError.response?.data?.errors;
       if (responseErrors) {

@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, ArrowUpRight, BriefcaseBusiness, Compass, Layers3, Sparkles, UserRoundSearch } from "lucide-react";
+import { ArrowRight, ArrowUpRight, BriefcaseBusiness, Compass, Layers3, MapPin, Sparkles, UserRoundSearch } from "lucide-react";
+import { getProfileImage, getPreferredUserLabel } from "@/lib/user-display";
 import DashboardPostCard from "@/components/ui/post-card";
 import LoadingIndicator from "@/components/LoadingIndicator";
 import { useApp } from "@/context/AppContext";
@@ -64,34 +65,30 @@ export default function DashboardPage() {
 
   return (
     <div className="page min-w-0 dashboard-page">
-      <section className="dashboard-overview-grid">
-        {overviewCards.map(({ label, value, note, icon: Icon }) => (
-          <article key={label} className="glass-card dashboard-overview-card">
-            <div className="dashboard-overview-head">
-              <span className="dashboard-overview-label">{label}</span>
-              <div className="dashboard-overview-icon"><Icon size={16} /></div>
-            </div>
-            <p className="dashboard-overview-value">{value}</p>
-            <p className="dashboard-overview-note">{note}</p>
+      <div className="dashboard-shell-grid">
+        <aside className="dashboard-left-rail">
+          <article className="glass-card dashboard-profile-card">
+            <div className="dashboard-profile-cover" />
+            <Link to={`/profile/${currentUser._id}`} className="dashboard-profile-avatar"><img src={getProfileImage(currentUser)} alt={getPreferredUserLabel(currentUser)} /></Link>
+            <h2>{getPreferredUserLabel(currentUser)}</h2>
+            {currentUser.bio ? <p>{currentUser.bio}</p> : <p>Keep learning and sharing your momentum.</p>}
+            {currentUser.location ? <span className="dashboard-location"><MapPin size={14} />{currentUser.location}</span> : null}
           </article>
-        ))}
-      </section>
+          <nav className="glass-card dashboard-side-nav" aria-label="Dashboard shortcuts">
+            {quickLinks.map(({ title, copy, to, icon: Icon }) => <Link key={title} to={to}><span className="dashboard-side-nav-icon"><Icon size={16} /></span><span><strong>{title}</strong><small>{copy}</small></span><ArrowRight size={14} /></Link>)}
+          </nav>
+        </aside>
 
-      <section className="dashboard-quick-links">
-        {quickLinks.map(({ title, copy, to, icon: Icon }) => (
-          <Link key={title} to={to} className="glass-card dashboard-quick-link">
-            <div className="dashboard-quick-link-head">
-              <div className="dashboard-quick-link-icon"><Icon size={17} /></div>
-              <ArrowRight size={16} />
-            </div>
-            <p className="dashboard-quick-link-title">{title}</p>
-            <p className="dashboard-quick-link-copy">{copy}</p>
-          </Link>
-        ))}
-      </section>
+        <main className="dashboard-primary-column">
+          <article className="glass-card dashboard-composer-card">
+            <div className="dashboard-composer-row"><img src={getProfileImage(currentUser)} alt="" /><Link to="/create-post">Share a learning update, skill, or win...</Link></div>
+            <div className="dashboard-composer-actions"><Link to="/create-post"><ArrowUpRight size={16} />Create post</Link><Link to="/requests"><BriefcaseBusiness size={16} />Review requests</Link><Link to="/users"><UserRoundSearch size={16} />Find people</Link></div>
+          </article>
 
-      <div className="dashboard-main-grid dashboard-main-grid-single">
-        <div className="dashboard-primary-column">
+          <section className="dashboard-overview-grid">
+            {overviewCards.map(({ label, value, note, icon: Icon }) => <article key={label} className="glass-card dashboard-overview-card"><div className="dashboard-overview-head"><span className="dashboard-overview-label">{label}</span><div className="dashboard-overview-icon"><Icon size={16} /></div></div><p className="dashboard-overview-value">{value}</p><p className="dashboard-overview-note">{note}</p></article>)}
+          </section>
+
           <article className="glass-card card dashboard-feed-card min-w-0">
             <div className="dashboard-section-head">
               <div>
@@ -113,7 +110,12 @@ export default function DashboardPage() {
               ) : null}
             </div>
           </article>
-        </div>
+        </main>
+
+        <aside className="dashboard-right-rail">
+          <article className="glass-card dashboard-rail-card"><div className="dashboard-rail-title-wrap"><div><div className="dashboard-kicker">Your workspace</div><h3 className="section-title">SkillFlow snapshot</h3></div><Sparkles size={18} /></div><div className="dashboard-rail-stats">{overviewCards.map(({ label, value, note }) => <div className="dashboard-rail-stat" key={label}><span>{label}</span><strong>{value}</strong><small>{note}</small></div>)}</div></article>
+          <article className="glass-card dashboard-rail-card"><div className="dashboard-rail-title-wrap"><div><div className="dashboard-kicker">Keep moving</div><h3 className="section-title">Useful shortcuts</h3></div><Compass size={18} /></div><div className="dashboard-rail-actions">{quickLinks.map(({ title, to, icon: Icon }) => <Link key={title} to={to}><Icon size={15} />{title}<ArrowRight size={14} /></Link>)}</div></article>
+        </aside>
       </div>
     </div>
   );

@@ -1,16 +1,15 @@
-import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
-import { ArrowRight } from "lucide-react";
-import { Link } from "react-router-dom";
+import { useCallback, useEffect, useState } from "react";
+import { ArrowRight, Check, MoveUpRight } from "lucide-react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 import API from "@/api/axios";
 import { useApp } from "@/context/AppContext";
 import Footer from "@/components/Footer";
 import { FeatureSection } from "@/components/feature-section";
-import { TracingBeam } from "@/components/ui/tracing-beam";
 import { FaqsSection } from "../../components/faqs-page";
+import LoginModal from "@/components/auth/LoginModal";
+import RegisterModal from "@/components/auth/RegisterModal";
 
-const easeOut = [0.22, 1, 0.36, 1];
 const defaultStats = [
   { label: "Builders", value: "0" },
   { label: "Skills", value: "0" },
@@ -18,149 +17,103 @@ const defaultStats = [
 ];
 
 const statCopy = {
-  Builders: {
-    tag: "Active builders",
-    text: "People growing through shared learning.",
-  },
-  Skills: {
-    tag: "Skills listed",
-    text: "Real abilities offered and requested.",
-  },
-  Swaps: {
-    tag: "Peer swaps",
-    text: "Learning exchanges started on SkillFlow.",
-  },
+  Builders: { tag: "Active builders", text: "People growing through shared learning." },
+  Skills: { tag: "Skills listed", text: "Real abilities offered and requested." },
+  Swaps: { tag: "Peer swaps", text: "Learning exchanges started on SkillFlow." },
 };
 
 function LandingPage() {
   const { user, logout } = useApp();
+  const location = useLocation();
+  const navigate = useNavigate();
   const [landingStats, setLandingStats] = useState(defaultStats);
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [isRegisterOpen, setIsRegisterOpen] = useState(false);
+  const closeLogin = useCallback(() => setIsLoginOpen(false), []);
+  const closeRegister = useCallback(() => setIsRegisterOpen(false), []);
+  const openRegisterFromLogin = useCallback(() => { setIsLoginOpen(false); setIsRegisterOpen(true); }, []);
+  const openLoginFromRegister = useCallback(() => { setIsRegisterOpen(false); setIsLoginOpen(true); }, []);
+  useEffect(() => {
+    const requestedModal = location.state?.authModal;
+    if (requestedModal === "login") setIsLoginOpen(true);
+    if (requestedModal === "register") setIsRegisterOpen(true);
+    if (requestedModal) navigate("/", { replace: true, state: {} });
+  }, [location.state, navigate]);
   const primaryPath = user ? "/home" : "/register";
   const primaryLabel = user ? "Open workspace" : "Get started";
 
   useEffect(() => {
     let active = true;
-
     API.get("/public/landing")
       .then(({ data }) => {
-        if (!active) return;
-        setLandingStats(Array.isArray(data.displayStats) ? data.displayStats : defaultStats);
+        if (active) setLandingStats(Array.isArray(data.displayStats) ? data.displayStats : defaultStats);
       })
-      .catch(() => {
-        if (active) {
-          setLandingStats(defaultStats);
-        }
-      });
-
-    return () => {
-      active = false;
-    };
+      .catch(() => { if (active) setLandingStats(defaultStats); });
+    return () => { active = false; };
   }, []);
 
   return (
-    <div id="top" className="landing-shell resend-shell">
-      <header className="resend-header">
-        <div className="resend-nav">
-          <Link to="/" className="resend-brand" aria-label="SkillFlow home">
-            <span>SkillFlow</span>
+    <div id="top" className="landing-shell">
+      <header className="landing-header">
+        <div className="landing-header-inner">
+          <Link to="/" className="landing-brand" aria-label="SkillFlow home">
+            <span className="landing-brand-mark">S</span><span className="landing-brand-name">SkillFlow</span>
           </Link>
-
-          <div className="resend-nav-actions">
-            {user ? (
-              <button type="button" onClick={() => void logout()} className="resend-login resend-login-button">
-                Log out
-              </button>
-            ) : (
-              <Link to="/login" className="resend-login">
-                Log in
-              </Link>
-            )}
-            <Link to={primaryPath} className="resend-button resend-button-primary resend-nav-cta">
-              {user ? primaryLabel : "Get started"}
-              <ArrowRight size={15} />
-            </Link>
+          <nav className="landing-main-nav" aria-label="Main navigation">
+            <a href="#how-it-works">How it works</a><a href="#features">Features</a><a href="#faqs">FAQs</a>
+          </nav>
+          <div className="landing-header-actions">
+            {user ? <><Link to="/home" className="landing-text-link">Workspace</Link><button type="button" className="landing-text-link landing-logout" onClick={() => void logout()}>Log out</button></> : <><button type="button" className="landing-text-link" onClick={() => setIsLoginOpen(true)}>Sign in</button><button type="button" className="landing-button landing-button-dark" onClick={() => setIsRegisterOpen(true)}>Get started</button></>}
           </div>
         </div>
       </header>
 
-      <TracingBeam className="landing-tracing-beam">
-        <main className="resend-main">
-          <section className="resend-hero resend-hero-layout">
-            <h1 className="sr-only">
-              SkillFlow helps builders learn real-world skills with guided paths and peer swaps.
-            </h1>
-            <motion.div
-              className="resend-hero-grid"
-              initial={{ opacity: 0, y: 28 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.72, ease: easeOut }}
-            >
-              <div className="resend-hero-side resend-hero-side-left">
-                <span className="resend-hero-side-label">Skill Exchange</span>
-                <div className="resend-hero-actions resend-hero-actions-left">
-                  <Link to={primaryPath} className="resend-button resend-button-primary">
-                    {primaryLabel}
-                    <ArrowRight size={16} />
-                  </Link>
-                </div>
-              </div>
-
-              <div className="resend-hero-center">
-                <div className="resend-hero-word" aria-hidden="true">SKILLFLOW</div>
-              </div>
-
-              <div className="resend-hero-side resend-hero-side-right">
-                <span className="resend-hero-side-label">Peer Momentum</span>
-                <div className="resend-hero-stat-list">
-                  {landingStats.map((item) => (
-                    <div key={item.label} className="resend-hero-stat-card">
-                      <strong>{item.value}</strong>
-                      <span>{item.label}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="resend-hero-features">
-                <FeatureSection />
-              </div>
-            </motion.div>
-          </section>
-          <section className="landing-stats-section" aria-label="SkillFlow numbers">
-            <div className="landing-stats-copy">
-              <h2>SkillFlow turns everyday skills into shared progress</h2>
-              <p>
-                Learn from people around you, offer what you know, and keep every exchange moving
-                with a focused community built for practice.
-              </p>
-              <Link to={primaryPath} className="resend-button resend-button-primary">
-                {primaryLabel}
-                <ArrowRight size={16} />
-              </Link>
+      <main>
+        <section className="landing-hero" aria-labelledby="landing-title">
+          <div className="landing-container landing-hero-grid">
+            <div className="landing-hero-copy">
+              <p className="landing-eyebrow">Learn in motion</p>
+              <h1 id="landing-title">Build skills.<br /><span>Share momentum.</span></h1>
+              <p className="landing-hero-lede">SkillFlow connects people who want to learn with people ready to share what they know. Keep every exchange practical, focused, and moving forward.</p>
+              <div className="landing-hero-actions">{user ? <Link to={primaryPath} className="landing-button landing-button-accent">{primaryLabel}<ArrowRight size={16} aria-hidden="true" /></Link> : <button type="button" className="landing-button landing-button-accent" onClick={() => setIsRegisterOpen(true)}>{primaryLabel}<ArrowRight size={16} aria-hidden="true" /></button>}<a href="#how-it-works" className="landing-button landing-button-light">See how it works</a></div>
+              <div className="landing-hero-note"><Check size={15} aria-hidden="true" /><span>Peer learning built around real progress.</span></div>
             </div>
-            <div className="landing-stats-grid">
-              {landingStats.map((item) => {
-                const copy = statCopy[item.label] || {
-                  tag: item.label,
-                  text: "SkillFlow activity from the community.",
-                };
-
-                return (
-                  <article key={item.label} className="landing-stat-item">
-                    <strong>{item.value}</strong>
-                    <span>{copy.tag}</span>
-                    <p>{copy.text}</p>
-                  </article>
-                );
-              })}
+            <div className="landing-hero-panel" aria-label="SkillFlow community snapshot">
+              <div className="landing-hero-panel-top"><span>SkillFlow community</span><span className="landing-live-dot">Live</span></div>
+              <div className="landing-hero-panel-word">FLOW</div>
+              <div className="landing-hero-panel-footer"><span>Learn from people around you.</span><MoveUpRight size={18} aria-hidden="true" /></div>
             </div>
-          </section>
-          <section className="landing-faqs-section">
-            <FaqsSection />
-          </section>
-        </main>
-        <Footer />
-      </TracingBeam>
+          </div>
+        </section>
+
+        <section className="landing-stat-strip" aria-label="SkillFlow community numbers">
+          <div className="landing-container landing-stat-strip-inner">
+            {landingStats.map((item) => <div key={item.label} className="landing-stat"><strong>{item.value}</strong><span>{item.label}</span></div>)}
+            <p>Growing through shared knowledge, one exchange at a time.</p>
+          </div>
+        </section>
+
+        <section id="how-it-works" className="landing-section landing-how-section">
+          <div className="landing-container landing-section-heading"><div><p className="landing-eyebrow">A clearer way to grow</p><h2>Progress works better<br />when it is shared.</h2></div><p>Find the right people, make a useful exchange, and stay close to the next step.</p></div>
+          <div className="landing-container landing-process-grid">
+            <article><span>01</span><h3>Set your direction</h3><p>Add skills you can offer and the ones you want to learn.</p></article>
+            <article><span>02</span><h3>Find your people</h3><p>Discover profiles, posts, and goals that line up with yours.</p></article>
+            <article><span>03</span><h3>Keep moving</h3><p>Turn a good match into practice, feedback, and steady progress.</p></article>
+          </div>
+        </section>
+
+        <section id="features" className="landing-section landing-features-section">
+          <div className="landing-container landing-section-heading landing-section-heading-centered"><p className="landing-eyebrow">Everything in one flow</p><h2>Tools for learning<br />that feel human.</h2></div>
+          <FeatureSection />
+        </section>
+
+        <section className="landing-section landing-stats-section"><div className="landing-container landing-stats-layout"><div className="landing-stats-copy"><p className="landing-eyebrow">Built for practice</p><h2>Small actions<br />become real progress.</h2><p>SkillFlow keeps your goals, conversations, and learning exchanges close at hand so momentum does not get lost.</p><Link to={primaryPath} className="landing-inline-link">Start your flow <ArrowRight size={16} aria-hidden="true" /></Link></div><div className="landing-stats-grid">{landingStats.map((item) => { const copy = statCopy[item.label] || { tag: item.label, text: "SkillFlow activity from the community." }; return <article key={item.label} className="landing-stat-card"><strong>{item.value}</strong><span>{copy.tag}</span><p>{copy.text}</p></article>; })}</div></div></section>
+
+        <section id="faqs" className="landing-section landing-faq-section"><FaqsSection /></section>
+      </main>
+      <LoginModal open={isLoginOpen} onClose={closeLogin} onRegister={openRegisterFromLogin} />
+      <RegisterModal open={isRegisterOpen} onClose={closeRegister} onLogin={openLoginFromRegister} />
+      <Footer onOpenLogin={() => setIsLoginOpen(true)} />
     </div>
   );
 }

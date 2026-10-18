@@ -13,7 +13,7 @@ const footerLinks = [
   { label: "Terms", to: "/terms" },
 ];
 
-function LandingFooter() {
+function LandingFooter({ onOpenLogin }: { onOpenLogin?: () => void }) {
   const { currentUser, addToast } = useApp();
   const navigate = useNavigate();
   const [issueText, setIssueText] = useState("");
@@ -23,7 +23,8 @@ function LandingFooter() {
   const openIssueModal = () => {
     if (!currentUser) {
       addToast("Please log in to send an issue to admin.", "info");
-      navigate("/login");
+      if (onOpenLogin) onOpenLogin();
+      else navigate("/", { state: { authModal: "login" } });
       return;
     }
 
@@ -73,11 +74,13 @@ function LandingFooter() {
         </div>
 
         <div className="resend-footer-links">
-          {footerLinks.map((link) => (
-            <Link key={link.label} to={link.to}>
-              {link.label}
-            </Link>
-          ))}
+          {footerLinks.map((link) => {
+            const requiresAuth = ["/home", "/study-planner", "/community"].includes(link.to);
+            if (!currentUser && requiresAuth && onOpenLogin) {
+              return <button key={link.label} type="button" className="landing-footer-link" onClick={onOpenLogin}>{link.label}</button>;
+            }
+            return <Link key={link.label} to={link.to}>{link.label}</Link>;
+          })}
         </div>
 
         <div className="resend-footer-meta">
@@ -130,9 +133,9 @@ function LandingFooter() {
   );
 }
 
-function Footer() {
+function Footer({ onOpenLogin }: { onOpenLogin?: () => void }) {
   const location = useLocation();
-  return location.pathname === "/" ? <LandingFooter /> : null;
+  return location.pathname === "/" ? <LandingFooter onOpenLogin={onOpenLogin} /> : null;
 }
 
 export default Footer;

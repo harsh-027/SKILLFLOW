@@ -228,7 +228,6 @@ export default function CommunityPage() {
                           border: isCurrentUser ? "1px solid var(--red-border)" : "1px solid var(--border-card)",
                           borderTopRightRadius: isCurrentUser ? "4px" : "16px",
                           borderTopLeftRadius: isCurrentUser ? "16px" : "4px",
-                          backdropFilter: "blur(18px)",
                         WebkitBackdropFilter: "blur(18px)",
                       }}
                     >

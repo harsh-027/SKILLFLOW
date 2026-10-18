@@ -1,0 +1,72 @@
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { Eye, EyeOff } from "lucide-react";
+import { useApp } from "../../context/AppContext";
+
+export default function RegisterForm({ onSuccess, onLogin, titleId }) {
+  const navigate = useNavigate();
+  const { register } = useApp();
+  const [form, setForm] = useState({ userId: "", name: "", email: "", password: "" });
+  const [acceptedPolicies, setAcceptedPolicies] = useState(false);
+  const [errors, setErrors] = useState({ userId: "", name: "", email: "", password: "", policies: "", form: "" });
+  const [submitting, setSubmitting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+    setErrors((prev) => ({ ...prev, [name]: "", form: "" }));
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    setErrors({ userId: "", name: "", email: "", password: "", policies: "", form: "" });
+    if (!acceptedPolicies) {
+      setErrors((prev) => ({ ...prev, policies: "Please agree to the Terms & Conditions and Privacy Policy before creating your account." }));
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      const user = await register({ ...form, skillsOffered: [], skillsWanted: [] });
+      if (onSuccess) onSuccess(user);
+      else navigate(user.role === "admin" ? "/admin/dashboard" : "/home");
+    } catch (error) {
+      const responseErrors = error.response?.data?.errors;
+      if (responseErrors && typeof responseErrors === "object") {
+        setErrors({
+          userId: typeof responseErrors.userId?.msg === "string" ? responseErrors.userId.msg : "",
+          name: typeof responseErrors.name?.msg === "string" ? responseErrors.name.msg : "",
+          email: typeof responseErrors.email?.msg === "string" ? responseErrors.email.msg : "",
+          password: typeof responseErrors.password?.msg === "string" ? responseErrors.password.msg : "",
+          policies: "",
+          form: typeof responseErrors.form === "string" ? responseErrors.form : "",
+        });
+      } else {
+        setErrors({ userId: "", name: "", email: "", password: "", policies: "", form: error.response?.data?.message || "Unable to create your account right now. Please try again." });
+      }
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <>
+      <h2 id={titleId} className="auth-title">Create your SkillFlow account</h2>
+      <p className="auth-sub">Launch your profile, list what you know, and start learning with intention.</p>
+      <form onSubmit={handleSubmit} className="auth-form">
+        <div className="auth-field-grid">
+          <div className="auth-field-group"><label className="auth-label" htmlFor="register-userId">User ID</label><input id="register-userId" className={`input-dark ${errors.userId ? "input-error" : ""}`} name="userId" type="text" value={form.userId} onChange={handleChange} placeholder="Choose a user ID" aria-invalid={Boolean(errors.userId)} aria-describedby={errors.userId ? "register-userid-error" : undefined} required />{errors.userId ? <p className="auth-error-text" id="register-userid-error">{errors.userId}</p> : null}</div>
+          <div className="auth-field-group"><label className="auth-label" htmlFor="register-name">Name</label><input id="register-name" className={`input-dark ${errors.name ? "input-error" : ""}`} name="name" type="text" value={form.name} onChange={handleChange} placeholder="Your name" aria-invalid={Boolean(errors.name)} aria-describedby={errors.name ? "register-name-error" : undefined} required />{errors.name ? <p className="auth-error-text" id="register-name-error">{errors.name}</p> : null}</div>
+        </div>
+        <div className="auth-field-group"><label className="auth-label" htmlFor="register-email">Email</label><input id="register-email" className={`input-dark ${errors.email ? "input-error" : ""}`} name="email" type="email" value={form.email} onChange={handleChange} placeholder="Email address" aria-invalid={Boolean(errors.email)} aria-describedby={errors.email ? "register-email-error" : undefined} required />{errors.email ? <p className="auth-error-text" id="register-email-error">{errors.email}</p> : null}</div>
+        <div className="auth-field-group"><label className="auth-label" htmlFor="register-password">Password</label><div className="password-field"><input id="register-password" className={`input-dark password-input ${errors.password ? "input-error" : ""}`} name="password" type={showPassword ? "text" : "password"} value={form.password} onChange={handleChange} placeholder="Create a strong password" aria-invalid={Boolean(errors.password)} aria-describedby={errors.password ? "register-password-error" : undefined} required /><button type="button" className="password-toggle" aria-label={showPassword ? "Hide password" : "Show password"} aria-pressed={showPassword} onClick={() => setShowPassword((prev) => !prev)}>{showPassword ? <EyeOff size={18} /> : <Eye size={18} />}</button></div>{errors.password ? <p className="auth-error-text" id="register-password-error">{errors.password}</p> : <p className="auth-error-text auth-muted-caption">Use at least 10 characters with uppercase, lowercase, a number, and a symbol.</p>}</div>
+        <div className="auth-policy-field"><input id="register-policies" name="policies" type="checkbox" checked={acceptedPolicies} onChange={(event) => { setAcceptedPolicies(event.target.checked); setErrors((prev) => ({ ...prev, policies: "", form: "" })); }} aria-invalid={Boolean(errors.policies)} aria-describedby={errors.policies ? "register-policies-error" : undefined} aria-required="true" /><label htmlFor="register-policies">I agree to the <Link to="/terms" className="auth-link">Terms & Conditions</Link> and <Link to="/privacy" className="auth-link">Privacy Policy</Link></label></div>
+        {errors.policies ? <p className="auth-error-text" id="register-policies-error">{errors.policies}</p> : null}
+        {errors.form ? <p className="auth-form-error">{errors.form}</p> : null}
+        <button type="submit" className="btn-red auth-submit" disabled={submitting}>{submitting ? "Creating..." : "Create Account"}</button>
+      </form>
+      <div className="auth-meta-stack"><p className="auth-footer-copy">Already registered? {onLogin ? <button type="button" className="auth-link auth-link-button" onClick={onLogin}>Sign in</button> : <Link to="/login" className="auth-link">Sign in</Link>}</p></div>
+    </>
+  );
+}

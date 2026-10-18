@@ -27,14 +27,15 @@ export function FaqsSection() {
 	);
 
 	return (
-		<section className="mx-auto w-full max-w-5xl">
-			<div className="flex flex-col items-center justify-center gap-4 px-4 py-12">
-				<h2 className="text-balance text-center font-black font-mono text-4xl md:text-5xl">SkillFlow FAQs</h2>
-				<p className="text-center text-muted-foreground">Quick answers before you start swapping skills.</p>
+		<section className="faq-section">
+			<div className="faq-intro">
+				<span className="faq-kicker">FAQ · SkillFlow</span>
+				<h2>Common Questions</h2>
+				<p>Quick answers before you start swapping skills.</p>
 			</div>
-			<div className="relative grid grid-cols-1 py-8 md:grid-cols-3">
-				<div className="flex h-full items-start justify-center border-b pb-2 md:border-b-0">
-					<div className="flex w-max flex-wrap items-start justify-start gap-2 md:flex-col md:justify-center">
+			<div className="faq-layout">
+				<div className="faq-categories">
+					<div className="faq-category-list">
 						{categories.map((cat) => (
 							<Button
 								key={cat.id}
@@ -48,18 +49,18 @@ export function FaqsSection() {
 						))}
 					</div>
 				</div>
-				<div className="col-span-2 space-y-5 px-4 py-5">
+				<div className="faq-list">
 					{currentCategory ? (
 						<div className="flex items-center gap-2">
 							{currentCategory.icon}
 							<span className="font-medium">{currentCategory.label}</span>
 						</div>
 					) : null}
-					<Accordion className="space-y-2">
+					<Accordion className="faq-accordion">
 						{filtered.map((item) => (
-							<AccordionItem className="border-b-0" key={item.id} value={item.id.toString()}>
-								<AccordionTrigger className="border px-4 hover:no-underline">{item.title}</AccordionTrigger>
-								<AccordionContent className="p-4">{item.content}</AccordionContent>
+							<AccordionItem className="faq-item" key={item.id} value={item.id.toString()}>
+								<AccordionTrigger className="faq-trigger"><span className="faq-number">{String(item.id).padStart(2, "0")}</span><span>{item.title}</span></AccordionTrigger>
+								<AccordionContent className="faq-content">{item.content}</AccordionContent>
 							</AccordionItem>
 						))}
 					</Accordion>

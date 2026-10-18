@@ -65,11 +65,11 @@ export default function AdminShell({ children }: { children: ReactNode }) {
   }, [location.pathname]);
 
   return (
-    <div className="admin-shell min-h-screen overflow-hidden bg-[var(--bg-root)] text-[var(--text-primary)]">
+    <div className="admin-shell min-h-screen overflow-hidden bg-white text-black">
       <div className="relative flex min-h-screen">
         <div className="flex min-h-screen w-full overflow-hidden">
         <aside
-          className={`w-0 shrink-0 border-r border-[var(--border-card)] bg-[var(--bg-sidebar)] transition-all duration-300 md:block ${
+          className={`w-0 shrink-0 border-r border-gray-300 bg-white md:block ${
             collapsed ? "md:w-20" : "md:w-[260px]"
           }`}
         >

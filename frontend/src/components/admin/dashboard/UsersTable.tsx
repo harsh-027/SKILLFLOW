@@ -10,7 +10,7 @@ export type AdminUserRow = {
 
 const statusClasses: Record<AdminUserRow["status"], string> = {
   Active: "bg-emerald-400/10 text-emerald-300 border-emerald-400/10",
-  Review: "bg-amber-400/10 text-amber-300 border-amber-400/10",
+  Review: "bg-black/5 text-black border-black/10",
   Suspended: "bg-rose-400/10 text-rose-300 border-rose-400/10",
 };
 
@@ -74,7 +74,7 @@ export default function UsersTable({ rows }: UsersTableProps) {
                 <div className="flex justify-end gap-2">
                   <button
                     type="button"
-                    className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-slate-300 transition hover:border-amber-400/20 hover:bg-amber-400/10 hover:text-amber-300"
+                    className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-black/10 bg-black/[0.04] text-black transition hover:border-black/20 hover:bg-black/10 hover:text-black"
                     aria-label={`Ban ${row.name}`}
                   >
                     <Ban className="h-4 w-4" />

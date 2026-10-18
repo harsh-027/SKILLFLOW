@@ -1,5 +1,4 @@
 import { FormEvent, useMemo, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
 import {
   BarChart3,
   CalendarDays,
@@ -132,12 +131,12 @@ function StatCard({
   note: string;
 }) {
   return (
-    <motion.div className="study-stat-card" whileHover={{ y: -3 }} transition={{ duration: 0.2 }}>
+    <div className="study-stat-card">
       <span className="study-stat-icon"><Icon size={18} /></span>
       <span className="learning-stat-label">{label}</span>
       <strong className="learning-stat-value">{value}</strong>
       <span className="dashboard-overview-note">{note}</span>
-    </motion.div>
+    </div>
   );
 }
 
@@ -295,7 +294,7 @@ export default function StudyPlannerPanel({
       </section>
 
       <div className="study-layout">
-        <motion.article className="learning-panel study-task-panel" layout>
+        <article className="learning-panel study-task-panel">
           <div className="dashboard-section-head">
             <div>
               <div className="dashboard-kicker">{editingId ? "Edit task" : "Task manager"}</div>
@@ -339,7 +338,7 @@ export default function StudyPlannerPanel({
               ) : null}
             </div>
           </form>
-        </motion.article>
+        </article>
 
         <section className="study-main-stack">
           <article className="learning-panel">
@@ -353,9 +352,9 @@ export default function StudyPlannerPanel({
               {loading ? (
                 <LoadingIndicator label="Loading tasks..." className="study-skeleton" />
               ) : todayTasks.length ? (
-                <AnimatePresence>
+                <>
                   {todayTasks.map((entry) => (
-                    <motion.div key={entry._id} className={`study-task-card ${entry.status === "Completed" ? "complete" : ""}`} layout initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}>
+                    <div key={entry._id} className={`study-task-card ${entry.status === "Completed" ? "complete" : ""}`}>
                       <button type="button" className="ai-path-check" onClick={() => markComplete(entry)} aria-label="Toggle complete">
                         <Check size={14} />
                       </button>
@@ -367,9 +366,9 @@ export default function StudyPlannerPanel({
                         <button type="button" className="btn-ghost btn-icon-only" onClick={() => editEntry(entry)} aria-label="Edit task" title="Edit task"><Pencil size={15} /></button>
                         <button type="button" className="btn-ghost btn-icon-only" onClick={() => onDelete(entry._id)} aria-label="Delete task" title="Delete task"><Trash2 size={15} /></button>
                       </div>
-                    </motion.div>
+                    </div>
                   ))}
-                </AnimatePresence>
+                </>
               ) : (
                 <div className="study-empty-state">
                   <ListChecks size={26} />
@@ -396,9 +395,9 @@ export default function StudyPlannerPanel({
               </div>
             </div>
 
-            <AnimatePresence mode="wait">
+            <>
               {view === "Timeline" ? (
-                <motion.div key="timeline" className="study-timeline" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}>
+                <div key="timeline" className="study-timeline">
                   {upcomingSessions.length ? upcomingSessions.map((entry) => (
                     <div key={entry._id} className="study-session-row">
                       <div className="study-session-time">
@@ -414,9 +413,9 @@ export default function StudyPlannerPanel({
                   )) : (
                     <div className="study-empty-state compact"><CalendarDays size={24} /><strong>No sessions scheduled</strong><span>Select a date and start time on a task to place it here.</span></div>
                   )}
-                </motion.div>
+                </div>
               ) : (
-                <motion.div key="calendar" className="study-calendar-grid" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}>
+                <div key="calendar" className="study-calendar-grid">
                   {calendarDays.map((day) => (
                     <div key={day.key} className="study-day-column">
                       <div className="learning-day-header">
@@ -433,9 +432,9 @@ export default function StudyPlannerPanel({
                       </div>
                     </div>
                   ))}
-                </motion.div>
+                </div>
               )}
-            </AnimatePresence>
+            </>
           </article>
         </section>
       </div>
@@ -465,10 +464,16 @@ export default function StudyPlannerPanel({
         </div>
       </section>
 
-      <AnimatePresence>
+      <>
         {aiOpen ? (
-          <motion.div className="modal-overlay" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            <motion.form className="modal-box study-ai-modal" onSubmit={submitAi} initial={{ scale: 0.96, y: 16 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.96, y: 16 }}>
+          <div
+            className="modal-overlay"
+          >
+            <form
+              className="modal-box study-ai-modal"
+              onSubmit={submitAi}
+              aria-busy={generating}
+            >
               <div className="study-modal-head">
                 <h2 className="modal-title">Generate AI Study Schedule</h2>
                 <button type="button" className="btn-ghost btn-icon-only" onClick={() => setAiOpen(false)} aria-label="Close"><X size={16} /></button>
@@ -502,15 +507,15 @@ export default function StudyPlannerPanel({
                 </div>
               </div>
               <div className="study-actions">
-                <button type="submit" className="btn-red" disabled={generating || !aiForm.examDate || !aiForm.subjects.trim()}>
+                <button type="submit" className="btn-red" disabled={generating || !aiForm.examDate || !aiForm.subjects.trim()} aria-busy={generating}>
                   <Sparkles size={16} />
                   {generating ? <InlineLoadingIndicator label="Generating..." /> : "Create Editable Schedule"}
                 </button>
               </div>
-            </motion.form>
-          </motion.div>
+            </form>
+          </div>
         ) : null}
-      </AnimatePresence>
+      </>
     </div>
   );
 }

@@ -4,7 +4,6 @@ import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ToastContainer from "@/components/ToastContainer";
-import GridOverlay from "@/components/layout/GridOverlay";
 import LoadingIndicator from "@/components/LoadingIndicator";
 
 import { useApp } from "@/context/AppContext";
@@ -40,13 +39,14 @@ function RouteFallback() {
 
 function ProtectedRoute({ children }: { children: ReactNode }) {
   const { currentUser, bootstrapping } = useApp();
+  const location = useLocation();
 
   if (bootstrapping) {
     return <div className="page"><div className="card"><LoadingIndicator /></div></div>;
   }
 
   if (!currentUser) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/" state={{ authModal: "login", returnTo: location.pathname }} replace />;
   }
 
   return <>{children}</>;
@@ -54,13 +54,14 @@ function ProtectedRoute({ children }: { children: ReactNode }) {
 
 function AdminRoute({ children }: { children: ReactNode }) {
   const { currentUser, bootstrapping } = useApp();
+  const location = useLocation();
 
   if (bootstrapping) {
     return <div className="page"><div className="card"><LoadingIndicator /></div></div>;
   }
 
   if (!currentUser) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/" state={{ authModal: "login", returnTo: location.pathname }} replace />;
   }
 
   if (currentUser.role !== "admin") {
@@ -86,8 +87,8 @@ function AnimatedRoutes() {
               </ProtectedRoute>
             }
           />
-          <Route path="/register" element={<RegisterPage />} />
-          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<Navigate to="/" state={{ authModal: "register" }} replace />} />
+          <Route path="/login" element={<Navigate to="/" state={{ authModal: "login" }} replace />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
           <Route path="/privacy" element={<PrivacyPolicyPage />} />
@@ -233,7 +234,6 @@ function App() {
   return (
     <div className="resend-shell relative min-h-screen overflow-x-hidden">
       <div className="relative z-10 app-surface-layer">
-        {isLandingRoute ? <GridOverlay /> : null}
         {!isLandingRoute && !isAuthRoute ? <Navbar /> : null}
         <main
           className={

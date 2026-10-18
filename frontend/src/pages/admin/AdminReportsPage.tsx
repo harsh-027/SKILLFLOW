@@ -196,7 +196,7 @@ export default function AdminReportsPage() {
                         className={`rounded-full px-2.5 py-1 text-[11px] uppercase tracking-[0.16em] ${
                           report.status === "resolved"
                             ? "bg-emerald-400/10 text-emerald-300"
-                            : "bg-amber-400/10 text-amber-300"
+                            : "bg-black/5 text-black"
                         }`}
                       >
                         {report.status}

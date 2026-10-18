@@ -17,7 +17,7 @@ function Messages() {
   const [loadingConversation, setLoadingConversation] = useState(true);
   const [sending, setSending] = useState(false);
 
-  useEffect(() => { if (!currentUser) navigate("/login"); }, [currentUser, navigate]);
+  useEffect(() => { if (!currentUser) navigate("/", { state: { authModal: "login" }, replace: true }); }, [currentUser, navigate]);
   useEffect(() => {
     const loadOtherUser = async () => { if (!userId) return; try { const { data } = await API.get(`/users/${userId}`); setOtherUser(data); } catch { setOtherUser(null); } };
     loadOtherUser();
