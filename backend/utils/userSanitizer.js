@@ -2,12 +2,12 @@ const DEFAULT_PROFILE_IMAGE = "/assets/default-profile.png";
 const DEFAULT_BANNER_IMAGE = "/assets/default-banner.png";
 
 const resolveImage = (primary, legacy, fallback) => {
-  if (primary && primary !== fallback) {
-    return primary;
-  }
-
   if (legacy && legacy !== fallback) {
     return legacy;
+  }
+
+  if (primary && primary !== fallback) {
+    return primary;
   }
 
   return fallback;

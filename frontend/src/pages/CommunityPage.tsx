@@ -279,7 +279,7 @@ export default function CommunityPage() {
                           onClick={() =>
                             setOpenComments((prev) => ({ ...prev, [post._id]: !prev[post._id] }))
                           }
-                          className="badge skill-tag"
+                          className="badge skill-tag community-comments-control"
                           style={{
                             display: "inline-flex",
                             alignItems: "center",
@@ -313,7 +313,7 @@ export default function CommunityPage() {
                                 return (
                                   <div
                                     key={comment._id}
-                                    className="p-2 rounded-lg"
+                                    className="p-2 rounded-lg comment-item"
                                     style={{
                                       width: "100%",
                                       border: "1px solid var(--comment-border)",

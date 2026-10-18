@@ -5,7 +5,6 @@ import {
   LayoutDashboard,
   LogIn,
   LogOut,
-  MessageSquareText,
   Menu,
   PlusSquare,
   Search,
@@ -25,7 +24,6 @@ type NavItem = {
 };
 
 const sharedLinks: NavItem[] = [
-  { to: "/community", label: "Community", icon: MessageSquareText },
   { to: "/users", label: "Browse Users", icon: Users },
 ];
 
@@ -60,13 +58,14 @@ export default function SiteNavbar() {
     return (
       <header className="app-header skillflow-topbar">
         <div className="skillflow-topbar-inner">
-          <Link to="/home" className="topbar-brand">SkillFlow</Link>
+          <Link to="/home" className="topbar-brand"><img src="/favicon.svg" alt="" />SkillFlow</Link>
           <div className="header-search">
             <Search size={16} color="var(--text-muted)" />
             <input type="search" placeholder="Search people, skills, and momentum" />
           </div>
           <nav className="topbar-nav" aria-label="Primary navigation">
-            {privateLinks.slice(0, 2).map((link) => {
+            <span className="topbar-nav-label">Main</span>
+            {[privateLinks[0], privateLinks[1]].map((link) => {
               const Icon = link.icon;
               return <NavLink key={link.to} to={link.to} className={({ isActive }) => cn("topbar-nav-link", isActive && "active")}><Icon size={17} /><span>{link.label}</span></NavLink>;
             })}

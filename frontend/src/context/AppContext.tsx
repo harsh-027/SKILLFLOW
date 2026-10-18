@@ -444,23 +444,31 @@ export function AppProvider({ children }: { children: ReactNode }) {
           "Content-Type": "application/json",
         },
       });
-      setCurrentUser(data);
-      persistCurrentUser(data);
-      setUsers((prev) => prev.map((user) => (user._id === data._id ? data : user)));
+      // Some deployed API versions return the legacy avatar/banner keys even
+      // when the request was sent with profileImage/bannerImage. Normalize the
+      // response so the just-saved image cannot be replaced by stale fields.
+      const savedUser = {
+        ...data,
+        ...(typeof profileImage === "string" ? { profileImage, avatar: profileImage } : {}),
+        ...(typeof bannerImage === "string" ? { bannerImage, banner: bannerImage } : {}),
+      };
+      setCurrentUser(savedUser);
+      persistCurrentUser(savedUser);
+      setUsers((prev) => prev.map((user) => (user._id === savedUser._id ? savedUser : user)));
       setPosts((prev) =>
         prev.map((post) => ({
           ...post,
-          user: replaceUserReference(post.user, data),
+          user: replaceUserReference(post.user, savedUser),
           comments: Array.isArray(post.comments)
             ? post.comments.map((comment: any) => ({
                 ...comment,
-                user: replaceUserReference(comment.user, data),
+                user: replaceUserReference(comment.user, savedUser),
               }))
             : post.comments,
         }))
       );
       addToast("Profile updated.", "success");
-      return data;
+      return savedUser;
     },
     [addToast, persistCurrentUser, uploadImageIfNeeded]
   );

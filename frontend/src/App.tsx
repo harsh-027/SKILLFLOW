@@ -18,7 +18,6 @@ const PrivacyPolicyPage = lazy(() => import("@/pages/PrivacyPolicyPage"));
 const TermsPage = lazy(() => import("@/pages/TermsPage"));
 const DashboardPage = lazy(() => import("@/pages/DashboardPage"));
 const StudyPlannerPage = lazy(() => import("@/pages/StudyPlannerPage"));
-const CommunityPage = lazy(() => import("@/pages/CommunityPage"));
 const UsersPage = lazy(() => import("@/pages/UsersPage"));
 const RequestsPage = lazy(() => import("@/pages/RequestsPage"));
 const CreatePostPage = lazy(() => import("@/pages/CreatePostPage"));
@@ -111,11 +110,7 @@ function AnimatedRoutes() {
           />
           <Route
             path="/community"
-            element={
-              <ProtectedRoute>
-                <CommunityPage />
-              </ProtectedRoute>
-            }
+            element={<Navigate to="/dashboard" replace />}
           />
           <Route
             path="/users"

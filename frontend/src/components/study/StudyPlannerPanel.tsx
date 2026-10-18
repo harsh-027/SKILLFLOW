@@ -436,33 +436,33 @@ export default function StudyPlannerPanel({
               )}
             </>
           </article>
+
+          <section className="learning-panel study-progress-panel">
+            <div className="dashboard-section-head">
+              <div>
+                <div className="dashboard-kicker">Progress</div>
+                <h2 className="section-title">Weekly Progress</h2>
+              </div>
+            </div>
+            <div className="study-progress-grid">
+              {[
+                ["Weekly Study Hours", weeklyHours, Math.max(weeklyHours, 10)],
+                ["Monthly Study Hours", monthlyHours, Math.max(monthlyHours, 40)],
+                ["Tasks Completed", completedCount, Math.max(entries.length, 1)],
+                ["Completion %", completePercent, 100],
+              ].map(([label, value, max]) => (
+                <div key={label} className="study-progress-card">
+                  <div className="learning-phase-meta"><span>{label}</span><strong>{value}{label === "Completion %" ? "%" : ""}</strong></div>
+                  <div className="learning-progress-track"><div className="ai-progress-value" style={{ width: `${Math.min(100, (Number(value) / Number(max)) * 100)}%` }} /></div>
+                </div>
+              ))}
+            </div>
+            <div className="dashboard-pill-list">
+              {subjects.length ? subjects.map((subject) => <span key={subject} className="dashboard-chip">{subject}</span>) : <span className="dashboard-chip">No subjects yet</span>}
+            </div>
+          </section>
         </section>
       </div>
-
-      <section className="learning-panel study-progress-panel">
-        <div className="dashboard-section-head">
-          <div>
-            <div className="dashboard-kicker">Progress</div>
-            <h2 className="section-title">Weekly Progress</h2>
-          </div>
-        </div>
-        <div className="study-progress-grid">
-          {[
-            ["Weekly Study Hours", weeklyHours, Math.max(weeklyHours, 10)],
-            ["Monthly Study Hours", monthlyHours, Math.max(monthlyHours, 40)],
-            ["Tasks Completed", completedCount, Math.max(entries.length, 1)],
-            ["Completion %", completePercent, 100],
-          ].map(([label, value, max]) => (
-            <div key={label} className="study-progress-card">
-              <div className="learning-phase-meta"><span>{label}</span><strong>{value}{label === "Completion %" ? "%" : ""}</strong></div>
-              <div className="learning-progress-track"><div className="ai-progress-value" style={{ width: `${Math.min(100, (Number(value) / Number(max)) * 100)}%` }} /></div>
-            </div>
-          ))}
-        </div>
-        <div className="dashboard-pill-list">
-          {subjects.length ? subjects.map((subject) => <span key={subject} className="dashboard-chip">{subject}</span>) : <span className="dashboard-chip">No subjects yet</span>}
-        </div>
-      </section>
 
       <>
         {aiOpen ? (

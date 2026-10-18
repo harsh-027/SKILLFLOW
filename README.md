@@ -136,3 +136,5 @@ You can also run backend scripts directly inside `backend/` with `npm run dev` a
 
 - The frontend API client points to `http://localhost:5000/api`.
 - Some package names in the repo still use older `skillswap` naming, but the product UI is branded as SkillFlow.
+# NOTICE: The Community page is temporarily disabled.
+

@@ -1,6 +1,6 @@
-import { type ChangeEvent, type FormEvent, useEffect, useState } from "react";
+import { type ChangeEvent, type CSSProperties, type FormEvent, useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { MapPin, PencilLine } from "lucide-react";
+import { MapPin } from "lucide-react";
 import LoadingIndicator from "@/components/LoadingIndicator";
 import API from "../api/axios";
 import SkillTagInput from "../components/SkillTagInput";
@@ -29,16 +29,31 @@ type SwapRequest = {
 
 type ImageField = "profileImage" | "bannerImage";
 
-const readFileAsDataUrl = (file: File): Promise<string> =>
+const prepareImageForSave = (file: File, field: ImageField): Promise<string> =>
   new Promise((resolve, reject) => {
     const reader = new FileReader();
-
-    reader.onload = () =>
-      resolve(typeof reader.result === "string" ? reader.result : "");
-
-    reader.onerror = () =>
-      reject(new Error("Failed to read file."));
-
+    reader.onerror = () => reject(new Error("Failed to read file."));
+    reader.onload = () => {
+      const image = new Image();
+      image.onerror = () => reject(new Error("Failed to load image."));
+      image.onload = () => {
+        // Keep both images comfortably below the backend's 2 MB image limit
+        // and the JSON request body limit when they are saved together.
+        const maxDimension = field === "bannerImage" ? 900 : 600;
+        const scale = Math.min(1, maxDimension / Math.max(image.naturalWidth, image.naturalHeight));
+        const canvas = document.createElement("canvas");
+        canvas.width = Math.max(1, Math.round(image.naturalWidth * scale));
+        canvas.height = Math.max(1, Math.round(image.naturalHeight * scale));
+        const context = canvas.getContext("2d");
+        if (!context) {
+          resolve(typeof reader.result === "string" ? reader.result : "");
+          return;
+        }
+        context.drawImage(image, 0, 0, canvas.width, canvas.height);
+        resolve(canvas.toDataURL("image/jpeg", 0.58));
+      };
+      image.src = typeof reader.result === "string" ? reader.result : "";
+    };
     reader.readAsDataURL(file);
   });
 
@@ -148,6 +163,8 @@ function ProfilePage() {
     setProfileUser(updatedUser);
     setDraft(createDraftFromUser(updatedUser));
       setEditing(false);
+    } catch (error: any) {
+      addToast(error?.response?.data?.message || error?.message || "Unable to save profile images.", "error");
     } finally {
       setSaving(false);
     }
@@ -164,7 +181,7 @@ function ProfilePage() {
     }
 
     try {
-      const imageDataUrl = await readFileAsDataUrl(file);
+      const imageDataUrl = await prepareImageForSave(file, field);
 
       setDraft((prev: Draft) => ({
         ...prev,
@@ -175,7 +192,7 @@ function ProfilePage() {
     }
   };
 
-  if (bootstrapping || loadingUser) return <section className="page"><div className="glass-card card"><LoadingIndicator label="Loading profile..." /></div></section>;
+  if (bootstrapping || loadingUser) return <section className="page profile-page profile-loading-page"><div className="profile-loading-content"><LoadingIndicator label="Loading profile..." /></div></section>;
   if (!profileUser) return <section className="page"><div className="glass-card card"><h2 className="section-title">User not found</h2><Link className="btn-outline-red" to="/users">Back to Users</Link></div></section>;
 
   const handleCancelEditing = () => {
@@ -207,7 +224,7 @@ function ProfilePage() {
   const secondaryProfileName = getSecondaryUserName(displayProfile);
 
   return (
-    <section className="page">
+    <section className={`page profile-page ${isOwnProfile && editing ? "is-editing" : ""}`}>
       <div className={`profile-showcase-layout ${isOwnProfile && editing ? "is-editing" : ""}`}>
         <div className="profile-showcase-column">
           <article className="glass-card card profile-showcase-card">
@@ -216,10 +233,10 @@ function ProfilePage() {
               style={
                 displayProfile.bannerImage
                   ? {
-                      backgroundImage: `url(${getBannerImage(displayProfile)})`,
+                      "--profile-cover-image": `url(${getBannerImage(displayProfile)})`,
                       backgroundSize: "cover",
                       backgroundPosition: "center",
-                    }
+                    } as CSSProperties
                   : undefined
               }
             >
@@ -261,6 +278,7 @@ function ProfilePage() {
                     </svg>
                     <div className="profile-avatar-ring profile-showcase-avatar-frame">
                       <img
+                        key={getProfileImage(displayProfile)}
                         src={getProfileImage(displayProfile)}
                         alt={preferredProfileLabel}
                         className="profile-showcase-avatar"
@@ -336,7 +354,6 @@ function ProfilePage() {
                   !editing ? (
                     <div className="profile-showcase-actions">
                       <button className="btn-outline-red" onClick={() => setEditing(true)}>
-                        <PencilLine size={16} />
                         Edit Profile
                       </button>
                     </div>

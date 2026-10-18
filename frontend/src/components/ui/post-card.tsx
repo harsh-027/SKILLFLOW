@@ -24,8 +24,8 @@ export default function DashboardPostCard({ post, author, currentUser, getUserBy
 
   return (
     <article className="glass-card post-card">
-      <div className="flex-between gap-12" style={{ alignItems: "flex-start" }}>
-        <div className="flex-center gap-12">
+      <div className="post-card-header">
+        <div className="post-card-author-wrap">
           <img src={getProfileImage(resolvedAuthor)} alt={getPreferredUserLabel(resolvedAuthor)} className="profile-avatar-ring" style={{ width: "42px", height: "42px", fontSize: "16px", margin: 0 }} />
           <div>
             <h4 className="post-card-author">{getPreferredUserLabel(resolvedAuthor)}</h4>
@@ -46,11 +46,11 @@ export default function DashboardPostCard({ post, author, currentUser, getUserBy
       </div>
       {post.content ? <p className="post-card-body">{post.content}</p> : null}
       {post.image ? <img src={post.image} alt="Post attachment" className="post-image" /> : null}
-      <div className="flex-between" style={{ marginTop: "12px" }}>
+      <div className="post-card-actions">
         <button type="button" onClick={() => onLike(post._id)} className={`like-btn ${liked ? "liked" : ""}`}><Heart size={16} className={liked ? "fill-current" : ""} />{post.likes.length}</button>
         <span className="badge skill-tag"><MessageCircle size={14} />{post.comments.length} comments</span>
       </div>
-      <div style={{ display: "grid", gap: "8px", marginTop: "12px" }}>
+      <div className="post-card-comments">
         {post.comments.slice(-3).map((comment) => {
           const commenterId = typeof comment.user === "object" && comment.user !== null ? comment.user._id || "" : comment.user;
           const commenter =
@@ -64,7 +64,7 @@ export default function DashboardPostCard({ post, author, currentUser, getUserBy
         })}
       </div>
       {showCommentComposer ? (
-        <form onSubmit={handleCommentSubmit} className="comment-form" style={{ marginTop: "12px" }}>
+        <form onSubmit={handleCommentSubmit} className="comment-form post-card-composer" style={{ marginTop: "12px" }}>
           <input value={commentText} onChange={(event) => setCommentText(event.target.value)} placeholder={currentUser ? "Write a comment..." : "Login to comment"} disabled={!currentUser} className="input-dark" />
           <button type="submit" disabled={!currentUser || !onComment} className="btn-red"><SendHorizontal size={14} />Send</button>
         </form>

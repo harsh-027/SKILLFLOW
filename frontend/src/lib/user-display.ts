@@ -12,12 +12,12 @@ export const DEFAULT_PROFILE_IMAGE = "/assets/default-profile.png";
 export const DEFAULT_BANNER_IMAGE = "/assets/default-banner.png";
 
 function resolveImage(primary: string | undefined, legacy: string | undefined, fallback: string): string {
-  if (primary && primary !== fallback) {
-    return primary;
-  }
-
   if (legacy && legacy !== fallback) {
     return legacy;
+  }
+
+  if (primary && primary !== fallback) {
+    return primary;
   }
 
   return fallback;

@@ -8,7 +8,6 @@ import { useApp } from "@/context/AppContext";
 const footerLinks = [
   { label: "Dashboard", to: "/home" },
   { label: "Study Planner", to: "/study-planner" },
-  { label: "Community", to: "/community" },
   { label: "Privacy", to: "/privacy" },
   { label: "Terms", to: "/terms" },
 ];
@@ -75,7 +74,7 @@ function LandingFooter({ onOpenLogin }: { onOpenLogin?: () => void }) {
 
         <div className="resend-footer-links">
           {footerLinks.map((link) => {
-            const requiresAuth = ["/home", "/study-planner", "/community"].includes(link.to);
+            const requiresAuth = ["/home", "/study-planner"].includes(link.to);
             if (!currentUser && requiresAuth && onOpenLogin) {
               return <button key={link.label} type="button" className="landing-footer-link" onClick={onOpenLogin}>{link.label}</button>;
             }
