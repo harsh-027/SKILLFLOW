@@ -62,10 +62,6 @@ const updateMyProfile = asyncHandler(async (req, res) => {
     "name",
     "bio",
     "location",
-    "avatar",
-    "banner",
-    "profileImage",
-    "bannerImage",
     "skillsOffered",
     "skillsWanted",
     "interests",
@@ -87,13 +83,6 @@ const updateMyProfile = asyncHandler(async (req, res) => {
     updates.name = updates.name.trim();
   }
 
-  if (typeof updates.profileImage === "string") {
-    updates.profileImage = updates.profileImage.trim();
-  }
-
-  if (typeof updates.bannerImage === "string") {
-    updates.bannerImage = updates.bannerImage.trim();
-  }
 
   if (Array.isArray(updates.skillsOffered)) {
     updates.skillsOffered = updates.skillsOffered

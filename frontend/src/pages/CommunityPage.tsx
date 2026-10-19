@@ -5,9 +5,9 @@ import LoadingIndicator from "@/components/LoadingIndicator";
 import PaginationControls from "@/components/PaginationControls";
 import { useApp } from "@/context/AppContext";
 import { defaultPaginationMeta, readPaginatedItems, readPaginationMeta } from "@/lib/pagination";
-import { getPreferredUserLabel, getProfileImage } from "@/lib/user-display";
+import { getPreferredUserLabel } from "@/lib/user-display";
 
-type BasicUser = { _id?: string; userId?: string; name?: string; avatar?: string; profileImage?: string; updatedAt?: string; };
+type BasicUser = { _id?: string; userId?: string; name?: string; updatedAt?: string; };
 type CommunityComment = { _id: string; user: string | BasicUser; text: string; };
 type CommunityPost = {
   _id: string;
@@ -236,12 +236,6 @@ export default function CommunityPage() {
                           isCurrentUser ? "flex-row-reverse text-right" : "flex-row"
                         }`}
                       >
-                          <img
-                            src={getProfileImage(resolvedAuthor)}
-                            alt={getPreferredUserLabel(resolvedAuthor)}
-                            className="w-8 h-8 rounded-full"
-                            style={{ width: "32px", height: "32px", objectFit: "cover", flexShrink: 0 }}
-                          />
                         <div style={{ flex: 1, textAlign: isCurrentUser ? "right" : "left" }}>
                           <p className="text-sm font-semibold">{getPreferredUserLabel(resolvedAuthor)}</p>
                           <p className="text-xs opacity-60">{formatDate(post.createdAt)}</p>

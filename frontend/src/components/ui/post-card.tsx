@@ -1,9 +1,9 @@
 import { useMemo, useState } from "react";
 import { Heart, MessageCircle, SendHorizontal } from "lucide-react";
 import TrashSolidIcon from "@/components/ui/trash-solid-icon";
-import { getPreferredUserLabel, getProfileImage } from "@/lib/user-display";
+import { getPreferredUserLabel } from "@/lib/user-display";
 
-type BasicUser = { _id?: string; userId?: string; name?: string; avatar?: string; profileImage?: string; updatedAt?: string; };
+type BasicUser = { _id?: string; userId?: string; name?: string; updatedAt?: string; };
 type PostComment = { _id: string; user: string | BasicUser; text: string; };
 type FeedPost = { _id: string; content?: string; image?: string; createdAt: string; user: string | BasicUser; likes: string[]; comments: PostComment[]; };
 type PostCardProps = { post: FeedPost; currentUser: { _id: string } | null; author?: BasicUser | null; getUserById: (id: string) => BasicUser | undefined; onLike: (postId: string) => void; onComment?: (postId: string, text: string) => void; onDelete?: (postId: string) => void; showCommentComposer?: boolean; };
@@ -26,7 +26,6 @@ export default function DashboardPostCard({ post, author, currentUser, getUserBy
     <article className="glass-card post-card">
       <div className="post-card-header">
         <div className="post-card-author-wrap">
-          <img src={getProfileImage(resolvedAuthor)} alt={getPreferredUserLabel(resolvedAuthor)} className="profile-avatar-ring" style={{ width: "42px", height: "42px", fontSize: "16px", margin: 0 }} />
           <div>
             <h4 className="post-card-author">{getPreferredUserLabel(resolvedAuthor)}</h4>
             <p className="post-card-date">{formatDate(post.createdAt)}</p>

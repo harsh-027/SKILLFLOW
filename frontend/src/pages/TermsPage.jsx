@@ -47,8 +47,8 @@ function TermsPage() {
             <section className="legal-section">
               <h2>Using SkillFlow</h2>
               <p>
-                You can use SkillFlow to create an account, upload a profile image, make
-                posts and messages, upload images, and use AI features for skill
+                You can use SkillFlow to create an account, make posts and messages,
+                upload images, and use AI features for skill
                 recommendations and study planners.
               </p>
             </section>

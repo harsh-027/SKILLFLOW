@@ -22,10 +22,6 @@ export interface User {
   isVerified: boolean;
   bio?: string;
   location?: string;
-  avatar?: string;
-  banner?: string;
-  profileImage?: string;
-  bannerImage?: string;
   createdAt?: string;
   updatedAt?: string;
   skillsOffered: string[];
@@ -116,7 +112,8 @@ function getStoredUser(): User | null {
   }
 
   try {
-    return JSON.parse(storedUser) as User;
+    const parsed = JSON.parse(storedUser) as User;
+    return parsed;
   } catch {
     window.localStorage.removeItem("skillflow-current-user");
     return null;
@@ -195,7 +192,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
 
     try {
-      const { data } = await API.get("/auth/me");
+      const { data } = await API.get("/auth/me", {
+        params: { _t: Date.now() },
+        headers: {
+          "Cache-Control": "no-cache",
+          Pragma: "no-cache",
+        },
+      });
       setCurrentUser(data);
       persistCurrentUser(data);
       return data;
@@ -404,33 +407,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const updateProfile = useCallback(
     async (updates: Partial<User>) => {
-      let profileImage =
-        typeof updates.profileImage === "string"
-          ? updates.profileImage
-          : typeof updates.avatar === "string"
-            ? updates.avatar
-            : undefined;
-      if (profileImage) {
-        profileImage = await uploadImageIfNeeded(profileImage);
-      }
-
-      let bannerImage =
-        typeof updates.bannerImage === "string"
-          ? updates.bannerImage
-          : typeof updates.banner === "string"
-            ? updates.banner
-            : undefined;
-      if (bannerImage) {
-        bannerImage = await uploadImageIfNeeded(bannerImage);
-      }
-
       const payload = {
         ...(typeof updates.userId === "string" ? { userId: updates.userId } : {}),
         ...(typeof updates.name === "string" ? { name: updates.name } : {}),
         ...(typeof updates.bio === "string" ? { bio: updates.bio } : {}),
         ...(typeof updates.location === "string" ? { location: updates.location } : {}),
-        ...(typeof profileImage === "string" ? { profileImage } : {}),
-        ...(typeof bannerImage === "string" ? { bannerImage } : {}),
         ...(Array.isArray(updates.skillsOffered)
           ? { skillsOffered: updates.skillsOffered }
           : {}),
@@ -444,14 +425,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
           "Content-Type": "application/json",
         },
       });
-      // Some deployed API versions return the legacy avatar/banner keys even
-      // when the request was sent with profileImage/bannerImage. Normalize the
-      // response so the just-saved image cannot be replaced by stale fields.
-      const savedUser = {
-        ...data,
-        ...(typeof profileImage === "string" ? { profileImage, avatar: profileImage } : {}),
-        ...(typeof bannerImage === "string" ? { bannerImage, banner: bannerImage } : {}),
-      };
+      const savedUser = data as User;
       setCurrentUser(savedUser);
       persistCurrentUser(savedUser);
       setUsers((prev) => prev.map((user) => (user._id === savedUser._id ? savedUser : user)));

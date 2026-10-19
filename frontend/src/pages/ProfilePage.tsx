@@ -1,4 +1,4 @@
-import { type ChangeEvent, type CSSProperties, type FormEvent, useEffect, useState } from "react";
+import { type ChangeEvent, type FormEvent, useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { MapPin } from "lucide-react";
 import LoadingIndicator from "@/components/LoadingIndicator";
@@ -6,14 +6,12 @@ import API from "../api/axios";
 import SkillTagInput from "../components/SkillTagInput";
 import SwapRequestModal from "../components/SwapRequestModal";
 import { type User, useApp } from "../context/AppContext";
-import { getBannerImage, getPreferredUserLabel, getProfileImage, getSecondaryUserName } from "../lib/user-display";
+import { getPreferredUserLabel, getSecondaryUserName } from "../lib/user-display";
 
 type Draft = {
   name: string;
   bio: string;
   location: string;
-  profileImage: string;
-  bannerImage: string;
   skillsOffered: string[];
   skillsWanted: string[];
 };
@@ -27,63 +25,13 @@ type SwapRequest = {
   skillWanted: string;
 };
 
-type ImageField = "profileImage" | "bannerImage";
-
-const prepareImageForSave = (file: File, field: ImageField): Promise<string> =>
-  new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onerror = () => reject(new Error("Failed to read file."));
-    reader.onload = () => {
-      const image = new Image();
-      image.onerror = () => reject(new Error("Failed to load image."));
-      image.onload = () => {
-        // Keep both images comfortably below the backend's 2 MB image limit
-        // and the JSON request body limit when they are saved together.
-        const maxDimension = field === "bannerImage" ? 900 : 600;
-        const scale = Math.min(1, maxDimension / Math.max(image.naturalWidth, image.naturalHeight));
-        const canvas = document.createElement("canvas");
-        canvas.width = Math.max(1, Math.round(image.naturalWidth * scale));
-        canvas.height = Math.max(1, Math.round(image.naturalHeight * scale));
-        const context = canvas.getContext("2d");
-        if (!context) {
-          resolve(typeof reader.result === "string" ? reader.result : "");
-          return;
-        }
-        context.drawImage(image, 0, 0, canvas.width, canvas.height);
-        resolve(canvas.toDataURL("image/jpeg", 0.58));
-      };
-      image.src = typeof reader.result === "string" ? reader.result : "";
-    };
-    reader.readAsDataURL(file);
-  });
-
 const createDraftFromUser = (user: ProfileUser): Draft => ({
   name: user.name || "",
   bio: user.bio || "",
   location: user.location || "",
-  profileImage: getProfileImage(user),
-  bannerImage: getBannerImage(user),
   skillsOffered: [...(user.skillsOffered || [])],
   skillsWanted: [...(user.skillsWanted || [])],
 });
-
-const formatJoinRingText = (joinedAt?: string): string => {
-  if (!joinedAt) {
-    return "SKILLFLOW MEMBER";
-  }
-
-  const date = new Date(joinedAt);
-  if (Number.isNaN(date.getTime())) {
-    return "SKILLFLOW MEMBER";
-  }
-
-  const label = new Intl.DateTimeFormat("en-US", {
-    month: "short",
-    year: "numeric",
-  }).format(date).toUpperCase();
-
-  return `JOINED IN ${label}`;
-};
 
 function ProfilePage() {
   const { id } = useParams<{ id: string }>();
@@ -99,8 +47,6 @@ function ProfilePage() {
     name: "",
     bio: "",
     location: "",
-    profileImage: "",
-    bannerImage: "",
     skillsOffered: [],
     skillsWanted: [],
   });
@@ -110,7 +56,13 @@ function ProfilePage() {
       try {
         if (!id) return;
         if (currentUser && currentUser._id === id) { setProfileUser(currentUser); return; }
-        const { data } = await API.get<ProfileUser>(`/users/${id}`);
+        const { data } = await API.get<ProfileUser>(`/users/${id}`, {
+          params: { _t: Date.now() },
+          headers: {
+            "Cache-Control": "no-cache",
+            Pragma: "no-cache",
+          },
+        });
         setProfileUser(data);
       } catch {
         setProfileUser(null);
@@ -155,8 +107,6 @@ function ProfilePage() {
       name: draft.name.trim(),
       bio: draft.bio.trim(),
       location: draft.location.trim(),
-      profileImage: draft.profileImage,
-      bannerImage: draft.bannerImage,
       skillsOffered: draft.skillsOffered,
       skillsWanted: draft.skillsWanted,
     });
@@ -164,34 +114,11 @@ function ProfilePage() {
     setDraft(createDraftFromUser(updatedUser));
       setEditing(false);
     } catch (error: any) {
-      addToast(error?.response?.data?.message || error?.message || "Unable to save profile images.", "error");
+      addToast(error?.response?.data?.message || error?.message || "Unable to save profile.", "error");
     } finally {
       setSaving(false);
     }
   };
-  const handleImageSelection = async (
-    field: ImageField,
-    file: File | null
-  ) => {
-    if (!file) return;
-
-    if (!file.type.startsWith("image/")) {
-      addToast("Please choose an image file.", "warning");
-      return;
-    }
-
-    try {
-      const imageDataUrl = await prepareImageForSave(file, field);
-
-      setDraft((prev: Draft) => ({
-        ...prev,
-        [field]: imageDataUrl,
-      }));
-    } catch {
-      addToast("Unable to read the selected image.", "error");
-    }
-  };
-
   if (bootstrapping || loadingUser) return <section className="page profile-page profile-loading-page"><div className="profile-loading-content"><LoadingIndicator label="Loading profile..." /></div></section>;
   if (!profileUser) return <section className="page"><div className="glass-card card"><h2 className="section-title">User not found</h2><Link className="btn-outline-red" to="/users">Back to Users</Link></div></section>;
 
@@ -206,8 +133,6 @@ function ProfilePage() {
         name: draft.name || profileUser.name,
         bio: draft.bio || profileUser.bio,
         location: draft.location || profileUser.location,
-        profileImage: draft.profileImage || getProfileImage(profileUser),
-        bannerImage: draft.bannerImage || getBannerImage(profileUser),
         skillsOffered: draft.skillsOffered?.length ? draft.skillsOffered : profileUser.skillsOffered,
         skillsWanted: draft.skillsWanted?.length ? draft.skillsWanted : profileUser.skillsWanted,
       }
@@ -217,9 +142,6 @@ function ProfilePage() {
   const wantedSkills = displayProfile.skillsWanted || [];
   const totalSkills = new Set([...offeredSkills, ...wantedSkills]).size;
   const profileHeadline = displayProfile.bio?.trim() || "Building a strong skill exchange profile.";
-  const avatarRingLabel = formatJoinRingText(displayProfile.createdAt);
-  const avatarRingTopId = `profile-avatar-ring-top-${displayProfile._id}`;
-  const avatarRingBottomId = `profile-avatar-ring-bottom-${displayProfile._id}`;
   const preferredProfileLabel = getPreferredUserLabel(displayProfile);
   const secondaryProfileName = getSecondaryUserName(displayProfile);
 
@@ -228,64 +150,9 @@ function ProfilePage() {
       <div className={`profile-showcase-layout ${isOwnProfile && editing ? "is-editing" : ""}`}>
         <div className="profile-showcase-column">
           <article className="glass-card card profile-showcase-card">
-            <div
-              className={`profile-showcase-cover ${displayProfile.bannerImage ? "has-image" : ""}`}
-              style={
-                displayProfile.bannerImage
-                  ? {
-                      "--profile-cover-image": `url(${getBannerImage(displayProfile)})`,
-                      backgroundSize: "cover",
-                      backgroundPosition: "center",
-                    } as CSSProperties
-                  : undefined
-              }
-            >
-               <div className="profile-showcase-cover-content">
-                <p className="profile-showcase-cover-kicker">SkillFlow profile</p>
-              </div>
-            </div>
-
             <div className="profile-showcase-body">
               <div className="profile-showcase-content">
                 <div className="profile-showcase-identity">
-                  <div className="profile-showcase-avatar-shell">
-                    <svg
-                      className="profile-showcase-avatar-orbit"
-                      viewBox="0 0 200 200"
-                      aria-hidden="true"
-                      role="presentation"
-                    >
-                      <defs>
-                        <path
-                          id={avatarRingTopId}
-                          d="M 37,100 a 63,63 0 0,1 126,0"
-                        />
-                        <path
-                          id={avatarRingBottomId}
-                          d="M 163,100 a 63,63 0 0,1 -126,0"
-                        />
-                      </defs>
-                      <text className="profile-showcase-avatar-orbit-text">
-                        <textPath href={`#${avatarRingTopId}`} startOffset="50%" textAnchor="middle">
-                          {avatarRingLabel}
-                        </textPath>
-                      </text>
-                      <text className="profile-showcase-avatar-orbit-text">
-                        <textPath href={`#${avatarRingBottomId}`} startOffset="50%" textAnchor="middle">
-                          {avatarRingLabel}
-                        </textPath>
-                      </text>
-                    </svg>
-                    <div className="profile-avatar-ring profile-showcase-avatar-frame">
-                      <img
-                        key={getProfileImage(displayProfile)}
-                        src={getProfileImage(displayProfile)}
-                        alt={preferredProfileLabel}
-                        className="profile-showcase-avatar"
-                      />
-                    </div>
-                  </div>
-
                   <div className="profile-showcase-intro">
                     <div className="profile-showcase-name-row">
                       <div className="profile-showcase-name-block">
@@ -399,40 +266,6 @@ function ProfilePage() {
                   required
                 />
               </label>
-
-              <div className="profile-asset-stack">
-                <label className="field-wrap">
-                  <span className="field-label">Profile Picture</span>
-                </label>
-
-                <label className="profile-image-field">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={(event: ChangeEvent<HTMLInputElement>) => {
-                      const file: File | null = event.target.files?.[0] ?? null;
-                      handleImageSelection("profileImage", file);
-                    }}
-                  />
-                </label>
-              </div>
-
-              <div className="profile-asset-stack">
-                <label className="field-wrap">
-                  <span className="field-label">Profile Banner</span>
-                </label>
-
-                <label className="profile-image-field">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={(event: ChangeEvent<HTMLInputElement>) => {
-                      const file: File | null = event.target.files?.[0] ?? null;
-                      handleImageSelection("bannerImage", file);
-                    }}
-                  />
-                </label>
-              </div>
 
               <label className="field-wrap profile-editor-span-2">
                 <span className="field-label">Bio</span>

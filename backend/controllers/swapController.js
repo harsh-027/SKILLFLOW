@@ -3,8 +3,8 @@ const User = require("../models/User");
 const { getPagination, paginatedResponse } = require("../utils/pagination");
 
 const userPreviewPopulation = [
-  { path: "sender", select: "name email avatar profileImage" },
-  { path: "receiver", select: "name email avatar profileImage" },
+  { path: "sender", select: "name email" },
+  { path: "receiver", select: "name email" },
 ];
 
 const backfillLegacySkills = (swapRequest) => {

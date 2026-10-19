@@ -5,7 +5,6 @@ const collectedItems = [
   "Name",
   "Email address",
   "Phone number",
-  "Profile image",
   "Posts and messages you create",
   "Images you upload in posts or messages",
   "AI prompts used for recommendations and study planners",
@@ -87,8 +86,8 @@ function PrivacyPolicyPage() {
             <section className="legal-section">
               <h2>Images and Uploaded Content</h2>
               <p>
-                Profile images, post images, and message images are stored in MongoDB
-                using GridFS. Posts and messages may be visible to other users depending
+                Post and message images are stored in MongoDB using GridFS. Posts and
+                messages may be visible to other users depending
                 on how the website feature is used.
               </p>
             </section>

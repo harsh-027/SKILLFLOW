@@ -5,7 +5,7 @@ import { getPreferredUserLabel } from "@/lib/user-display";
 import LoadingIndicator from "@/components/LoadingIndicator";
 import { useApp } from "@/context/AppContext";
 
-type BasicUser = { _id: string; name: string; avatar?: string; profileImage?: string; updatedAt?: string; location?: string; bio?: string; skillsOffered: string[]; skillsWanted: string[]; };
+type BasicUser = { _id: string; name: string; updatedAt?: string; location?: string; bio?: string; skillsOffered: string[]; skillsWanted: string[]; };
 type PostItem = { _id: string; user: string | BasicUser; content?: string; image?: string; createdAt: string; likes: string[]; comments: Array<{ _id: string; user: string | BasicUser; text: string }>; };
 
 export default function DashboardPage() {

@@ -14,7 +14,7 @@ import {
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { useApp } from "@/context/AppContext";
 import { isDashboardShellPath } from "@/lib/navigation";
-import { getPreferredUserLabel, getProfileImage, getUserInitials } from "@/lib/user-display";
+import { getPreferredUserLabel } from "@/lib/user-display";
 import { cn } from "@/lib/utils";
 
 type NavItem = {
@@ -38,7 +38,6 @@ export default function SiteNavbar() {
   const { user, logout } = useApp();
   const currentUser = user;
   const [open, setOpen] = useState(false);
-  const [avatarFailed, setAvatarFailed] = useState(false);
   const location = useLocation();
   const isAuthPage = location.pathname === "/login" || location.pathname === "/register";
   const isDashboardShell = Boolean(currentUser) && isDashboardShellPath(location.pathname);
@@ -49,10 +48,6 @@ export default function SiteNavbar() {
   useEffect(() => {
     setOpen(false);
   }, [location.pathname]);
-
-  useEffect(() => {
-    setAvatarFailed(false);
-  }, [currentUser?.profileImage, currentUser?.avatar, currentUser?.updatedAt, currentUser?._id]);
 
   if (isDashboardShell) {
     return (
@@ -76,7 +71,6 @@ export default function SiteNavbar() {
           </nav>
           <div className="topbar-profile-actions">
             <Link to={`/profile/${currentUser?._id}`} className="topbar-profile" title="View profile">
-              {currentUser && !avatarFailed ? <img src={getProfileImage(currentUser)} alt={currentUserLabel} onError={() => setAvatarFailed(true)} /> : <span>{getUserInitials(currentUser)}</span>}
               <span className="topbar-profile-name">{currentUserLabel}</span>
             </Link>
             <button type="button" onClick={() => void logout()} className="btn-ghost topbar-logout" aria-label="Logout" title="Logout"><LogOut size={16} /></button>
@@ -127,11 +121,6 @@ export default function SiteNavbar() {
               className="landing-user-state"
               title={currentUserLabel || "View profile"}
             >
-              {currentUser && !avatarFailed ? (
-                <img src={getProfileImage(currentUser)} alt={currentUserLabel} onError={() => setAvatarFailed(true)} />
-              ) : (
-                <span>{getUserInitials(currentUser)}</span>
-              )}
               <span>{currentUserLabel}</span>
             </Link>
             <button

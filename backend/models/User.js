@@ -61,26 +61,6 @@ const userSchema = new mongoose.Schema(
       trim: true,
       maxlength: 120,
     },
-    avatar: {
-      type: String,
-      default: "",
-      trim: true,
-    },
-    banner: {
-      type: String,
-      default: "",
-      trim: true,
-    },
-    profileImage: {
-      type: String,
-      default: "/assets/default-profile.png",
-      trim: true,
-    },
-    bannerImage: {
-      type: String,
-      default: "/assets/default-banner.png",
-      trim: true,
-    },
     skillsOffered: {
       type: [String],
       default: [],

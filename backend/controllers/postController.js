@@ -2,7 +2,7 @@ const Post = require("../models/Post");
 const User = require("../models/User");
 const { getPagination, paginatedResponse } = require("../utils/pagination");
 
-const visibleUserFields = "name userId email avatar profileImage";
+const visibleUserFields = "name userId email";
 
 const stripInactiveCommunityContent = (posts) =>
   posts
@@ -54,7 +54,7 @@ const getAllPosts = async (req, res) => {
       .populate("user", visibleUserFields)
       .populate({
         path: "comments.user",
-        select: "name userId avatar profileImage",
+        select: "name userId",
         match: { isBanned: false },
       })
       .sort({ createdAt: -1 })
@@ -96,7 +96,7 @@ const getFollowingPosts = async (req, res) => {
       })
       .populate({
         path: "comments.user",
-        select: "name userId avatar profileImage",
+        select: "name userId",
         match: { isBanned: false },
       })
       .sort({ createdAt: -1 })
@@ -132,7 +132,7 @@ const getCommunityPosts = async (req, res) => {
       })
       .populate({
         path: "comments.user",
-        select: "name userId avatar profileImage",
+        select: "name userId",
         match: { isBanned: false },
       })
       .sort({ createdAt: -1 })
@@ -210,7 +210,7 @@ const addCommentToPost = async (req, res) => {
       })
       .populate({
         path: "comments.user",
-        select: "name userId avatar profileImage",
+        select: "name userId",
         match: { isBanned: false },
       });
 
