@@ -22,6 +22,8 @@ export interface User {
   isVerified: boolean;
   bio?: string;
   location?: string;
+  profilePicture?: string;
+  profileBanner?: string;
   createdAt?: string;
   updatedAt?: string;
   skillsOffered: string[];
@@ -407,11 +409,22 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const updateProfile = useCallback(
     async (updates: Partial<User>) => {
+      const [profilePicture, profileBanner] = await Promise.all([
+        typeof updates.profilePicture === "string"
+          ? uploadImageIfNeeded(updates.profilePicture.trim())
+          : undefined,
+        typeof updates.profileBanner === "string"
+          ? uploadImageIfNeeded(updates.profileBanner.trim())
+          : undefined,
+      ]);
+
       const payload = {
         ...(typeof updates.userId === "string" ? { userId: updates.userId } : {}),
         ...(typeof updates.name === "string" ? { name: updates.name } : {}),
         ...(typeof updates.bio === "string" ? { bio: updates.bio } : {}),
         ...(typeof updates.location === "string" ? { location: updates.location } : {}),
+        ...(typeof profilePicture === "string" ? { profilePicture } : {}),
+        ...(typeof profileBanner === "string" ? { profileBanner } : {}),
         ...(Array.isArray(updates.skillsOffered)
           ? { skillsOffered: updates.skillsOffered }
           : {}),

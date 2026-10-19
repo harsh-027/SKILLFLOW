@@ -1,6 +1,6 @@
 import { type ChangeEvent, type FormEvent, useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { MapPin } from "lucide-react";
+import { Camera, ImagePlus, MapPin } from "lucide-react";
 import LoadingIndicator from "@/components/LoadingIndicator";
 import API from "../api/axios";
 import SkillTagInput from "../components/SkillTagInput";
@@ -19,6 +19,16 @@ type Draft = {
 type ProfileUser = User & {
   createdAt?: string;
 };
+
+type ImageKind = "profilePicture" | "profileBanner";
+
+const MAX_PROFILE_IMAGE_SIZE = 5 * 1024 * 1024;
+const ALLOWED_PROFILE_IMAGE_TYPES = new Set([
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "image/gif",
+]);
 
 type SwapRequest = {
   skillOffered: string;
@@ -43,6 +53,9 @@ function ProfilePage() {
   const [sendingSwap, setSendingSwap] = useState<boolean>(false);
   const [editing, setEditing] = useState<boolean>(false);
   const [saving, setSaving] = useState<boolean>(false);
+  const [uploadingImage, setUploadingImage] = useState<ImageKind | null>(null);
+  const [picturePreview, setPicturePreview] = useState<string>("");
+  const [bannerPreview, setBannerPreview] = useState<string>("");
   const [draft, setDraft] = useState<Draft>({
     name: "",
     bio: "",
@@ -119,6 +132,52 @@ function ProfilePage() {
       setSaving(false);
     }
   };
+
+  const handleImageSelection = async (
+    kind: ImageKind,
+    event: ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+
+    if (!file) return;
+    if (!ALLOWED_PROFILE_IMAGE_TYPES.has(file.type)) {
+      addToast("Please choose a JPG, PNG, WEBP, or GIF image.", "error");
+      return;
+    }
+    if (file.size > MAX_PROFILE_IMAGE_SIZE) {
+      addToast("Profile images must be 5 MB or smaller.", "error");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = async () => {
+      const imageData = reader.result?.toString() || "";
+      if (!imageData) {
+        addToast("Unable to read that image.", "error");
+        return;
+      }
+
+      if (kind === "profilePicture") setPicturePreview(imageData);
+      else setBannerPreview(imageData);
+      setUploadingImage(kind);
+
+      try {
+        const updatedUser = await updateProfile({ [kind]: imageData });
+        setProfileUser(updatedUser);
+        if (kind === "profilePicture") setPicturePreview("");
+        else setBannerPreview("");
+      } catch (error: any) {
+        if (kind === "profilePicture") setPicturePreview("");
+        else setBannerPreview("");
+        addToast(error?.response?.data?.message || error?.message || "Unable to update image.", "error");
+      } finally {
+        setUploadingImage(null);
+      }
+    };
+    reader.onerror = () => addToast("Unable to read that image.", "error");
+    reader.readAsDataURL(file);
+  };
   if (bootstrapping || loadingUser) return <section className="page profile-page profile-loading-page"><div className="profile-loading-content"><LoadingIndicator label="Loading profile..." /></div></section>;
   if (!profileUser) return <section className="page"><div className="glass-card card"><h2 className="section-title">User not found</h2><Link className="btn-outline-red" to="/users">Back to Users</Link></div></section>;
 
@@ -144,12 +203,56 @@ function ProfilePage() {
   const profileHeadline = displayProfile.bio?.trim() || "Building a strong skill exchange profile.";
   const preferredProfileLabel = getPreferredUserLabel(displayProfile);
   const secondaryProfileName = getSecondaryUserName(displayProfile);
+  const pictureSrc = picturePreview || displayProfile.profilePicture || "";
+  const bannerSrc = bannerPreview || displayProfile.profileBanner || "";
+  const profileInitials = preferredProfileLabel
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0])
+    .join("")
+    .toUpperCase() || "SF";
 
   return (
     <section className={`page profile-page ${isOwnProfile && editing ? "is-editing" : ""}`}>
       <div className={`profile-showcase-layout ${isOwnProfile && editing ? "is-editing" : ""}`}>
         <div className="profile-showcase-column">
           <article className="glass-card card profile-showcase-card">
+            <div className={`profile-media ${bannerSrc ? "has-banner" : ""}`}>
+              {bannerSrc ? <img src={bannerSrc} alt="" className="profile-banner-image" /> : null}
+              {isOwnProfile ? (
+                <label className="profile-banner-control">
+                  <ImagePlus size={14} />
+                  {uploadingImage === "profileBanner" ? "Uploading..." : "Change banner"}
+                  <input
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp,image/gif"
+                    onChange={(event) => handleImageSelection("profileBanner", event)}
+                    disabled={Boolean(uploadingImage)}
+                    hidden
+                  />
+                </label>
+              ) : null}
+              <div className="profile-avatar-wrap">
+                {pictureSrc ? (
+                  <img src={pictureSrc} alt={preferredProfileLabel} className="profile-avatar-image" />
+                ) : (
+                  <span className="profile-avatar-fallback">{profileInitials}</span>
+                )}
+                {isOwnProfile ? (
+                  <label className="profile-picture-control" title="Change profile picture">
+                    <Camera size={14} />
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp,image/gif"
+                      onChange={(event) => handleImageSelection("profilePicture", event)}
+                      disabled={Boolean(uploadingImage)}
+                      hidden
+                    />
+                  </label>
+                ) : null}
+              </div>
+            </div>
             <div className="profile-showcase-body">
               <div className="profile-showcase-content">
                 <div className="profile-showcase-identity">
