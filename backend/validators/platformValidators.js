@@ -12,12 +12,14 @@ const safeImageValue = (value) => {
   const isHttpImage =
     /^https?:\/\/[^\s]+$/i.test(trimmed) &&
     /\.(?:png|jpe?g|webp|gif)(?:[?#].*)?$/i.test(trimmed);
+  const isCloudinaryImage =
+    /^https:\/\/res\.cloudinary\.com\/[^\s/]+\/image\/upload\/[^\s]+$/i.test(trimmed);
   const isLocalAssetImage = /^\/assets\/[\w.-]+\.(?:png|jpe?g|webp|gif)$/i.test(trimmed);
   const isSafeDataImage =
     /^data:image\/(?:png|jpe?g|webp|gif);base64,[A-Za-z0-9+/=]+$/i.test(trimmed) &&
     Buffer.byteLength(trimmed, "utf8") <= 2 * 1024 * 1024;
 
-  return isHttpImage || isLocalAssetImage || isSafeDataImage;
+  return isHttpImage || isCloudinaryImage || isLocalAssetImage || isSafeDataImage;
 };
 
 const stringArrayField = (field, maxItems = 25, maxLength = 80) =>
@@ -77,6 +79,16 @@ const updateProfileValidator = [
   body("name").optional().trim().isLength({ min: 2, max: 80 }).withMessage("Name must be between 2 and 80 characters."),
   body("bio").optional().trim().isLength({ max: 280 }).withMessage("Bio must be 280 characters or fewer."),
   body("location").optional().trim().isLength({ max: 120 }).withMessage("Location must be 120 characters or fewer."),
+  body("profilePicture")
+    .optional()
+    .trim()
+    .custom(safeImageValue)
+    .withMessage("Profile picture must be a valid image URL or safe image data URL."),
+  body("profileBanner")
+    .optional()
+    .trim()
+    .custom(safeImageValue)
+    .withMessage("Profile banner must be a valid image URL or safe image data URL."),
   stringArrayField("skillsOffered"),
   stringArrayField("skillsWanted"),
   stringArrayField("interests"),

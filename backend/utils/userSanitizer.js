@@ -9,6 +9,8 @@ const sanitizeUser = (user) => {
   isVerified: Boolean(user.isVerified),
   bio: user.bio || "",
   location: user.location || "",
+  profilePicture: user.profilePicture || "",
+  profileBanner: user.profileBanner || "",
   skillsOffered: Array.isArray(user.skillsOffered) ? user.skillsOffered : [],
   skillsWanted: Array.isArray(user.skillsWanted) ? user.skillsWanted : [],
   interests: Array.isArray(user.interests) ? user.interests : [],

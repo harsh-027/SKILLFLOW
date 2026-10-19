@@ -62,6 +62,8 @@ const updateMyProfile = asyncHandler(async (req, res) => {
     "name",
     "bio",
     "location",
+    "profilePicture",
+    "profileBanner",
     "skillsOffered",
     "skillsWanted",
     "interests",
