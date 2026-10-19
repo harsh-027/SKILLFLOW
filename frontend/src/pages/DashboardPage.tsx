@@ -76,20 +76,43 @@ export default function DashboardPage() {
         <Link className="dashboard-summary-link" to={`/profile/${currentUser._id}`}>View your profile <ArrowUpRight size={14} /></Link>
       </article>
 
-      <section className="glass-card dashboard-contribution-card" aria-label="Contribution activity">
-        <div className="dashboard-contribution-head">
-          <div><h2>Contributors</h2></div>
-          <span className="dashboard-contribution-period">Last 12 months</span>
-        </div>
-        <div className="dashboard-contribution-months">{contributionMonthLabels.map((label, week) => <span key={week} style={{ gridColumn: week + 1 }}>{label}</span>)}</div>
-        <div className="dashboard-contribution-chart">
-          <div className="dashboard-contribution-weekdays"><span>Mon</span><span /><span>Wed</span><span /><span /><span /><span>Sun</span></div>
-          <div className="dashboard-contribution-grid" aria-label="Posts by day">
-            {contributionCells.map(({ key, date, count }) => <span key={key} className={`dashboard-contribution-cell level-${Math.min(count, 4)}`} title={`${count} post${count === 1 ? "" : "s"} on ${date.toLocaleDateString("en-IN")}`} />)}
+      <div className="dashboard-contribution-row">
+        <section className="glass-card dashboard-contribution-card" aria-label="Contribution activity">
+          <div className="dashboard-contribution-head">
+            <div><h2>Contributors</h2></div>
+            <span className="dashboard-contribution-period">Last 12 months</span>
           </div>
-        </div>
-        <div className="dashboard-contribution-footer"><span>Learn how we count contributions</span><span className="dashboard-legend-scale"><span>Less</span><i className="level-0" /><i className="level-1" /><i className="level-2" /><i className="level-3" /><i className="level-4" /><span>More</span></span></div>
-      </section>
+          <div className="dashboard-contribution-months">{contributionMonthLabels.map((label, week) => <span key={week} style={{ gridColumn: week + 1 }}>{label}</span>)}</div>
+          <div className="dashboard-contribution-chart">
+            <div className="dashboard-contribution-weekdays"><span>Mon</span><span /><span>Wed</span><span /><span /><span /><span>Sun</span></div>
+            <div className="dashboard-contribution-grid" aria-label="Posts by day">
+              {contributionCells.map(({ key, date, count }) => <span key={key} className={`dashboard-contribution-cell level-${Math.min(count, 4)}`} title={`${count} post${count === 1 ? "" : "s"} on ${date.toLocaleDateString("en-IN")}`} />)}
+            </div>
+          </div>
+          <div className="dashboard-contribution-footer"><span>Learn how we count contributions</span><span className="dashboard-legend-scale"><span>Less</span><i className="level-0" /><i className="level-1" /><i className="level-2" /><i className="level-3" /><i className="level-4" /><span>More</span></span></div>
+        </section>
+
+        <Link to={`/profile/${currentUser._id}`} className="dashboard-profile-square" aria-label={`Open ${currentUser.userId} profile`}>
+          <div className="dashboard-profile-square-media">
+            {currentUser.profilePicture ? (
+              <>
+                <img src={currentUser.profilePicture} alt="" className="dashboard-profile-square-backdrop" aria-hidden="true" />
+                <img src={currentUser.profilePicture} alt="" className="dashboard-profile-square-avatar" />
+              </>
+            ) : (
+              <span className="dashboard-profile-square-avatar dashboard-profile-square-initials">
+                {getPreferredUserLabel(currentUser).slice(0, 2).toUpperCase()}
+              </span>
+            )}
+          </div>
+          <div className="dashboard-profile-square-content">
+            <span className="dashboard-profile-square-handle">@{currentUser.userId}</span>
+            <strong>{currentUser.name}</strong>
+            <span className="dashboard-profile-square-copy">View your profile</span>
+            <ArrowUpRight size={16} aria-hidden="true" />
+          </div>
+        </Link>
+      </div>
 
     </div>
   );

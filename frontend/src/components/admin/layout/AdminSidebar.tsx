@@ -6,14 +6,17 @@ import {
   HelpCircle,
   LayoutDashboard,
   LogOut,
+  Moon,
   type LucideIcon,
   Settings,
+  Sun,
   Tags,
   Users,
   X,
 } from "lucide-react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useApp } from "@/context/AppContext";
+import { useTheme } from "@/context/ThemeContext";
 
 type AdminNavigationItem = {
   to: string;
@@ -45,6 +48,7 @@ export default function AdminSidebar({
 }: AdminSidebarProps) {
   const navigate = useNavigate();
   const { currentUser, logout } = useApp();
+  const { theme, toggleTheme } = useTheme();
 
   const handleLogout = async () => {
     await logout(true);
@@ -177,7 +181,16 @@ export default function AdminSidebar({
             )}
           </div>
 
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-3 gap-2">
+            <button
+              type="button"
+              onClick={toggleTheme}
+              className="inline-flex h-10 items-center justify-center rounded border border-gray-300 bg-white text-black"
+              aria-label={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
+              title={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
+            >
+              {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            </button>
             <button
               type="button"
               className="inline-flex h-10 items-center justify-center rounded border border-gray-300 bg-white text-black"

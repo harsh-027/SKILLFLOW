@@ -8,10 +8,13 @@ This README intentionally leaves out sensitive local configuration, private keys
 
 - User registration and login flows
 - Profile management with offered and wanted skills
+- Profile pictures and banners uploaded through Cloudinary
 - Community feed with posts, likes, and comments
 - Skill swap request management
 - Direct messaging between users
 - Personal dashboard with activity and profile insights
+- Persistent application-wide light and dark themes
+- Terms & Conditions and Privacy Policy pages
 
 ## Tech Stack
 
@@ -21,9 +24,10 @@ This README intentionally leaves out sensitive local configuration, private keys
 - Vite
 - TypeScript and JavaScript
 - React Router
-- Tailwind CSS
+- Tailwind CSS 4
 - Framer Motion
 - Axios
+- Cloudinary unsigned image uploads
 
 ### Backend
 
@@ -78,7 +82,20 @@ cd frontend
 npm install
 ```
 
-### 2. Start the frontend
+### 2. Configure the frontend
+
+Create `frontend/.env` using `frontend/.env.example` as a template:
+
+```env
+VITE_API_BASE_URL=http://localhost:5000/api/v1
+VITE_CLOUDINARY_CLOUD_NAME=
+VITE_CLOUDINARY_UPLOAD_PRESET=
+```
+
+The Cloudinary values are used for unsigned frontend image uploads. Do not place API
+secrets or private credentials in frontend environment variables.
+
+### 3. Start the frontend
 
 ```bash
 npm run dev
@@ -92,14 +109,14 @@ npm run dev
 
 The frontend runs with Vite, typically at `http://localhost:5173`.
 
-### 3. Install backend dependencies
+### 4. Install backend dependencies
 
 ```bash
 cd backend
 npm install
 ```
 
-### 4. Start the backend
+### 5. Start the backend
 
 ```bash
 npm run dev
@@ -123,6 +140,14 @@ npm run build
 npm run preview
 ```
 
+From the project root, the equivalent frontend commands are:
+
+```bash
+npm run dev
+npm run build
+npm run preview
+```
+
 ### Backend
 
 ```bash
@@ -134,7 +159,10 @@ You can also run backend scripts directly inside `backend/` with `npm run dev` a
 
 ## Notes
 
-- The frontend API client points to `http://localhost:5000/api`.
+- The frontend API client defaults to `http://localhost:5000/api/v1` through `VITE_API_BASE_URL`.
+- Profile pictures and profile banners are stored as Cloudinary URLs in the user record; image files are not stored in MongoDB.
+- The selected theme is stored locally under `skillflow-theme` and is shared between the regular and admin interfaces.
+- Legal pages are available at `/terms` and `/privacy`.
 - Some package names in the repo still use older `skillswap` naming, but the product UI is branded as SkillFlow.
 # NOTICE: The Community page is temporarily disabled.
 

@@ -6,13 +6,16 @@ import {
   LogIn,
   LogOut,
   Menu,
+  Moon,
   PlusSquare,
   Search,
+  Sun,
   Users,
   X,
 } from "lucide-react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { useApp } from "@/context/AppContext";
+import { useTheme } from "@/context/ThemeContext";
 import { isDashboardShellPath } from "@/lib/navigation";
 import { getPreferredUserLabel } from "@/lib/user-display";
 import { cn } from "@/lib/utils";
@@ -36,6 +39,7 @@ const privateLinks: NavItem[] = [
 
 export default function SiteNavbar() {
   const { user, logout } = useApp();
+  const { theme, toggleTheme } = useTheme();
   const currentUser = user;
   const [open, setOpen] = useState(false);
   const location = useLocation();
@@ -53,7 +57,7 @@ export default function SiteNavbar() {
     return (
       <header className="app-header skillflow-topbar">
         <div className="skillflow-topbar-inner">
-          <Link to="/home" className="topbar-brand"><img src="/favicon.svg" alt="" />SkillFlow</Link>
+          <Link to="/" className="topbar-brand"><img src="/logo.svg" alt="" />SkillFlow</Link>
           <div className="header-search">
             <Search size={16} color="var(--text-muted)" />
             <input type="search" placeholder="Search people, skills, and momentum" />
@@ -70,9 +74,9 @@ export default function SiteNavbar() {
             })}
           </nav>
           <div className="topbar-profile-actions">
-            <Link to={`/profile/${currentUser?._id}`} className="topbar-profile" title="View profile">
-              <span className="topbar-profile-name">{currentUserLabel}</span>
-            </Link>
+            <button type="button" onClick={toggleTheme} className="btn-ghost topbar-theme-toggle" aria-label={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"} title={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}>
+              {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
+            </button>
             <button type="button" onClick={() => void logout()} className="btn-ghost topbar-logout" aria-label="Logout" title="Logout"><LogOut size={16} /></button>
             <button type="button" onClick={() => setOpen((prev) => !prev)} className="btn-ghost topbar-menu" aria-label="Toggle navigation"><Menu size={18} /></button>
           </div>
