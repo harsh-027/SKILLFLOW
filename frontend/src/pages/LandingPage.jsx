@@ -72,11 +72,10 @@ function LandingPage() {
         <section className="landing-hero" aria-labelledby="landing-title">
           <div className="landing-container landing-hero-grid">
             <div className="landing-hero-copy">
-              <p className="landing-eyebrow">Learn in motion</p>
               <h1 id="landing-title">Build skills.<br /><span>Share momentum.</span></h1>
               <p className="landing-hero-lede">SkillFlow connects people who want to learn with people ready to share what they know. Keep every exchange practical, focused, and moving forward.</p>
               <div className="landing-hero-actions">{user ? <Link to={primaryPath} className="landing-button landing-button-accent">{primaryLabel}<ArrowRight size={16} aria-hidden="true" /></Link> : <button type="button" className="landing-button landing-button-accent" onClick={() => setIsRegisterOpen(true)}>{primaryLabel}<ArrowRight size={16} aria-hidden="true" /></button>}<a href="#how-it-works" className="landing-button landing-button-light">See how it works</a></div>
-              <div className="landing-hero-note"><Check size={15} aria-hidden="true" /><span>Peer learning built around real progress.</span></div>
+              
             </div>
             <div className="landing-hero-panel" aria-label="SkillFlow community snapshot">
               <div className="landing-hero-panel-top"><span>SkillFlow community</span><span className="landing-live-dot">Live</span></div>
@@ -94,7 +93,7 @@ function LandingPage() {
         </section>
 
         <section id="how-it-works" className="landing-section landing-how-section">
-          <div className="landing-container landing-section-heading"><div><p className="landing-eyebrow">A clearer way to grow</p><h2>Progress works better<br />when it is shared.</h2></div><p>Find the right people, make a useful exchange, and stay close to the next step.</p></div>
+          <div className="landing-container landing-section-heading"><div><h2>Progress works better<br />when it is shared.</h2></div><p>Find the right people, make a useful exchange, and stay close to the next step.</p></div>
           <div className="landing-container landing-process-grid">
             <article><span>01</span><h3>Set your direction</h3><p>Add skills you can offer and the ones you want to learn.</p></article>
             <article><span>02</span><h3>Find your people</h3><p>Discover profiles, posts, and goals that line up with yours.</p></article>
@@ -103,11 +102,11 @@ function LandingPage() {
         </section>
 
         <section id="features" className="landing-section landing-features-section">
-          <div className="landing-container landing-section-heading landing-section-heading-centered"><p className="landing-eyebrow">Everything in one flow</p><h2>Tools for learning<br />that feel human.</h2></div>
+          <div className="landing-container landing-section-heading landing-section-heading-centered"><h2>Tools for learning<br />that feel human.</h2></div>
           <FeatureSection />
         </section>
 
-        <section className="landing-section landing-stats-section"><div className="landing-container landing-stats-layout"><div className="landing-stats-copy"><p className="landing-eyebrow">Built for practice</p><h2>Small actions<br />become real progress.</h2><p>SkillFlow keeps your goals, conversations, and learning exchanges close at hand so momentum does not get lost.</p><Link to={primaryPath} className="landing-inline-link">Start your flow <ArrowRight size={16} aria-hidden="true" /></Link></div><div className="landing-stats-grid">{landingStats.map((item) => { const copy = statCopy[item.label] || { tag: item.label, text: "SkillFlow activity from the community." }; return <article key={item.label} className="landing-stat-card"><strong>{item.value}</strong><span>{copy.tag}</span><p>{copy.text}</p></article>; })}</div></div></section>
+        <section className="landing-section landing-stats-section"><div className="landing-container landing-stats-layout"><div className="landing-stats-copy"><h2>Small actions<br />become real progress.</h2><p>SkillFlow keeps your goals, conversations, and learning exchanges close at hand so momentum does not get lost.</p><Link to={primaryPath} className="landing-inline-link">Start your flow <ArrowRight size={16} aria-hidden="true" /></Link></div><div className="landing-stats-grid">{landingStats.map((item) => { const copy = statCopy[item.label] || { tag: item.label, text: "SkillFlow activity from the community." }; return <article key={item.label} className="landing-stat-card"><strong>{item.value}</strong><span>{copy.tag}</span><p>{copy.text}</p></article>; })}</div></div></section>
 
         <section id="faqs" className="landing-section landing-faq-section"><FaqsSection /></section>
       </main>

@@ -31,7 +31,6 @@ export function FaqsSection() {
 			<div className="faq-intro">
 				<span className="faq-kicker">FAQ · SkillFlow</span>
 				<h2>Common Questions</h2>
-				<p>Quick answers before you start swapping skills.</p>
 			</div>
 			<div className="faq-layout">
 				<div className="faq-categories">

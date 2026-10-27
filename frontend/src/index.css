@@ -4,9 +4,18 @@
    by existing components; visual effects are intentionally flattened below. */
 *, *::before, *::after { box-sizing: border-box; }
 
+/* Keep scrolling available while removing browser scrollbar chrome. */
+*, *::before, *::after {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+*::-webkit-scrollbar { display: none; }
+
 :root {
   color-scheme: light;
-  --font-system: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-display: "SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-text: "SF Pro Text", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-system: var(--font-text);
   font-family: var(--font-system);
   color: #2a2a2a;
   background: #f7f7f7;
@@ -65,25 +74,27 @@
   --type-caption: .75rem;
   --leading-body: 1.55;
   --leading-tight: 1.12;
+  --tracking-display: -0.028em;
+  --tracking-body: -0.006em;
 }
 
 html, body, #root { width: 100%; min-height: 100%; margin: 0; }
-html { font-family: var(--font-system); font-size: 16px; }
-body { background: var(--color-page); color: var(--color-text); font-family: var(--font-system); font-size: var(--type-body); font-weight: 400; line-height: var(--leading-body); -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+html { font-family: var(--font-text); font-size: 16px; }
+body { background: var(--color-page); color: var(--color-text); font-family: var(--font-text); font-size: var(--type-body); font-weight: 400; line-height: var(--leading-body); -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; font-kerning: normal; font-variant-numeric: proportional-nums; }
 body, button, input, textarea, select { font-family: inherit; }
 button, input, textarea, select { font-size: inherit; }
 button, a { -webkit-tap-highlight-color: transparent; }
 a { color: inherit; }
 img { max-width: 100%; }
 h1, h2, h3, h4, p { margin-top: 0; }
-h1, h2, h3, h4 { color: var(--color-text); font-optical-sizing: auto; line-height: var(--leading-tight); letter-spacing: -0.02em; }
-h1 { font-size: clamp(1.75rem, 3vw, 2.8rem); font-weight: 700; letter-spacing: -0.035em; }
-h2 { font-size: clamp(1.5rem, 3vw, 2.25rem); font-weight: 650; letter-spacing: -0.028em; }
+h1, h2, h3, h4 { color: var(--color-text); font-family: var(--font-display); font-optical-sizing: auto; line-height: var(--leading-tight); letter-spacing: var(--tracking-display); }
+h1 { font-size: clamp(1.75rem, 3vw, 2.8rem); font-weight: 600; letter-spacing: -0.035em; }
+h2 { font-size: clamp(1.5rem, 3vw, 2.25rem); font-weight: 600; letter-spacing: -0.028em; }
 h3 { font-size: clamp(1.125rem, 2vw, 1.5rem); font-weight: 600; letter-spacing: -0.018em; }
 h4 { font-weight: 600; }
-p { line-height: var(--leading-body); }
-label { font-weight: 500; }
-button { font-weight: 600; }
+p { line-height: var(--leading-body); letter-spacing: var(--tracking-body); }
+label { font-weight: 600; }
+button { font-weight: 600; letter-spacing: -0.006em; }
 small, .caption, .text-caption { font-size: var(--type-caption); line-height: 1.4; }
 button { cursor: pointer; }
 button:disabled, input:disabled, textarea:disabled, select:disabled { cursor: not-allowed; opacity: .6; }
@@ -160,12 +171,18 @@ input::placeholder, textarea::placeholder { color: #777; }
 .profile-loading-content { display: grid; min-height: 180px; place-items: center; border: 0 !important; background: transparent !important; }
 .profile-page.is-editing { width: min(980px, calc(100% - 40px)); }
 .profile-showcase-layout { display: grid; grid-template-columns: minmax(0, 1fr); gap: 18px; align-items: start; transition: grid-template-columns 260ms var(--motion-ease-out); }
-.profile-showcase-layout.is-editing { position: relative; grid-template-columns: minmax(0, 1.05fr) minmax(320px, .95fr); gap: 0; align-items: start; border-right: 1px solid var(--color-border); border-bottom: 1px solid var(--color-border); border-radius: 0 18px 18px 0; }
+.profile-showcase-layout.is-editing { position: relative; overflow: hidden; grid-template-columns: minmax(0, 1.05fr) minmax(320px, .95fr); gap: 0; align-items: stretch; border-bottom: 1px solid var(--color-border); border-radius: 18px; }
 .profile-showcase-column { min-width: 0; }
 .profile-showcase-card { padding: 0 !important; border-radius: 18px !important; }
-.profile-showcase-layout.is-editing .profile-showcase-card { border-right: 0 !important; border-bottom: 0 !important; border-radius: 18px 0 0 0 !important; }
+.profile-showcase-layout.is-editing .profile-showcase-card { border-right: 0 !important; border-bottom: 0 !important; border-radius: 18px 0 0 18px !important; }
 .profile-media { position: relative; height: 178px; overflow: visible; border-radius: 18px 18px 0 0; background: linear-gradient(135deg, #e9e7e4, #f7f6f4 55%, #dedbd8); }
-.profile-media::after { position: absolute; inset: 35% 0 0; background: linear-gradient(180deg, transparent, var(--color-surface)); content: ""; pointer-events: none; }
+.profile-media::after {
+  position: absolute;
+  inset: 28% 0 0;
+  background: linear-gradient(180deg, transparent 0%, var(--color-surface) 100%);
+  content: "";
+  pointer-events: none;
+}
 .profile-media.has-banner { background: #e9e7e4; }
 .profile-banner-image { width: 100%; height: 100%; object-fit: cover; border-radius: 18px 18px 0 0; }
 .profile-showcase-layout.is-editing .profile-media::before { position: absolute; z-index: 1; inset: 0 0 0 76%; background: linear-gradient(90deg, transparent, var(--color-surface)); content: ""; pointer-events: none; }
@@ -196,8 +213,8 @@ input::placeholder, textarea::placeholder { color: #777; }
 .profile-showcase-empty { color: #888; font-size: 13px; }
 .profile-showcase-actions { display: flex; justify-content: flex-end; margin-top: 24px; }
 .profile-showcase-actions .btn-outline-red { border: 0 !important; background: transparent !important; padding: 7px 0; }
-.profile-showcase-editor { padding: 22px !important; animation: profile-editor-enter 260ms var(--motion-ease-out) both; }
-.profile-showcase-layout.is-editing .profile-showcase-editor { align-self: start; border: 1px solid var(--color-border) !important; border-right: 0 !important; border-bottom: 0 !important; border-left: 0 !important; border-radius: 0 18px 0 0 !important; }
+.profile-showcase-editor { display: flex; min-height: 100%; flex-direction: column; padding: 22px !important; animation: profile-editor-enter 260ms var(--motion-ease-out) both; }
+.profile-showcase-layout.is-editing .profile-showcase-editor { align-self: start; border: 1px solid var(--color-border) !important; border-right: 0 !important; border-bottom: 0 !important; border-left: 0 !important; border-radius: 0 18px 18px 0 !important; }
 @keyframes profile-editor-enter {
   from { opacity: 0; transform: translateX(28px); }
   to { opacity: 1; transform: translateX(0); }
@@ -209,12 +226,13 @@ input::placeholder, textarea::placeholder { color: #777; }
 .profile-editor-head { margin-bottom: 18px; }
 .profile-editor-head .field-label { margin: 0; color: #777; font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
 .profile-editor-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
-.profile-editor-grid .field-wrap, .profile-asset-stack { display: grid; gap: 7px; }
+.profile-editor-grid .field-wrap, .profile-asset-stack { display: grid; gap: 7px; align-content: start; }
 .profile-editor-grid .field-wrap, .profile-editor-grid .tag-input-wrap { min-width: 0; }
+.profile-editor-grid .tag-input-wrap { display: grid; gap: 7px; align-content: start; }
 .profile-editor-grid .tag-input { width: 100%; min-width: 0; }
-.profile-editor-grid .tags-row { display: flex; flex-wrap: wrap; gap: 6px; min-width: 0; }
+.profile-editor-grid .tags-row { display: flex; min-height: 24px; flex-wrap: wrap; align-content: start; gap: 6px; min-width: 0; }
 .profile-editor-span-2, .profile-editor-actions { grid-column: 1 / -1; }
-.profile-editor-actions { display: flex; justify-content: flex-end; gap: 8px; padding-top: 4px; }
+.profile-editor-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: auto; padding-top: 18px; }
 
 /* Shared structural primitives. These restore readable layouts without
    coupling the foundation to a page-specific visual treatment. */
@@ -366,7 +384,8 @@ input::placeholder, textarea::placeholder { color: #777; }
 /* Landing page foundation: spacious, editorial sections with restrained contrast. */
 .landing-shell { min-height: 100vh; background: var(--color-page); color: var(--color-text); }
 .landing-container { width: min(1120px, calc(100% - 48px)); margin: 0 auto; }
-.landing-header { position: sticky; top: 0; z-index: 20; background: rgba(247, 247, 247, .94); border-bottom: 1px solid var(--color-border); }
+.landing-header { position: sticky; top: 0; z-index: 20; background: rgba(247, 247, 247, .94); border-bottom: 0; }
+.landing-header::after { position: absolute; right: 0; bottom: -18px; left: 0; height: 18px; background: linear-gradient(180deg, var(--color-page), transparent); content: ""; pointer-events: none; }
 .landing-header-inner { width: min(1120px, calc(100% - 48px)); min-height: 68px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: var(--space-6); }
 .landing-brand { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; font-weight: 700; letter-spacing: -.03em; }
 .landing-brand-mark { display: block; width: 28px; height: 28px; object-fit: contain; }
@@ -936,6 +955,24 @@ input::placeholder, textarea::placeholder { color: #777; }
 .dashboard-rail-card:hover,
 .dashboard-composer-card:hover { box-shadow: 0 14px 30px rgba(23, 23, 23, .11) !important; transform: translateY(-2px); }
 
+/* The editing view is one composed surface, so its two columns share one effect. */
+.profile-showcase-layout.is-editing {
+  box-shadow: 0 10px 24px rgba(23, 23, 23, .08);
+  transition: box-shadow 240ms var(--motion-ease-out), transform 240ms var(--motion-ease-out);
+}
+.profile-showcase-layout.is-editing:hover {
+  box-shadow: 0 14px 30px rgba(23, 23, 23, .11);
+  transform: translateY(-2px);
+}
+.profile-showcase-layout.is-editing .profile-showcase-card,
+.profile-showcase-layout.is-editing .profile-showcase-editor,
+.profile-showcase-layout.is-editing .profile-showcase-card:hover,
+.profile-showcase-layout.is-editing .profile-showcase-editor:hover {
+  box-shadow: none !important;
+  transform: none !important;
+  transition: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .card,
   .glass-card,
@@ -954,7 +991,8 @@ input::placeholder, textarea::placeholder { color: #777; }
   .dashboard-feed-card,
   .dashboard-rail-card,
   .dashboard-composer-card,
-  .dashboard-contribution-card { transition: none; }
+  .dashboard-contribution-card,
+  .profile-showcase-layout.is-editing { transition: none; }
 }
 
 /* Application-wide dark theme. The contribution chart keeps its intentional dark palette. */
